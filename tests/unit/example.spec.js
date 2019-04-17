@@ -1,12 +1,16 @@
-import { shallowMount } from '@vue/test-utils'
-import HelloWorld from '@/components/HelloWorld.vue'
+import { posStringToNumber } from "../../lib/posStringToNumber";
 
-describe('HelloWorld.vue', () => {
-  it('renders props.msg when passed', () => {
-    const msg = 'new message'
-    const wrapper = shallowMount(HelloWorld, {
-      propsData: { msg }
-    })
-    expect(wrapper.text()).toMatch(msg)
-  })
+
+
+it('test',()=>{
+  let object = {
+    left:'30px',
+    right:'40px',
+    top:30
+  }
+  let result = posStringToNumber(object)
+  expect(result.left).toBe(30);
+  expect(result.right).toBe(40);
+  expect(result.top).toBe(30);
 })
+
