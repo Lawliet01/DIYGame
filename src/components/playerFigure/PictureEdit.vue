@@ -55,6 +55,7 @@ export default {
     return {
       imgSrc: "",
       imgData: null,
+      historyData: [],
       canvasDimension: {
         width: 700,
         height: 400,
@@ -97,9 +98,16 @@ export default {
         this.canvasDimension.width,
         this.canvasDimension.height
       );
-      this.canvasDimension.width = 700 * this.canvasDimension.scale;
-      this.canvasDimension.height = 400 * this.canvasDimension.scale;
-      return this.drawCanvas();
+      // this.canvasDimension.width = 700 * this.canvasDimension.scale;
+      // this.canvasDimension.height = 400 * this.canvasDimension.scale;
+      console.log('happy')
+      let scale = this.canvasDimension.scale;
+      this.context.save();
+      this.context.scale(scale, scale);
+      let { x, y, data } = this.historyData[0];
+      this.context.putImageData(data, x, y,x,y,this.canvasDimension.width*scale,this.canvasDimension.height*scale)//,0,0,700,100);
+      this.context.restore();
+
     },
     //处理canvas
     editCanvas(event) {
@@ -118,10 +126,18 @@ export default {
     removeCropFrame() {
       this.cropFrameDimension.width = 0;
       this.cropFrameDimension.height = 0;
-      this.mode = "drag"
+      this.mode = "drag";
     },
     //剪切canvas
     cutCanvas() {
+      let { top, left, width, height } = posStringToNumber(
+        this.cropFrameDimension
+      );
+      let x = left - posStringToNumber(this.canvasDimension.left);
+      let y = top - posStringToNumber(this.canvasDimension.top);
+
+      let newImageData = this.context.getImageData(x, y, width, height);
+
       this.context.clearRect(
         0,
         0,
@@ -129,15 +145,8 @@ export default {
         this.canvasDimension.height
       );
 
-      let { top, left, width, height } = posStringToNumber(
-        this.cropFrameDimension
-      );
-      this.drawCanvas(
-        left - posStringToNumber(this.canvasDimension.left),
-        top - posStringToNumber(this.canvasDimension.top),
-        width,
-        height
-      );
+      this.context.putImageData(newImageData, x, y);
+      this.historyUpdate(x, y);
       this.removeCropFrame();
     },
     //移动cropFrame
@@ -215,10 +224,10 @@ export default {
         yDiff: originalEvent.clientY - cropFramePos.top
       };
     },
-    //画图
-    drawCanvas(innerX = 0, innerY = 0, innerWidth, innerHeight) {
-      //3个参数用来draw内部图样。
+    //首次加载图片
+    initCanvas() {
       if (this.imgSrc.length == 0) return;
+      //首次加载
       let img = new Image();
       img.src = this.imgSrc;
       img.onload = () => {
@@ -229,30 +238,24 @@ export default {
           width / imgWidth < height / imgHeight
             ? width / imgWidth
             : height / imgHeight);
-         
-        //
-        if (innerWidth == undefined) {
-         //正常情况下，保证整个图片能囊括在canva里面，并自动填满canvas。
-          console.log("happy");
-          innerWidth = imgWidth * this.canvasDimension.ratio;
-          innerHeight = imgHeight * this.canvasDimension.ratio;
-        }
-        //如果innerWidth ！= undefined,说明只需要截取内部的一部分
-        this.context.drawImage(
-          img,
-          innerX / ratio,
-          innerY / ratio,
-          innerWidth / ratio,
-          innerHeight / ratio,
-          innerX,
-          innerY,
-          innerWidth,
-          innerHeight
-        );
-        this.imgData = this.context.getImageData(innerX,innerY,innerWidth,innerHeight)
-        console.log(this.imgData);
-        
+
+        //保证整个图片能囊括在canva里面，并自动填满canvas。
+        this.context.drawImage(img, 0, 0, imgWidth * ratio, imgHeight * ratio);
+        this.historyUpdate(0, 0);
       };
+    },
+    //把canvas数据放到history中
+    historyUpdate(x, y) {
+      //获得全canvas数据
+      //但指明要样式的未知
+      let { width, height } = this.canvasDimension;
+      let newImageData = this.context.getImageData(0, 0, width, height);
+      console.log(newImageData);
+      this.historyData.unshift({
+        x: x,
+        y: y,
+        data: newImageData
+      });
     },
     //添加图片
     addPicture() {
@@ -266,7 +269,7 @@ export default {
           let reader = new FileReader();
           reader.addEventListener("load", () => {
             this.imgSrc = reader.result;
-            this.drawCanvas();
+            this.initCanvas();
           });
           reader.readAsDataURL(input.files[0]);
         }
