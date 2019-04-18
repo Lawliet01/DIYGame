@@ -9,11 +9,16 @@
         class="toCombineCanvas"
         :width="canvasContainerSize.width"
         :height="canvasContainerSize.height"
-        :style="{top:toCombineCanvasStyle.top,left:toCombineCanvasStyle.left}"
+        :update="imgContentPos.top + imgContentPos.left + rotate + flip"
       ></canvas>
       <span class="leftRotate" @click="rotate-=5">左转</span>
       <span class="rightRotate" @click="rotate+=5">右转</span>
-      <canvas class="previewCanvas" :width="previewSize.width" :height="previewSize.height"></canvas>
+      <div
+        class="previewContainer"
+        :style="{width:previewSize.width+'px',height:previewSize.height+'px'}"
+      >
+        <canvas class="previewCanvas" :width="previewSize.width" :height="previewSize.height"></canvas>
+      </div>
     </div>
     <div class="adjustOptions">
       <div class="goback">back</div>
@@ -21,64 +26,68 @@
         <input type="range" min="0.5" max="3" step="0.05" v-model.number="scale">
       </div>
       <div class="flip" @click="flip = !flip">flip</div>
-      <div class="done">done</div>
+      <div class="done" @click="generatePlayerFigure()">done</div>
     </div>
+    <canvas class="testCanvas" width="480" height="600"></canvas>
   </div>
 </template>
 
 <script>
+//girlHeadImg应该是imageData，要知道width和height,然后通过toDataURL生成图画
 import {
-  oneBodyImg,
   headLessBodyGroupImg,
   girlHeadImg
 } from "./lib/imgSource.js";
-
-import { posStringToNumber } from "./lib/posStringToNumber";
-import { flipCanvas } from "./lib/flipCanvas";
 
 export default {
   name: "PictureCombine",
   mounted: function() {
     girlHeadImg.onload = () => {
+      //应该通过putImageData来放入
       this.toCombineCanvasContext.drawImage(girlHeadImg, 0, 0, 200, 165);
     };
   },
   updated: function() {
-     //this.toCombineCanvasContext.clearRect(0,0,this.canvasContainerSize.width,this.canvasContainerSize.height)
-     //this.toCombineCanvasContext.translate
-   //  this.previewCanvasContext.clearRect(
-   //    0,
-   //    0,
-   //    this.previewSize.width,
-   //    this.previewSize.height
-   //  );
-   //  this.previewCanvasContext.drawImage(oneBodyImg, 0, 0, 48, 60);
-   //  let ratio = this.previewSize.width / this.canvasContainerSize.width;
-   //  let top = posStringToNumber(this.toCombineCanvasStyle.top) * ratio;
-   //  let left = posStringToNumber(this.toCombineCanvasStyle.left) * ratio;
-   //  console.log(left);
-    
-   //  this.previewCanvasContext.save();
-   //  //  this.previewCanvasContext.scale(this.scale, this.scale);
-   //  //  this.previewCanvasContext.rotate((this.rotate * Math.PI) / 180);
-   //  let factor = this.flip==true?-1:1;
-   //  this.previewCanvasContext.translate(left,top);
-   //  this.previewCanvasContext.scale(factor*this.scale,this.scale)
-   //  this.previewCanvasContext.drawImage(girlHeadImg, 0, 0, 30, 25);
-   //  this.previewCanvasContext.restore();
+    //清楚canvas
+    this.toCombineCanvasContext.clearRect(
+      0,
+      0,
+      this.canvasContainerSize.width,
+      this.canvasContainerSize.height
+    );
+    this.previewCanvasContext.clearRect(
+      0,
+      0,
+      this.previewSize.width,
+      this.previewSize.height
+    );
 
-   //  function flipHorizontally(context, around, scale) {
-   //    context.translate(around, 0);
-   //    context.scale(-scale, scale);
-   //    context.translate(-around, 0);
-   //  }
+    //开始画
+    //toCombinedCanvas
+    this.drawCanvasAfterTransform(
+      girlHeadImg,
+      this.toCombineCanvasContext,
+      this.imgContentPos.left,
+      this.imgContentPos.top,
+      200, //需要调整
+      165
+    );
+    let ratio = this.previewSize.width / this.canvasContainerSize.width;
+    this.drawCanvasAfterTransform(
+      girlHeadImg,
+      this.previewCanvasContext,
+      this.imgContentPos.left * ratio,
+      this.imgContentPos.top * ratio,
+      30,
+      25
+    );
   },
   data: function() {
     return {
       scale: 1,
       rotate: 0,
       flip: false,
-      toCombineCanvasStyle: {
+      imgContentPos: {
         top: 0,
         left: 0
       },
@@ -92,6 +101,7 @@ export default {
       }
     };
   },
+
   computed: {
     toCombineCanvasDOM: function() {
       let canvas = document.getElementsByClassName("toCombineCanvas");
@@ -110,63 +120,61 @@ export default {
     },
     previewCanvasContext: function() {
       return this.previewCanvasDOM.getContext("2d");
-    },
-    transform: function() {
-      let factor = this.flip == true ? -1 : 1;
-      return `scale(${factor * this.scale},${this.scale}) rotate(${factor *
-        this.rotate}deg) `;
     }
   },
   methods: {
     //移动canvas
-    moveCanvas: function() {
-       let self = this;
+    moveCanvas: function(event) {
+      let self = this;
       let { widthDiff, heightDiff } = this.mouseImgPosDiff(event);
       self.canvasContainerDOM.addEventListener("mousemove", startMove);
       function startMove(event) {
-         if (event.buttons == 0) {
-            self.canvasContainerDOM.removeEventListener("mousemove", startMove);
+        if (event.buttons == 0) {
+          self.canvasContainerDOM.removeEventListener("mousemove", startMove);
         }
-        self.toCombineCanvasStyle.top =
-          event.clientY -
-          self.canvasContainerDOMRectPos().top -
-          heightDiff +
-          self.scaleDiff().yCompensate +
-          "px";
-        self.toCombineCanvasStyle.left =
-          event.clientX -
-          self.canvasContainerDOMRectPos().left -
-          widthDiff +
-          self.scaleDiff().xCompensate +
-          "px";
+        self.imgContentPos.left = event.clientX - widthDiff;
+        self.imgContentPos.top = event.clientY - heightDiff;
       }
     },
     //位置信息
-    canvasContainerDOMRectPos() {
-      return this.canvasContainerDOM.getBoundingClientRect();
-    },
-    toCombineCanvasRectPos() {
-      return this.toCombineCanvasDOM.getBoundingClientRect();
-    },
     mouseImgPosDiff: function(originalEvent) {
       return {
-        widthDiff: originalEvent.clientX - this.toCombineCanvasRectPos().left,
-        heightDiff: originalEvent.clientY - this.toCombineCanvasRectPos().top
+        widthDiff: originalEvent.clientX - this.imgContentPos.left,
+        heightDiff: originalEvent.clientY - this.imgContentPos.top
       };
     },
-    scaleDiff: function() {
-      //scale 改变后，top，left数据没有发生变化，但实际上是变化了的，需要“补偿“变化的部分
-      let { top, left } = posStringToNumber(this.toCombineCanvasStyle);
-      return {
-        xCompensate:
-          left -
-          (this.toCombineCanvasRectPos().left -
-            this.canvasContainerDOMRectPos().left),
-        yCompensate:
-          top -
-          (this.toCombineCanvasRectPos().top -
-            this.canvasContainerDOMRectPos().top)
-      };
+    drawCanvasAfterTransform(img, context, left, top, width, height) {
+      context.translate(left, top);
+      if (this.flip == true) {
+        flipScale(context, width / 2, this.scale);
+      } else {
+        context.scale(this.scale, this.scale);
+      }
+      context.rotate((this.rotate * Math.PI) / 180);
+      context.drawImage(img, 0, 0, width, height);
+      context.resetTransform();
+      function flipScale(context, around, scale) {
+        context.translate(around, 0);
+        context.scale(-scale, scale);
+        context.translate(-around, 0);
+      }
+    },
+    generatePlayerFigure() {
+      let testCanvas = document.querySelector(".testCanvas");
+      let testCanvasCx = testCanvas.getContext("2d");
+      let topAdjusteds = [2, -2, -3, -4, 2, -2, -3, -3, 0, -3];
+      testCanvasCx.drawImage(headLessBodyGroupImg, 0, 0);
+      let ratio = this.previewSize.width / this.canvasContainerSize.width;
+      for (let i = 0; i < 10; i++) {
+        this.drawCanvasAfterTransform(
+          girlHeadImg,
+          testCanvasCx,
+          this.imgContentPos.left * ratio + 48*i,
+          this.imgContentPos.top * ratio + topAdjusteds[i],
+          30,
+          25
+        );
+      }
     }
   }
 };
@@ -190,8 +198,10 @@ export default {
   background-color: beige;
   @extend %background;
 
-  .toCombineCanvas{
-     position: absolute
+  .toCombineCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 
   .leftRotate {
@@ -210,12 +220,12 @@ export default {
       @extend %hover-effect;
     }
   }
-
-  .previewCanvas {
+  .previewContainer {
     position: absolute;
     right: 0;
     bottom: 0;
     border: 1px solid lightblue;
+    @extend %background;
   }
 }
 
