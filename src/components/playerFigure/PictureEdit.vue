@@ -17,26 +17,23 @@
       </div>
       <div class="pictureEdit_toolKit">
         <div class="resize">
-          <input
-            type="range"
-            min="0.1"
-            max="3"
-            step="0.05"
-            v-model="canvasDimension.scale"
-            @input="resize()"
-          >
+          <input type="range" min="0.1" max="3" step="0.05" v-model="scale" @input="resize($event)">
         </div>
         <div class="drag" @click="mode='drag'">drag</div>
         <div class="crop" @click="mode='crop'">crop</div>
         <div class="erase" @click="mode='erase'">erase</div>
-        <div class="undo">undo</div>
-        <div class="reset">reset</div>
+        <div class="undo" @click="undo()">undo</div>
+        <div class="reset" @click="reset()">reset</div>
         <div class="toolState">
           <div v-if="mode == 'crop'">
             <button @click="cutCanvas()">cut</button>
             <button @click="removeCropFrame()">remove</button>
           </div>
-          <div v-else-if="mode == 'erase'">erase</div>
+          <div v-else-if="mode == 'erase'">
+            <span>small</span>
+            <span>middle</span>
+            <span>big</span>
+          </div>
         </div>
       </div>
     </div>
@@ -48,22 +45,23 @@
 <script>
 import { isTSExpressionWithTypeArguments } from "@babel/types";
 import { posStringToNumber } from "../../../lib/posStringToNumber";
+import { transform } from "@babel/core";
 
 export default {
   name: "pictureEdit",
   data: function() {
     return {
       imgSrc: "",
-      imgData: null,
       historyData: [],
       canvasDimension: {
         width: 700,
         height: 400,
         top: 0,
         left: 0,
-        scale: 1,
-        ratio: 1
+        transform: "scale(1)"
       },
+      scale: 1,
+      ratio: 1,
       cropFrameDimension: {
         width: 0,
         height: 0,
@@ -86,28 +84,29 @@ export default {
       return this.imgSrc.length != 0
         ? document.getElementsByClassName("pictureEditCanvas")[0]
         : null;
-    }
+    },
   },
   methods: {
     //放大缩小
-    resize() {
-      //resize通过改变canvas的大小 + 重画来改变图案大小，重画会尝试自动填满canvas
+    resize(event) {
+      this.canvasDimension.transform = `scale(${event.target.value})`;
+    },
+    //重置
+    reset() {
       this.context.clearRect(
         0,
         0,
         this.canvasDimension.width,
         this.canvasDimension.height
       );
-      // this.canvasDimension.width = 700 * this.canvasDimension.scale;
-      // this.canvasDimension.height = 400 * this.canvasDimension.scale;
-      console.log('happy')
-      let scale = this.canvasDimension.scale;
-      this.context.save();
-      this.context.scale(scale, scale);
-      let { x, y, data } = this.historyData[0];
-      this.context.putImageData(data, x, y,x,y,this.canvasDimension.width*scale,this.canvasDimension.height*scale)//,0,0,700,100);
-      this.context.restore();
-
+      this.initCanvas();
+    },
+    //撤回
+    undo() {
+      if (this.historyData.length < 2) return;
+      this.historyData.shift();
+      let { imageData } = this.historyData[0];
+      this.drawCanvas(imageData);
     },
     //处理canvas
     editCanvas(event) {
@@ -130,23 +129,18 @@ export default {
     },
     //剪切canvas
     cutCanvas() {
-      let { top, left, width, height } = posStringToNumber(
-        this.cropFrameDimension
+      let { width, height } = posStringToNumber(this.cropFrameDimension);
+      let { widthDiff, heightDiff } = this.cropFrameCanvasPosDiff();
+      let x = widthDiff / this.scale;
+      let y = heightDiff / this.scale;
+      let newImageData = this.context.getImageData(
+        x,
+        y,
+        width / this.scale,
+        height / this.scale
       );
-      let x = left - posStringToNumber(this.canvasDimension.left);
-      let y = top - posStringToNumber(this.canvasDimension.top);
-
-      let newImageData = this.context.getImageData(x, y, width, height);
-
-      this.context.clearRect(
-        0,
-        0,
-        this.canvasDimension.width,
-        this.canvasDimension.height
-      );
-
-      this.context.putImageData(newImageData, x, y);
-      this.historyUpdate(x, y);
+      this.drawCanvas(newImageData, x, y);
+      this.historyUpdate();
       this.removeCropFrame();
     },
     //移动cropFrame
@@ -197,9 +191,17 @@ export default {
           self.canvasContainer.removeEventListener("mousemove", startMove);
         }
         self.canvasDimension.top =
-          event.clientY - self.canvasContainerRectPos().top - heightDiff + "px";
+          event.clientY -
+          self.canvasContainerRectPos().top -
+          heightDiff +
+          self.scaleDiff().yCompensate +
+          "px";
         self.canvasDimension.left =
-          event.clientX - self.canvasContainerRectPos().left - widthDiff + "px";
+          event.clientX -
+          self.canvasContainerRectPos().left -
+          widthDiff +
+          self.scaleDiff().xCompensate +
+          "px";
       }
     },
     //获取位置信息
@@ -215,6 +217,15 @@ export default {
         heightDiff: originalEvent.clientY - this.canvasRectPos().top
       };
     },
+    cropFrameCanvasPosDiff: function() {
+      let cropFramePos = document
+        .getElementsByClassName("cropFrame")[0]
+        .getBoundingClientRect();
+      return {
+        widthDiff: cropFramePos.left - this.canvasRectPos().left,
+        heightDiff: cropFramePos.top - this.canvasRectPos().top
+      };
+    },
     mouseCropFramePosDiff: function(originalEvent) {
       let cropFramePos = document
         .getElementsByClassName("cropFrame")[0]
@@ -222,6 +233,17 @@ export default {
       return {
         xDiff: originalEvent.clientX - cropFramePos.left,
         yDiff: originalEvent.clientY - cropFramePos.top
+      };
+    },
+    scaleDiff: function() {
+      //scale 改变后，top，left数据没有发生变化，但实际上是变化了的，需要“补偿“变化的部分
+      let { top, left } = posStringToNumber(this.canvasDimension);
+      return {
+        xCompensate:
+          left -
+          (this.canvasRectPos().left - this.canvasContainerRectPos().left),
+        yCompensate:
+          top - (this.canvasRectPos().top - this.canvasContainerRectPos().top)
       };
     },
     //首次加载图片
@@ -234,7 +256,7 @@ export default {
         let imgWidth = img.width;
         let imgHeight = img.height;
         let { width, height } = this.canvasDimension;
-        let ratio = (this.canvasDimension.ratio =
+        let ratio = (this.ratio =
           width / imgWidth < height / imgHeight
             ? width / imgWidth
             : height / imgHeight);
@@ -244,18 +266,28 @@ export default {
         this.historyUpdate(0, 0);
       };
     },
+    //根据数据来画画
+    drawCanvas(imgData, x = 0, y = 0) {
+      this.context.clearRect(
+        0,
+        0,
+        this.canvasDimension.width,
+        this.canvasDimension.height
+      );
+      this.context.putImageData(imgData, x, y);
+    },
     //把canvas数据放到history中
-    historyUpdate(x, y) {
+    historyUpdate() {
       //获得全canvas数据
       //但指明要样式的未知
       let { width, height } = this.canvasDimension;
       let newImageData = this.context.getImageData(0, 0, width, height);
-      console.log(newImageData);
       this.historyData.unshift({
-        x: x,
-        y: y,
-        data: newImageData
+        imageData: newImageData
       });
+      if (this.historyData.length > 10) {
+        this.historyData.pop();
+      }
     },
     //添加图片
     addPicture() {
@@ -326,6 +358,16 @@ $toolKit-list: resize drag crop erase undo reset toolState;
       .#{$className}:hover {
         @extend %hover-effect;
       }
+    }
+  }
+  .toolState span {
+    border: 1px solid grey;
+    margin: 2px;
+    padding: 0 2px;
+  }
+  .toolState span {
+    &:hover {
+      @extend %hover-effect;
     }
   }
 }
