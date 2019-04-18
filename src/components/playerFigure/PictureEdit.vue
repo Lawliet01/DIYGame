@@ -1,7 +1,12 @@
 <template>
   <div id="pictureEdit">
     <div class="pictureEditContainer" v-if="imgSrc.length != 0">
-      <div class="canvasContainer" @mousedown="editCanvas($event)">
+      <div
+        class="canvasContainer"
+        @mousedown="editCanvas($event)"
+        v-bind:style="cursor"
+        @mousemove="getEraserPos($event)"
+      >
         <canvas
           class="pictureEditCanvas"
           v-bind:width="canvasDimension.width"
@@ -14,10 +19,11 @@
           @mousedown.stop="moveCropFrame($event)"
           v-bind:style="cropFrameDimension"
         ></div>
+        <div class="eraser" :style="eraserStyle" v-else-if="mode=='erase'"></div>
       </div>
       <div class="pictureEdit_toolKit">
         <div class="resize">
-          <input type="range" min="0.1" max="3" step="0.05" v-model="scale" @input="resize($event)">
+          <input type="range" min="0.5" max="3" step="0.05" v-model="scale" @input="resize($event)">
         </div>
         <div class="drag" @click="mode='drag'">drag</div>
         <div class="crop" @click="mode='crop'">crop</div>
@@ -30,9 +36,9 @@
             <button @click="removeCropFrame()">remove</button>
           </div>
           <div v-else-if="mode == 'erase'">
-            <span>small</span>
-            <span>middle</span>
-            <span>big</span>
+            <span @click="eraserStyle.width = eraserStyle.height = '10px'">small</span>
+            <span @click="eraserStyle.width = eraserStyle.height = '20px'">middle</span>
+            <span @click="eraserStyle.width = eraserStyle.height = '30px'">large</span>
           </div>
         </div>
       </div>
@@ -44,8 +50,9 @@
 
 <script>
 import { isTSExpressionWithTypeArguments } from "@babel/types";
-import { posStringToNumber } from "../../../lib/posStringToNumber";
 import { transform } from "@babel/core";
+import { posStringToNumber } from "../../lib/posStringToNumber";
+import { eraseCanvas as goErase } from "../../lib/eraseCanvasTool";
 
 export default {
   name: "pictureEdit",
@@ -61,14 +68,19 @@ export default {
         transform: "scale(1)"
       },
       scale: 1,
-      ratio: 1,
       cropFrameDimension: {
         width: 0,
         height: 0,
         top: 0,
         left: 0
       },
-      mode: "drag"
+      mode: "drag",
+      eraserStyle: {
+        width: "10px",
+        height: "10px",
+        top: "0px",
+        left: "0px"
+      }
     };
   },
   computed: {
@@ -85,6 +97,19 @@ export default {
         ? document.getElementsByClassName("pictureEditCanvas")[0]
         : null;
     },
+    cursor: function() {
+      switch (this.mode) {
+        case "drag":
+          return { cursor: "default" };
+          break;
+        case "crop":
+          return { cursor: "crosshair" };
+          break;
+        case "erase":
+          return { cursor: "none" };
+          break;
+      }
+    }
   },
   methods: {
     //放大缩小
@@ -118,8 +143,41 @@ export default {
           return this.drawCropFrame(event);
           break;
         case "erase":
+          return this.eraseCanvas(event);
           break;
       }
+    },
+    //橡皮擦功能
+    eraseCanvas(event) {
+      let self = this;
+      this.canvasContainer.addEventListener("mousemove", startErase);
+
+      function startErase(event) {
+        if (event.buttons == 0) {
+          self.canvasContainer.removeEventListener("mousemove", startErase);
+          self.historyUpdate()
+        }
+        let { widthDiff, heightDiff } = self.mouseImgPosDiff(event);
+        let radius = Math.round((posStringToNumber(self.eraserStyle.width)/self.scale/2));
+        let x = Math.round(widthDiff/self.scale) + radius;
+        let y = Math.round(heightDiff/self.scale) + radius;
+        let imageData = self.context.getImageData(
+          0,
+          0,
+          self.canvasDimension.width,
+          self.canvasDimension.height
+        );
+        goErase(x, y, radius, imageData);
+        self.drawCanvas(imageData);
+      }
+    },
+    //橡皮擦跟随鼠标移动
+    getEraserPos(event) {
+      if (this.mode != "erase") return;
+      this.eraserStyle.top =
+        event.clientY - this.canvasContainerRectPos().top + "px";
+      this.eraserStyle.left =
+        event.clientX - this.canvasContainerRectPos().left + "px";
     },
     //移除cropFrame
     removeCropFrame() {
@@ -256,14 +314,14 @@ export default {
         let imgWidth = img.width;
         let imgHeight = img.height;
         let { width, height } = this.canvasDimension;
-        let ratio = (this.ratio =
+        let ratio =
           width / imgWidth < height / imgHeight
             ? width / imgWidth
-            : height / imgHeight);
+            : height / imgHeight;
 
         //保证整个图片能囊括在canva里面，并自动填满canvas。
         this.context.drawImage(img, 0, 0, imgWidth * ratio, imgHeight * ratio);
-        this.historyUpdate(0, 0);
+        this.historyUpdate();
       };
     },
     //根据数据来画画
@@ -331,6 +389,7 @@ $toolKit-list: resize drag crop erase undo reset toolState;
   border: 0.5px solid lightblue;
   position: relative;
   overflow: scroll;
+  background-color: beige;
 
   canvas {
     position: absolute;
@@ -344,6 +403,13 @@ $toolKit-list: resize drag crop erase undo reset toolState;
       @extend %move-effect;
       border-color: red;
     }
+  }
+
+  .eraser {
+    position: absolute;
+    border-radius: 50%;
+    background-color: lightcyan;
+    z-index: 1;
   }
 }
 .pictureEdit_toolKit {
