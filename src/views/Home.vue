@@ -1,17 +1,17 @@
 <template>
   <div class="home">
-    <picture-edit></picture-edit>
+    <pictureCombine></pictureCombine>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import PictureEdit from '@/components/playerFigure/PictureEdit.vue'
+import PictureCombine from '@/components/playerFigure/PictureCombine.vue'
 
 export default {
   //name: 'home',
   components: {
-    PictureEdit
+    PictureCombine
   }
 }
 </script>

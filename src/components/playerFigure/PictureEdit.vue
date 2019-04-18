@@ -51,8 +51,8 @@
 <script>
 import { isTSExpressionWithTypeArguments } from "@babel/types";
 import { transform } from "@babel/core";
-import { posStringToNumber } from "../../lib/posStringToNumber";
-import { eraseCanvas as goErase } from "../../lib/eraseCanvasTool";
+import { posStringToNumber } from "./lib/posStringToNumber";
+import { eraseCanvas as goErase } from "./lib/eraseCanvasTool";
 
 export default {
   name: "pictureEdit",
