@@ -1,6 +1,6 @@
 <template>
   <div id="pictureEdit">
-    <div class="pictureEditContainer" v-if="imgSrc.length != 0">
+    <div class="pictureEditContainer" v-if="imgSrc.length != 0||imgData != null">
       <div
         class="canvasContainer"
         @mousedown="editCanvas($event)"
@@ -30,7 +30,7 @@
         <div class="erase" @click="mode='erase'">erase</div>
         <div class="undo" @click="undo()">undo</div>
         <div class="reset" @click="reset()">reset</div>
-        <div class='done' @click='done()'>done</div>
+        <div class="done" @click="done()">done</div>
         <div class="toolState">
           <div v-if="mode == 'crop'">
             <button @click="cutCanvas()">cut</button>
@@ -45,7 +45,7 @@
       </div>
     </div>
     <br>
-    <button @click="addPicture()" v-if="imgSrc.length == 0">添加图片</button>
+    <button @click="addPicture()" v-if="imgSrc.length == 0&&imgData == null">添加图片</button>
   </div>
 </template>
 
@@ -57,6 +57,13 @@ import { eraseCanvas as goErase } from "./lib/eraseCanvasTool";
 
 export default {
   name: "pictureEdit",
+  mounted: function() {
+    // 如果图片已经加载了，就不用重头再来
+    if (this.imgData == null) return;
+    let { x, y } = this.$store.state.playerFigure;
+    this.drawCanvas(this.imgData, x, y);
+    this.historyUpdate();
+  },
   data: function() {
     return {
       imgSrc: "",
@@ -82,27 +89,29 @@ export default {
         top: "0px",
         left: "0px"
       },
-      contentPos:{
-        x:0,
-        y:0,
-        width:null,
-        height:null,
+      contentPos: {
+        x: 0,
+        y: 0,
+        width: null,
+        height: null
       }
     };
   },
   computed: {
+    imgData: function() {
+      //从store里调取保存的数据
+      return this.$store.state.playerFigure.imgData;
+    },
     context: function() {
       return document.querySelector(".pictureEditCanvas").getContext("2d");
     },
     canvasContainer: function() {
-      return this.imgSrc.length != 0
-        ? document.getElementsByClassName("canvasContainer")[0]
-        : null;
+      if (this.imgSrc.length == 0 && this.imgData == null) return null;
+      return document.getElementsByClassName("canvasContainer")[0];
     },
     canvasDOM: function() {
-      return this.imgSrc.length != 0
-        ? document.getElementsByClassName("pictureEditCanvas")[0]
-        : null;
+      if (this.imgSrc.length == 0 && this.imgData == null) return null;
+      return document.getElementsByClassName("pictureEditCanvas")[0];
     },
     cursor: function() {
       switch (this.mode) {
@@ -120,11 +129,20 @@ export default {
   },
   methods: {
     //完成
-    done(){
-      let {x,y,width,height} = this.contentPos;
-      let data = this.context.getImageData(x,y,width,height)
-      this.$store.commit('playerFigure/uploadImgData',data)
-      this.$router.push({path:'/playerFigure/combine'})
+    done() {
+      let { x, y, width, height } = this.contentPos;
+      width = width == null ? this.canvasDimension.width : width;
+      height = height == null ? this.canvasDimension.height : height;
+      let data = this.context.getImageData(x, y, width, height);
+      let dataToUploaded = {
+        imgData: data,
+        x: x,
+        y: y,
+        width: width,
+        height: height
+      };
+      this.$store.commit("playerFigure/uploadImgData", dataToUploaded);
+      this.$router.push({ path: "/playerFigure/combine" });
     },
     //放大缩小
     resize(event) {
@@ -132,6 +150,7 @@ export default {
     },
     //重置
     reset() {
+      if (this.imgSrc == "") this.imgSrc = this.$store.state.playerFigure.src;
       this.context.clearRect(
         0,
         0,
@@ -169,12 +188,14 @@ export default {
       function startErase(event) {
         if (event.buttons == 0) {
           self.canvasContainer.removeEventListener("mousemove", startErase);
-          self.historyUpdate()
+          self.historyUpdate();
         }
         let { widthDiff, heightDiff } = self.mouseImgPosDiff(event);
-        let radius = Math.round((posStringToNumber(self.eraserStyle.width)/self.scale/2));
-        let x = Math.round(widthDiff/self.scale) + radius;
-        let y = Math.round(heightDiff/self.scale) + radius;
+        let radius = Math.round(
+          posStringToNumber(self.eraserStyle.width) / self.scale / 2
+        );
+        let x = Math.round(widthDiff / self.scale) + radius;
+        let y = Math.round(heightDiff / self.scale) + radius;
         let imageData = self.context.getImageData(
           0,
           0,
@@ -211,7 +232,12 @@ export default {
         width / this.scale,
         height / this.scale
       );
-      Object.assign(this.contentPos,{x:x,y:y,width:width / this.scale,height:height / this.scale})
+      Object.assign(this.contentPos, {
+        x: x,
+        y: y,
+        width: width / this.scale,
+        height: height / this.scale
+      });
       this.drawCanvas(newImageData, x, y);
       this.historyUpdate();
       this.removeCropFrame();
@@ -325,6 +351,7 @@ export default {
       //首次加载
       let img = new Image();
       img.src = this.imgSrc;
+      this.$store.commit("playerFigure/uploadImgSrc", this.imgSrc);
       img.onload = () => {
         let imgWidth = img.width;
         let imgHeight = img.height;

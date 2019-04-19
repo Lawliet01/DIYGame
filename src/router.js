@@ -27,7 +27,7 @@ export default new Router({
       children:[
         {
           path:'',
-          component: () => import(/* webpackChunkName: "playerFigure" */ './components/playerFigure/PictureEdit.vue')
+          component: () => import(/* webpackChunkName: "playerFigure" */ './components/playerFigure/PictureEdit.vue'),
         },
         {
           path:'combine',

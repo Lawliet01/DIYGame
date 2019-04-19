@@ -28,25 +28,29 @@
       <div class="flip" @click="flip = !flip">flip</div>
       <div class="done" @click="generatePlayerFigure()">done</div>
     </div>
-    <canvas class="testCanvas" width="480" height="600"></canvas>
+    <!-- <img class='testImg'> -->
   </div>
 </template>
 
 <script>
-//girlHeadImg应该是imageData，要知道width和height,然后通过toDataURL生成图画
-import { headLessBodyGroupImg, girlHeadImg } from "./lib/imgSource.js";
-
+import { headLessBodyGroupImg } from "./lib/imgSource.js";
 
 export default {
   name: "PictureCombine",
+
+  created: function() {
+    //如果没有图片数据，就返回编辑页
+    if (this.inputCanvasSize.width == null) {
+      this.$router.push({ path: "/playerFigure" });
+    }
+  },
   mounted: function() {
-    girlHeadImg.onload = () => {
-      //应该通过putImageData来放入
-      this.toCombineCanvasContext.drawImage(girlHeadImg, 0, 0, 200, 165);
-    };
+    //起始的时候把图片放上去
+    if (this.inputCanvasSize.width == null) return;
+    this.toCombineCanvasContext.putImageData(this.inputCanvasData,0,0)
   },
   updated: function() {
-    //清楚canvas
+    //清除canvas
     this.toCombineCanvasContext.clearRect(
       0,
       0,
@@ -61,23 +65,24 @@ export default {
     );
 
     //开始画
+    //使用drawImage来画
+    //不使用putImageData是因为putImageData不接受transform的作用。
     //toCombinedCanvas
     this.drawCanvasAfterTransform(
-      girlHeadImg,
+      this.inputCanvasImg,
       this.toCombineCanvasContext,
       this.imgContentPos.left,
       this.imgContentPos.top,
-      200, //需要调整
-      165
+      this.inputCanvasSize.width, //需要调整
+      this.inputCanvasSize.height
     );
-    let ratio = this.previewSize.width / this.canvasContainerSize.width;
     this.drawCanvasAfterTransform(
-      girlHeadImg,
+      this.inputCanvasImg,
       this.previewCanvasContext,
-      this.imgContentPos.left * ratio,
-      this.imgContentPos.top * ratio,
-      30,
-      25
+      this.imgContentPos.left * this.ratio,
+      this.imgContentPos.top * this.ratio,
+      this.inputCanvasSize.width * this.ratio,
+      this.inputCanvasSize.height * this.ratio
     );
   },
   data: function() {
@@ -99,8 +104,28 @@ export default {
       }
     };
   },
-
   computed: {
+    inputCanvasData:function(){
+      return this.$store.state.playerFigure.imgData
+    },
+    inputCanvasSize: function() {
+      return {
+        width: this.$store.state.playerFigure.width,
+        height: this.$store.state.playerFigure.height
+      };
+    },
+    inputCanvasImg: function() {
+      if (this.inputCanvasData == null) return null;
+      let canvas = document.createElement("canvas");
+      canvas.width = this.inputCanvasSize.width;
+      canvas.height = this.inputCanvasSize.height;
+      let context = canvas.getContext("2d");
+      context.putImageData(this.inputCanvasData, 0, 0);
+      let img = new Image();
+      img.src = canvas.toDataURL();
+      return img;
+    },
+
     toCombineCanvasDOM: function() {
       let canvas = document.getElementsByClassName("toCombineCanvas");
       return canvas[0];
@@ -118,12 +143,15 @@ export default {
     },
     previewCanvasContext: function() {
       return this.previewCanvasDOM.getContext("2d");
+    },
+    ratio: function() {
+      return this.previewSize.width / this.canvasContainerSize.width;
     }
   },
   methods: {
     //返回
-    goBack(){
-      this.$router.push({path:'/playerFigure'})
+    goBack() {
+      this.$router.push({ path: "/playerFigure" });
     },
     //移动canvas
     moveCanvas: function(event) {
@@ -143,7 +171,7 @@ export default {
             self.imgContentPos.left = event.clientX - widthDiff;
             self.imgContentPos.top = event.clientY - heightDiff;
             scheduled = null;
-          }, 100);
+          }, 60);
         }
         scheduled = event;
       }
@@ -173,21 +201,26 @@ export default {
     },
     //生成图像
     generatePlayerFigure() {
-      let testCanvas = document.querySelector(".testCanvas");
+      let testCanvas = document.createElement('canvas');
+      //根据实际大小调整
+      testCanvas.width = 480;
+      testCanvas.height = 600;
       let testCanvasCx = testCanvas.getContext("2d");
       let topAdjusteds = [2, -2, -3, -4, 2, -2, -3, -3, 0, -3];
       testCanvasCx.drawImage(headLessBodyGroupImg, 0, 0);
-      let ratio = this.previewSize.width / this.canvasContainerSize.width;
       for (let i = 0; i < 10; i++) {
         this.drawCanvasAfterTransform(
-          girlHeadImg,
+          this.inputCanvasImg,
           testCanvasCx,
-          this.imgContentPos.left * ratio + 48 * i,
-          this.imgContentPos.top * ratio + topAdjusteds[i],
-          30,
-          25
+          this.imgContentPos.left * this.ratio + 48 * i,
+          this.imgContentPos.top * this.ratio + topAdjusteds[i],
+          this.inputCanvasSize.width * this.ratio,
+          this.inputCanvasSize.height * this.ratio
         );
       }
+      // let img = document.querySelector('.testImg');
+      // img.src = testCanvas.toDataURL()
+      return testCanvas.toDataURL();
     }
   }
 };

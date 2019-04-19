@@ -8,13 +8,21 @@ let playerFigure = {
   state: {
     imgData: null,
     width:null,
-    height:null
+    height:null,
+    x:null,
+    y:null,
+    src:null
   },
   mutations: {
-    uploadImgData(state,data){
-      state.imgData = data
-      state.width = data.width;
-      state.height = data.height
+    uploadImgData(state,playload){
+      state.imgData = playload.imgData
+      state.width = playload.width;
+      state.height = playload.height;
+      state.x = playload.x;
+      state.y = playload.y
+    },
+    uploadImgSrc(state,src){
+      state.src = src
     }
   },
   actions: {
