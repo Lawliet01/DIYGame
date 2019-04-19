@@ -30,6 +30,7 @@
         <div class="erase" @click="mode='erase'">erase</div>
         <div class="undo" @click="undo()">undo</div>
         <div class="reset" @click="reset()">reset</div>
+        <div class='done' @click='done()'>done</div>
         <div class="toolState">
           <div v-if="mode == 'crop'">
             <button @click="cutCanvas()">cut</button>
@@ -80,6 +81,12 @@ export default {
         height: "10px",
         top: "0px",
         left: "0px"
+      },
+      contentPos:{
+        x:0,
+        y:0,
+        width:null,
+        height:null,
       }
     };
   },
@@ -112,6 +119,13 @@ export default {
     }
   },
   methods: {
+    //完成
+    done(){
+      let {x,y,width,height} = this.contentPos;
+      let data = this.context.getImageData(x,y,width,height)
+      this.$store.commit('playerFigure/uploadImgData',data)
+      this.$router.push({path:'/playerFigure/combine'})
+    },
     //放大缩小
     resize(event) {
       this.canvasDimension.transform = `scale(${event.target.value})`;
@@ -197,6 +211,7 @@ export default {
         width / this.scale,
         height / this.scale
       );
+      Object.assign(this.contentPos,{x:x,y:y,width:width / this.scale,height:height / this.scale})
       this.drawCanvas(newImageData, x, y);
       this.historyUpdate();
       this.removeCropFrame();
@@ -337,7 +352,7 @@ export default {
     //把canvas数据放到history中
     historyUpdate() {
       //获得全canvas数据
-      //但指明要样式的未知
+      //x,y,width,height表示有内容的地方。
       let { width, height } = this.canvasDimension;
       let newImageData = this.context.getImageData(0, 0, width, height);
       this.historyData.unshift({
@@ -373,7 +388,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-$toolKit-list: resize drag crop erase undo reset toolState;
+$toolKit-list: resize drag crop erase undo reset done toolState;
 
 %hover-effect {
   cursor: pointer;

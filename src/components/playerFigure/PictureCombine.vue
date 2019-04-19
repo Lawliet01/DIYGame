@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="adjustOptions">
-      <div class="goback">back</div>
+      <div class="goback" @click="goBack()">back</div>
       <div class="resize">
         <input type="range" min="0.5" max="3" step="0.05" v-model.number="scale">
       </div>
@@ -34,10 +34,8 @@
 
 <script>
 //girlHeadImg应该是imageData，要知道width和height,然后通过toDataURL生成图画
-import {
-  headLessBodyGroupImg,
-  girlHeadImg
-} from "./lib/imgSource.js";
+import { headLessBodyGroupImg, girlHeadImg } from "./lib/imgSource.js";
+
 
 export default {
   name: "PictureCombine",
@@ -123,17 +121,31 @@ export default {
     }
   },
   methods: {
+    //返回
+    goBack(){
+      this.$router.push({path:'/playerFigure'})
+    },
     //移动canvas
     moveCanvas: function(event) {
       let self = this;
       let { widthDiff, heightDiff } = this.mouseImgPosDiff(event);
       self.canvasContainerDOM.addEventListener("mousemove", startMove);
+      let scheduled = null;
       function startMove(event) {
-        if (event.buttons == 0) {
-          self.canvasContainerDOM.removeEventListener("mousemove", startMove);
+        if (!scheduled) {
+          setTimeout(() => {
+            if (event.buttons == 0) {
+              self.canvasContainerDOM.removeEventListener(
+                "mousemove",
+                startMove
+              );
+            }
+            self.imgContentPos.left = event.clientX - widthDiff;
+            self.imgContentPos.top = event.clientY - heightDiff;
+            scheduled = null;
+          }, 100);
         }
-        self.imgContentPos.left = event.clientX - widthDiff;
-        self.imgContentPos.top = event.clientY - heightDiff;
+        scheduled = event;
       }
     },
     //位置信息
@@ -159,6 +171,7 @@ export default {
         context.translate(-around, 0);
       }
     },
+    //生成图像
     generatePlayerFigure() {
       let testCanvas = document.querySelector(".testCanvas");
       let testCanvasCx = testCanvas.getContext("2d");
@@ -169,7 +182,7 @@ export default {
         this.drawCanvasAfterTransform(
           girlHeadImg,
           testCanvasCx,
-          this.imgContentPos.left * ratio + 48*i,
+          this.imgContentPos.left * ratio + 48 * i,
           this.imgContentPos.top * ratio + topAdjusteds[i],
           30,
           25

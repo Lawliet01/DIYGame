@@ -1,16 +1,15 @@
-import { posStringToNumber } from "../../lib/posStringToNumber";
+import store from '../../src/store';
+import {createLocalVue} from '@vue/test-utils';
+import Vuex from 'vuex';
 
 
-
-it('test',()=>{
-  let object = {
-    left:'30px',
-    right:'40px',
-    top:30
-  }
-  let result = posStringToNumber(object)
-  expect(result.left).toBe(30);
-  expect(result.right).toBe(40);
-  expect(result.top).toBe(30);
+describe('storeTest',()=>{
+  const localVue = createLocalVue();
+  localVue.use(Vuex);
+  it('uploadData',()=>{
+    expect(store.state.playerFigure.imgData).toBe(null);
+    store.commit('playerFigure/uploadImgData',{data:123,width:10,height:20});
+    expect(store.state.playerFigure.imgData.width).toBe(10);
+    expect(store.state.playerFigure.imgData.height).toBe(20);
+  })
 })
-

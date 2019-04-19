@@ -20,6 +20,20 @@ export default new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+    },
+    {
+      path:'/playerFigure',
+      component: () => import(/* webpackChunkName: "playerFigure" */ './views/playerFigure.vue'),
+      children:[
+        {
+          path:'',
+          component: () => import(/* webpackChunkName: "playerFigure" */ './components/playerFigure/PictureEdit.vue')
+        },
+        {
+          path:'combine',
+          component: () => import(/* webpackChunkName: "playerFigure" */ './components/playerFigure/PictureCombine.vue')
+        },
+      ]
     }
   ]
 })
