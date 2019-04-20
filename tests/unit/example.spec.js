@@ -16,3 +16,9 @@ describe('storeTest',()=>{
     expect(store.state.playerFigure.y).toBe(5);
   })
 })
+
+function getImage(name){
+  let image = new Image();
+  image.src = requireContext['./' + name];
+  return image
+}

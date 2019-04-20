@@ -22,6 +22,7 @@
         <div class="eraser" :style="eraserStyle" v-else-if="mode=='erase'"></div>
       </div>
       <div class="pictureEdit_toolKit">
+        <div class="reInput" @click="reInput()">reInput</div>
         <div class="resize">
           <input type="range" min="0.5" max="3" step="0.05" v-model="scale" @input="resize($event)">
         </div>
@@ -128,6 +129,16 @@ export default {
     }
   },
   methods: {
+    //reInput
+    reInput(){
+      //清空数据，重新导入图片
+      this.$store.commit('playerFigure/clearAll')
+      this.imgSrc = ""
+      //这里有点难看，直接push会playerFigure的话，由于复用当前实例，会出错，遗留从前的数据
+      //如计算属性里面的context索引还是从前的。
+      //所以导航到/playerFigure/combine,由于src数据为空，combine又会重新倒回来，组件实例被刷新
+      this.$router.push('/playerFigure/combine')
+    },
     //完成
     done() {
       let { x, y, width, height } = this.contentPos;
@@ -360,7 +371,6 @@ export default {
           width / imgWidth < height / imgHeight
             ? width / imgWidth
             : height / imgHeight;
-
         //保证整个图片能囊括在canva里面，并自动填满canvas。
         this.context.drawImage(img, 0, 0, imgWidth * ratio, imgHeight * ratio);
         this.historyUpdate();
@@ -415,7 +425,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-$toolKit-list: resize drag crop erase undo reset done toolState;
+$toolKit-list: reInput resize drag crop erase undo reset done toolState;
 
 %hover-effect {
   cursor: pointer;

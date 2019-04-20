@@ -105,6 +105,7 @@ export default {
     };
   },
   computed: {
+    //获取store的数据
     inputCanvasData:function(){
       return this.$store.state.playerFigure.imgData
     },
@@ -125,7 +126,7 @@ export default {
       img.src = canvas.toDataURL();
       return img;
     },
-
+    //获得视图信息
     toCombineCanvasDOM: function() {
       let canvas = document.getElementsByClassName("toCombineCanvas");
       return canvas[0];
@@ -144,6 +145,7 @@ export default {
     previewCanvasContext: function() {
       return this.previewCanvasDOM.getContext("2d");
     },
+    //大小canvas的比例
     ratio: function() {
       return this.previewSize.width / this.canvasContainerSize.width;
     }
@@ -218,9 +220,11 @@ export default {
           this.inputCanvasSize.height * this.ratio
         );
       }
+      // 用来测试
       // let img = document.querySelector('.testImg');
       // img.src = testCanvas.toDataURL()
-      return testCanvas.toDataURL();
+      this.$store.commit('playerFigure/uploadPlayerFigureResult',testCanvas.toDataURL())
+      this.$router.push('/entireGame')
     }
   }
 };

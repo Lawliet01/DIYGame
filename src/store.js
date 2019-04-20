@@ -6,12 +6,14 @@ Vue.use(Vuex)
 let playerFigure = {
   namespaced:true,
   state: {
+    //存储的是能拿来渲染的image的数据
     imgData: null,
     width:null,
     height:null,
     x:null,
     y:null,
-    src:null
+    src:null,
+    result:null
   },
   mutations: {
     uploadImgData(state,playload){
@@ -23,6 +25,14 @@ let playerFigure = {
     },
     uploadImgSrc(state,src){
       state.src = src
+    },
+    uploadPlayerFigureResult(state,result){
+      state.result = result
+    },
+    clearAll(state){
+      Object.keys(state).forEach(key=>{
+        state[key] = null
+      })
     }
   },
   actions: {
