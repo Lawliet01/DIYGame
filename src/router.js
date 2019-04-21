@@ -40,6 +40,16 @@ export default new Router({
       path:'/entireGame',
       // component:entireGame
       component: () => import(/* webpackChunkName: "entireGame" */ './views/entireGame.vue')
+    },
+    {
+      path:'/gameDesign',
+      component: () => import(/* webpackChunkName: "gameDesign" */ './views/gameDesign.vue'),
+      children:[
+        {
+          path:'',
+          component: () => import(/* webpackChunkName: "gameDesign" */ './components/gameDesign/structureDesign.vue')
+        }
+      ]
     }
   ]
 })
