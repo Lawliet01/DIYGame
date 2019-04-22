@@ -2,15 +2,21 @@
   <div id="structureDesign">
     <div class="leftContainer">
       <div class="panel">
-        <table class="map" @mousedown.prevent.stop="mutateGrids($event)">
+        <table
+          class="map"
+          @mousedown.prevent.stop="mutateGrids($event)"
+          :style="{transform:`scale(${mapScale})`}"
+        >
           <tr v-for="(_,rowIndex) in map" :key="'row'+rowIndex">
             <td
               v-for="(_,gridIndex) in map[0]"
               class="grid"
               :key="'row'+rowIndex+'-'+'grid'+gridIndex"
               :name="rowIndex+'-'+gridIndex"
-              :style="{backgroundImage:map[rowIndex][gridIndex].backgroundImage}"
-            ></td>
+              :style="{backgroundImage:map[rowIndex][gridIndex].backgroundImage,
+                      borderStyle:showGrid==true?'solid':'none'}"
+            >
+            </td>
           </tr>
         </table>
       </div>
@@ -28,7 +34,7 @@
         </div>
         <div class="options">
           <div
-            v-for="(option,index) in optionsForSelctor[selectedSelector]"
+            v-for="(option,index) in optionsForSelector[selectedSelector]"
             :key="selectedSelector+index"
             :style="{backgroundImage:'url('+option.src+')'}"
             @click="selectedOption = option"
@@ -37,8 +43,34 @@
       </div>
     </div>
     <div class="rightContainer">
-      <div class="setting"></div>
-      <div class="template"></div>
+      <div class="setting">
+        <div class="currentOption" :style="{backgroundImage:`url(${selectedOption.src})`}" @click="cancelSelect()">
+          <span v-show="selectedOption.pattern != '.'" class='closeBtn'>&Cross;</span>
+        </div>
+        <div>
+          <input type="range" v-model="mapScale" min="0.2" max="1.5" step="0.1">
+        </div>
+        <div class="resize">
+          长：
+          <input type="text" v-model.number="dimension.width" @change="changeDimension()">
+          宽：
+          <input type="text" v-model.number="dimension.height" @change="changeDimension()">
+        </div>
+        <div class="gridLine">
+          网格：
+          <input type="checkbox" v-model="showGrid">
+        </div>
+        <div class="undoBtn" @click="undo()">undo</div>
+        <div class="resetBtn" @click="reset()">reset</div>
+        <div class="clearBtn" @click="clear()">clear</div>
+      </div>
+      <div class="template">
+        <div
+          v-for="(template,index) in templates"
+          :key="'template'+index"
+          @click="useTemplate(template)"
+        >模版{{index+1}}</div>
+      </div>
       <div class="cancelBtn">cancel</div>
       <div class="doneBtn" @click="done()">done</div>
     </div>
@@ -65,11 +97,7 @@ export default {
   name: "structureDesign",
   mounted: function() {
     //初始赋值
-    let level =
-      this.initalLevel == null ? defaultGameLevel[0] : this.initalLevel;
-    let map = stringToMap(level, pics);
-
-    this.map = map;
+    this.reset();
   },
   data: function() {
     return {
@@ -82,10 +110,13 @@ export default {
       selectedSelector: "walls",
       selectedOption: { src: "", pattern: "." },
       hover: false,
-      optionsForSelctor: {
+      optionsForSelector: {
         walls: [this.createOption("wallIcon", "#")],
         players: [this.createOption("playerIcon", "@")],
-        monsters: [],
+        monsters: [
+          this.createOption("monsterIcon", "m"),
+          this.createOption("dragonIcon", "d")
+        ],
         collectors: [this.createOption("coinIcon", "o")],
         lava: [
           this.createOption("lavaIcon", "+"),
@@ -93,14 +124,18 @@ export default {
           this.createOption("lavaIcon", "|"),
           this.createOption("lavaIcon", "v")
         ]
-      }
+      },
+      mapScale: 1,
+      showGrid: true,
+      editHistory: [],
+      templates: gameTemplate
     };
   },
   computed: {
     initalLevel() {
       //开始使用，最后应该通过store注入
       return null;
-    }
+    },
   },
   methods: {
     done() {
@@ -114,17 +149,21 @@ export default {
     },
     mutateGrids(event) {
       let self = this;
-      startMutate(event);
       let map = document.getElementsByClassName("map")[0];
+      startMutate(event);
       map.addEventListener("mousemove", startMutate);
       function startMutate(event) {
         if (event.buttons == 0) {
           map.removeEventListener("mousemove", startMutate);
+          //如果图案改变，就更新历史
+          self.updateHistory();
         } else {
           let index = event.target.getAttribute("name");
-          let [_, y, x] = index.match(/(\d+)-(\d+)/);
+          let [, y, x] = index.match(/(\d+)-(\d+)/);
           self.mutateGrid(y, x);
         }
+
+        return;
       }
     },
     mutateGrid(y, x) {
@@ -133,12 +172,102 @@ export default {
       if (pattern == targetGrid.pattern) return;
       targetGrid.backgroundImage = `url(${src})`;
       targetGrid.pattern = pattern;
+      return;
+    },
+    changeDimension() {
+      let { width, height } = this.dimension;
+      if (typeof width != 'number'||typeof height != "number") {
+        //限制输入
+        alert('wrong inpit');
+        return;
+      }
+      let widthDiff = width - this.map[0].length;
+      let heightDiff = height - this.map.length;
+      if (widthDiff < 0) {
+        this.map.forEach(row => row.splice(width));
+      } else if (widthDiff > 0) {
+        let newPart = Array.apply(null, { length: widthDiff }).map(function() {
+          return {
+            backgroundImage: "",
+            pattern: "."
+          };
+        });
+        this.map = this.map.map(row => {
+          return row.concat(newPart);
+        });
+      }
+      if (heightDiff < 0) {
+        //从头部开始剪切
+        this.map.splice(0, Math.abs(heightDiff));
+      } else if (heightDiff > 0) {
+        let newPart = Array.apply(null, { length: heightDiff }).map(function() {
+          return Array.apply(null, { length: width }).map(function() {
+            return {
+              backgroundImage: "",
+              pattern: "."
+            };
+          });
+        });
+        this.map = newPart.concat(this.map);
+      }
+      this.updateHistory();
+      return;
+    },
+    updateHistory() {
+      let mapString = mapToString(this.map);
+      if (mapString == this.editHistory[0]) return;
+      this.editHistory.unshift(mapString);
+      if (this.editHistory.length > 20) this.editHistory.pop();
+      return;
+    },
+    undo() {
+      if (this.editHistory.length < 2) return;
+      this.editHistory.shift();
+      this.map = stringToMap(this.editHistory[0], pics);
+      return;
+    },
+    reset() {
+      let level =
+        this.initalLevel == null ? defaultGameLevel[0] : this.initalLevel;
+      this.map = stringToMap(level, pics);
+      this.dimension.width = this.map[0].length;
+      this.dimension.height = this.map.length
+      this.updateHistory();
+    },
+    clear() {
+      let self = this;
+      let emptyMap = Array.apply(null, { length: this.dimension.height }).map(
+        function() {
+          return Array.apply(null, { length: self.dimension.width }).map(
+            function() {
+              return {
+                backgroundImage: "",
+                pattern: "."
+              };
+            }
+          );
+        }
+      );
+      this.map = emptyMap;
+      this.updateHistory();
+      return;
+    },
+    useTemplate(template) {
+      this.map = stringToMap(template, pics);
+      this.dimension.width = this.map[0].length;
+      this.dimension.height = this.map.length;
+      return;
+    },
+    cancelSelect(){
+      this.selectedOption = {src:"",pattern:"."}
     }
   }
 };
 </script>
 
 <style scoped lang='scss'>
+//todo: 单独修改每一个option的样式（金币要小一点，人头要小一点。。。）
+
 $left-flex: 75%;
 $optionList-height: 40px;
 
@@ -146,9 +275,10 @@ $optionList-height: 40px;
   border: 1px solid lightblue;
 }
 
-%backgroundAdj {
+@mixin backgroundAdj($width) {
   background-position: center;
   background-repeat: no-repeat;
+  background-size: $width $width;
 }
 
 @mixin hover-effect {
@@ -212,9 +342,10 @@ $optionList-height: 40px;
   .grid {
     min-width: 40px;
     height: 40px;
-    border: 0.5px solid lightblue;
+    border-width: 0.5px;
+    border-color: lightblue;
     background-color: rgb(52, 166, 251);
-    @extend %backgroundAdj;
+    @include backgroundAdj($optionList-height);
     @include hover-effect();
   }
 }
@@ -257,7 +388,7 @@ $optionList-height: 40px;
       display: inline-block;
       width: $optionList-height;
       height: 100%;
-      @extend %backgroundAdj;
+      @include backgroundAdj($optionList-height);
       @include hover-effect();
     }
   }
@@ -265,10 +396,48 @@ $optionList-height: 40px;
 
 .setting {
   height: 280px;
+  padding: 10px;
+
+  $currentOptionWidth: 70px;
+  .currentOption {
+    position: relative;
+    width: $currentOptionWidth;
+    height: $currentOptionWidth;
+    border: 1px solid rgb(243, 69, 69);
+    @include backgroundAdj($optionList-height);
+    @include hover-effect();
+
+    .closeBtn{
+      position: absolute;
+      top:0;
+      right:0;
+      color:red;
+      font-size:50px;
+      line-height:10px;
+    }
+
+  }
+
+  .resize {
+    input {
+      width: 30px;
+    }
+  }
+
+  .undoBtn,
+  .resetBtn,
+  .clearBtn {
+    @include hover-effect();
+  }
 }
 
 .template {
   height: 200px;
+
+  div {
+    padding-top: 5px;
+    @include hover-effect();
+  }
 }
 
 .cancelBtn {
