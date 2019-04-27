@@ -82,6 +82,9 @@
 import defaultGameLevel from "@/lib/gameLevel.js";
 import gameTemplate from "@/lib/levelTemplate.js";
 import { stringToMap, mapToString } from "./lib/transversion.js";
+import {mapState} from 'vuex'
+
+
 let pics = {};
 importAll(require.context("@/pic/structureComponent/", false, /\.png$/));
 
@@ -132,14 +135,15 @@ export default {
     };
   },
   computed: {
-    initalLevel() {
-      //开始使用，最后应该通过store注入
-      return null;
-    },
+    ...mapState('gameLevel',[
+      'levelMap',
+      'currentLevel'
+    ]),
   },
   methods: {
     done() {
-      console.log(mapToString(this.map));
+      this.$store.commit('gameLevel/changeGameMap',mapToString(this.map))
+      this.$store.commit('gameLevel/toggleStructureDesign')
     },
     createOption(srcName, pattern) {
       return {
@@ -227,8 +231,7 @@ export default {
       return;
     },
     reset() {
-      let level =
-        this.initalLevel == null ? defaultGameLevel[0] : this.initalLevel;
+      let level = this.levelMap[this.currentLevel];
       this.map = stringToMap(level, pics);
       this.dimension.width = this.map[0].length;
       this.dimension.height = this.map.length

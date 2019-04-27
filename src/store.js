@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import defaultGameMap from './lib/gameLevel'
 
 Vue.use(Vuex)
 
@@ -35,13 +36,60 @@ let playerFigure = {
       })
     }
   },
-  actions: {
+};
 
+let gameLevel = {
+  namespaced:true,
+  state:{
+    levelMap:[],
+    levelSetting:[],
+    currentLevel:0,
+    structureDesign:false,
+    globalPlayerSetting:{
+      lives:3,
+      size:1,
+      speed:7,
+      jumpSpeed:17
+    }
+  },
+  mutations:{
+    addLevel(state){
+      state.levelMap.push(defaultGameMap[0]);
+      state.levelSetting.push({ 
+        backgroundColor:'#34a6fb',
+        backgroundImage:null
+      })
+      state.currentLevel = state.levelMap.length -1
+    },
+    changeGameMap(state,newMap){
+      //看看是否需要注意响应式属性的问题
+      if (typeof newMap != 'string') throw new Error('the map not a string' + newMap )
+      Vue.set(state.levelMap,state.currentLevel,newMap)
+    },
+    changeLevel(state,newLevel){
+      state.currentLevel = newLevel
+    },
+    toggleStructureDesign(state){
+      state.structureDesign = !state.structureDesign
+    },
+    changeBackgroundColor(state,color){
+      state.levelSetting[state.currentLevel].backgroundColor = color
+    },
+    changeBackgroundImage(state,image){
+      state.levelSetting[state.currentLevel].backgroundImage = image
+    },
+    changeGlobalPlayerSetting(state,valuePair){
+      Object.keys(valuePair).forEach(key=>{
+        state.globalPlayerSetting[key] = valuePair[key]
+      })
+    }
   }
+
 }
 
 export default new Vuex.Store({
   modules:{
-    playerFigure
+    playerFigure,
+    gameLevel
   }
 })

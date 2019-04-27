@@ -26,6 +26,7 @@ export default {
   },
   computed:{
     game(){
+      //注意删除游戏
       return new Game(this.gameContainer)
     },
     gameContainer(){

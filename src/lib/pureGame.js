@@ -87,9 +87,9 @@ var State = class State {
       }
       return this.actors.find(a => a.type == "player");
    }
-   update(time, keys) {
+   update(time, keys, gameClass) {
       let actors = this.actors
-         .map(actor => actor.update(time, this, keys));
+         .map(actor => actor.update(time, this, keys, gameClass));
       let newState = new State(this.level, actors, this.status);
       //先看this.status的状态
       if (newState.status != "playing") return newState;
@@ -126,13 +126,13 @@ var Vec = class Vec {
 }
 
 var Player = class Player {
-   constructor(pos, speed) {
+   constructor(pos, speed, property) {
       this.pos = pos;
       this.speed = speed;
-      this.size = new Vec(0.8, 1.5);
-      this.playerXSpeed = 7;
+      this.size = new Vec(0.8, 1.5)
+      this.playerXSpeed = property == undefined?7:property.speed;
       this.gravity = 30;
-      this.jumpSpeed = 17
+      this.jumpSpeed = property==undefined?17:property.jumpSpeed;
    }
    get type() {
       return "player";
@@ -140,7 +140,7 @@ var Player = class Player {
    static create(pos) {
       return new Player(pos.plus(new Vec(0, -0.5)), new Vec(0, 0));
    }
-   update(time, state, keys) {
+   update(time, state, keys, property) {
       let xSpeed = 0;
       if (keys.ArrowLeft) xSpeed -= this.playerXSpeed;
       if (keys.ArrowRight) xSpeed += this.playerXSpeed;
@@ -158,7 +158,7 @@ var Player = class Player {
       } else {
          ySpeed = 0;
       }
-      return new Player(pos, new Vec(xSpeed, ySpeed));
+      return new Player(pos, new Vec(xSpeed, ySpeed), property);
    }
 }
 
@@ -477,24 +477,21 @@ class CanvasDisplay {
    }
    clearDisplay(status) {
       //通过game对应的level找到调出渲染的参数
-      // let thisLevel = editorState.level[this.gameClass.level + editorState.workingOn];
-      // let backgroundImgSrc = thisLevel.backgroundImage;
-      // if (backgroundImgSrc != undefined) {
-      //    //处理游戏背景
-      //    gameBackgroundImg.src = backgroundImgSrc;
-      //    this.cx.drawImage(gameBackgroundImg, 0, 0, this.canvas.width, this.canvas.height)
-      // } else {
-      // default background setting
-      // let backgroundColor = thisLevel.backgroundColor;
+      let backgroundImage = this.gameClass.backgroundImage;
+      if (backgroundImage !== null) {
+         //处理游戏背景
+         this.cx.drawImage(backgroundImage, 0, 0, this.canvas.width, this.canvas.height)
+      } else {
+      //default background setting
       if (status == "won") {
          this.cx.fillStyle = "rgb(68, 191, 255)";
       } else if (status == "lost") {
          this.cx.fillStyle = "rgb(44, 136, 214)";
       } else {
-         this.cx.fillStyle = /*backgroundColor ||*/ "rgb(52, 166, 251)";
+         this.cx.fillStyle = this.gameClass.backgroundColor || "rgb(52, 166, 251)";
       }
       this.cx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-      // }
+      }
    }
    drawBackground(level) {
       let { left, top, width, height } = this.viewport;
@@ -616,30 +613,26 @@ class CanvasDisplay {
          }
       }
    }
+   drawProperty(actors){
+      let numberOfCoin = actors.reduce((total, each) => {
+         each = each.type == 'coin' ? 1 : 0;
+         return total + each
+      }, 0);
+      this.font = '40px Arial';
+      this.cx.fillStyle = 'red';
+      this.cx.fillText(`生命: ${this.gameClass.lives}`,20,20);
+      this.cx.fillText(`剩余金币: ${numberOfCoin}`,20,40)
+   }
    syncState(state) {
       this.updateViewport(state);
       this.clearDisplay(state.status);
       this.drawBackground(state.level);
       this.drawActors(state.actors);
+      this.drawProperty(state.actors)
    }
 }
 
 //最后一章：游戏的运行
-
-function trackKeys(keys) {
-   let down = Object.create(null);
-   function track(event) {
-      if (keys.includes(event.key)) {
-         down[event.key] = event.type == "keydown";
-         event.preventDefault();
-      }
-   }
-   window.addEventListener("keydown", track);
-   window.addEventListener("keyup", track);
-   return down;
-}
-
-var arrowKeys = trackKeys(["ArrowLeft", "ArrowRight", "ArrowUp"]);
 
 function runAnimation(frameFunc) {
    let lastTime = null;
@@ -654,18 +647,37 @@ function runAnimation(frameFunc) {
    requestAnimationFrame(frame);
 }
 
+
 function runLevel(level, gameClass) {
    let display = new CanvasDisplay(level, gameClass);
    let state = State.start(level);
    let ending = 1;
+   let running = "yes";
+
    return new Promise(resolve => {
-      runAnimation(time => {
+      function escHandler(event) {
+         if (event.key != "Escape") return;
+         event.preventDefault();
+         if (running == "no") {
+            running = "yes";
+            //true的时候，再call一次runAnimation
+            runAnimation(frame);
+         } else {
+            running = "no";
+         }
+      }
+      window.addEventListener("keydown", escHandler);
+      let arrowKeys = trackKeys(["ArrowLeft", "ArrowRight", "ArrowUp"]);
+      function frame(time) {
+         if (running == "no") {
+            return false;
+         }
          if (gameClass.killTheGame == true) {
             display.clear();
             resolve('won');
             return false;
          }
-         state = state.update(time, arrowKeys);
+         state = state.update(time, arrowKeys,gameClass);
          display.syncState(state);
          if (state.status == "playing") {
             return true;
@@ -674,33 +686,72 @@ function runLevel(level, gameClass) {
             return true;
          } else {
             display.clear();
+            window.removeEventListener("keydown", escHandler);
+            arrowKeys.unregister();
             resolve(state.status);
             return false;
          }
-      });
+      }
+      runAnimation(frame);
    });
 }
 
+function trackKeys(keys) {
+   let down = Object.create(null);
+   function track(event) {
+      if (keys.includes(event.key)) {
+         down[event.key] = event.type == "keydown";
+         event.preventDefault();
+      }
+   }
+   window.addEventListener("keydown", track);
+   window.addEventListener("keyup", track);
+   down.unregister = () => {
+      window.removeEventListener("keydown", track);
+      window.removeEventListener("keyup", track);
+   };
+   return down;
+}
+
+
 export default class Game {
    constructor(dom) {
-      this.killTheGame = false;
+      this.freezeTheGame = false
       this.dom = dom;
-      this.playerSprites = getImage('player.png', pics)
+      this.playerSprites = getImage('player.png', pics);
+      this.backgroundColor = "rgb(52, 166, 251)";
+      this.backgroundImage = null;
+      this.lives = 3;
+      this.speed = 7;
+      this.size = 1;
+      this.jumpSpeed = 17;
    }
    async runGame(plans) {
       for (let level = 0; level < plans.length;) {
          let status = await runLevel(new Level(plans[level]), this);
-         if (status == 'won') level++
+         if (status == 'won'){
+            level++
+         }else{
+            this.lives -- ;
+         }
+         if (this.lives == 0) break;
       }
-      console.log("game end");
+      if (this.lives > 0) {
+         console.log("You've won!");
+      } else {
+         console.log("Game over");
+      }
    }
    stopGame() {
       this.killTheGame = true
    }
    mutate(valueToBeMutated){
-      let key = Object.keys(valueToBeMutated);
-      if (this[key] == undefined) throw new Error('no such property')
-      this[key] = valueToBeMutated[key]
+      //方便在游戏中更新属性
+      let keys = Object.keys(valueToBeMutated);
+      keys.forEach(key=>{
+         if (this[key] === undefined) throw new Error('no such property: ' + key)
+         this[key] = valueToBeMutated[key]
+      })
    }
 }
 

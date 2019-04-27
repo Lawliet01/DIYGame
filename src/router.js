@@ -45,10 +45,10 @@ export default new Router({
       path:'/gameDesign',
       component: () => import(/* webpackChunkName: "gameDesign" */ './views/gameDesign.vue'),
       children:[
-        {
-          path:'',
-          component: () => import(/* webpackChunkName: "gameDesign" */ './components/gameDesign/structureDesign.vue')
-        }
+        // {
+        //   path:'',
+        //   component: () => import(/* webpackChunkName: "gameDesign" */ './components/gameDesign/structureDesign.vue')
+        // }
       ]
     }
   ]
