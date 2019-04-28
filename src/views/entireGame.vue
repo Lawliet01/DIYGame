@@ -11,24 +11,37 @@
 <script>
 import Game from "../lib/pureGame";
 import gameLevel from "../lib/gameLevel";
+import { mapState } from "vuex";
 
 
 export default {
   name: "entrieGame",
   beforeRouteLeave(to,from,next){
-    this.game.stopGame()
+     this.runningGame.stopGame()
     next()
   },
   mounted:function(){
-     this.game.runGame(gameLevel)
+    let levelMap = this.$store.state.gameLevel.levelMap;
+    levelMap = levelMap.length==0?gameLevel:levelMap
+    this.runningGame = new Game(this.gameContainer)
+    this.runningGame.runGame(levelMap,this.levelSetting,this.globalPlayerSetting)
      //如果数据存在，就直接变化player的形状。
-     if (this.playerFigure != null) this.game.mutate({playerSprites:this.playerFigure})
+    // if (this.playerFigure != null) this.game.mutate({playerSprites:this.playerFigure})
+
+  },
+  data:function(){
+    return{
+      runningGame:null
+    }
   },
   computed:{
-    game(){
-      //注意删除游戏
-      return new Game(this.gameContainer)
-    },
+    ...mapState("gameLevel", [
+      "levelMap",
+      "levelSetting",
+      "currentLevel",
+      "structureDesign",
+      "globalPlayerSetting"
+    ]),
     gameContainer(){
       return document.querySelector('.gameContainer')
     },
@@ -45,7 +58,7 @@ export default {
       this.$router.push('/playerFigure/combine')
     },
     goToGameDesign(){
-
+      this.$router.push('/gameDesign')
     },
     downloadTheGame(){
 

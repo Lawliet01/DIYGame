@@ -17,7 +17,7 @@
     </div>
     <div class="rightConatiner">
       <div class="returnBtnContainer">
-        <button class="returnBtn">返回</button>
+        <button class="returnBtn" @click='returnToEntireGame()'>返回</button>
       </div>
       <div class="operationalContainer">
         <div class="settingContainer">
@@ -57,7 +57,11 @@
               :value="globalPlayerSetting.jumpSpeed"
               @change="changePlayerSetting($event.target.value,'jumpSpeed')"
             >
-            <br>
+            <br>大小
+            <input
+              type="range"
+              class="playerSize"
+            >
             <hr>
           </div>
         </div>
@@ -93,12 +97,6 @@ export default {
       runningGame: null,
       mode: "backgroundSetting",
       backgroundColor: "#34a6fb"
-      // playerProperty:{
-      //    lives:3,
-      //    size: 1,
-      //    speed:7,
-      //    jumpSpeed:17
-      // }
     };
   },
   computed: {
@@ -134,7 +132,7 @@ export default {
         return {
           backgroundColor: "red"
         };
-      } else {
+      } else { 
         return {
           backgroundColor: ""
         };
@@ -143,9 +141,7 @@ export default {
     runGame() {
       if (this.runningGame != null) this.runningGame.stopGame();
       this.runningGame = new Game(this.gamePreviewContainer);
-      this.runningGame.runGame([this.levelMap[this.currentLevel]]);
-      this.runningGame.mutate(this.levelSetting[this.currentLevel]);
-      this.runningGame.mutate(this.globalPlayerSetting);
+      this.runningGame.runGame([this.levelMap[this.currentLevel]],[this.levelSetting[this.currentLevel]],this.globalPlayerSetting);
     },
     changeToNewLevel(index) {
       this.changeLevel(index);
@@ -193,6 +189,9 @@ export default {
       this.changeGlobalPlayerSetting(valuePair);
       this.runningGame.mutate(valuePair);
     },
+    returnToEntireGame(){
+      this.$router.push('/entireGame')
+    }
   }
 };
 </script>

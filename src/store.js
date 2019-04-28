@@ -49,7 +49,8 @@ let gameLevel = {
       lives:3,
       size:1,
       speed:7,
-      jumpSpeed:17
+      jumpSpeed:17,
+      playerSprites:null
     }
   },
   mutations:{

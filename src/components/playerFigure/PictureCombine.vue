@@ -223,7 +223,9 @@ export default {
       // 用来测试
       // let img = document.querySelector('.testImg');
       // img.src = testCanvas.toDataURL()
-      this.$store.commit('playerFigure/uploadPlayerFigureResult',testCanvas.toDataURL())
+      let playerImage = new Image();
+      playerImage.src = testCanvas.toDataURL();
+      this.$store.commit('gameLevel/changeGlobalPlayerSetting',{playerSprites:playerImage})
       this.$router.push('/entireGame')
     }
   }

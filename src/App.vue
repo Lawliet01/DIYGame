@@ -2,10 +2,7 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">home</router-link> |
-      <router-link to="/about">about</router-link>|
-      <router-link to="/playerFigure">playerFigure</router-link>|
-      <router-link to="/entireGame">entireGame</router-link>|
-      <router-link to="/gameDesign">gameDesign</router-link>
+      <router-link to="/entireGame">entireGame</router-link>
     </div>
     <router-view/>
   </div>

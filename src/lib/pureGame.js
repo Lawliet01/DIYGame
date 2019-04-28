@@ -622,6 +622,9 @@ class CanvasDisplay {
       this.cx.fillStyle = 'red';
       this.cx.fillText(`生命: ${this.gameClass.lives}`,20,20);
       this.cx.fillText(`剩余金币: ${numberOfCoin}`,20,40)
+      if (this.gameClass.totalLevel != 1){
+         this.cx.fillText(`关卡: ${this.gameClass.level+1}/${this.gameClass.totalLevel}`, 20, 60)
+      }
    }
    syncState(state) {
       this.updateViewport(state);
@@ -716,7 +719,6 @@ function trackKeys(keys) {
 
 export default class Game {
    constructor(dom) {
-      this.freezeTheGame = false
       this.dom = dom;
       this.playerSprites = getImage('player.png', pics);
       this.backgroundColor = "rgb(52, 166, 251)";
@@ -726,8 +728,16 @@ export default class Game {
       this.size = 1;
       this.jumpSpeed = 17;
    }
-   async runGame(plans) {
+   async runGame(plans,levelSettings=[],globalSettings) {
+      if(globalSettings != undefined){
+         this.mutate(globalSettings) //更改全球设置
+      }
       for (let level = 0; level < plans.length;) {
+         this.level = level;
+         this.totalLevel = plans.length;
+         if (levelSettings.length>0){
+            this.mutate(levelSettings[level])
+         }
          let status = await runLevel(new Level(plans[level]), this);
          if (status == 'won'){
             level++
@@ -750,7 +760,9 @@ export default class Game {
       let keys = Object.keys(valueToBeMutated);
       keys.forEach(key=>{
          if (this[key] === undefined) throw new Error('no such property: ' + key)
-         this[key] = valueToBeMutated[key]
+         if (valueToBeMutated[key] != undefined) {
+            this[key] = valueToBeMutated[key]
+         }
       })
    }
 }
