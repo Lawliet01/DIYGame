@@ -761,6 +761,12 @@ export default class Game {
       keys.forEach(key=>{
          if (this[key] === undefined) throw new Error('no such property: ' + key)
          if (valueToBeMutated[key] != undefined) {
+            if (key == 'backgroundImage' || key =='playerSprites'){
+               let image = new Image();
+               image.src = valueToBeMutated[key];
+               this[key] = image;
+               return;
+            }
             this[key] = valueToBeMutated[key]
          }
       })

@@ -14,7 +14,6 @@ let playerFigure = {
     x:null,
     y:null,
     src:null,
-    result:null
   },
   mutations: {
     uploadImgData(state,playload){
@@ -26,9 +25,6 @@ let playerFigure = {
     },
     uploadImgSrc(state,src){
       state.src = src
-    },
-    uploadPlayerFigureResult(state,result){
-      state.result = result
     },
     clearAll(state){
       Object.keys(state).forEach(key=>{

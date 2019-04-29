@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   <title>toBase64</title>
+</head>
+<body>
+   <input type="file" multiple accept="image/*" onchange='convert(event)'>
+   <img src="../src/pic/pureGame/player.png" class='player'>
+</body>
+<script>
+   let img = document.querySelector('.player')
+   let canvas = document.createElement('canvas');
+   let cx = canvas.getContext('2d');
+   cx.drawImage(img,0,0);
+   console.log(canvas.toDataURL())
+   // function convert(event){
+   //    let files = event.target.files;
+   //    console.log(files);
+      
+   //    // for (let i=0;i<files.length;i++){
+   //    //    let reader = new FileReader();
+   //    //    reader.addEventListener('load',()=>{
+   //    //       console.log(files[i]);
+   //    //    })
+   //    //    reader.readAsDataURL(files[i])
+   //    // }
+      
+   // }
+</script>
+</html>

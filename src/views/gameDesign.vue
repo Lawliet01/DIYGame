@@ -26,7 +26,7 @@
           <div class="backgroundSettingPanel" v-if="mode=='backgroundSetting'">
             <input
               type="color"
-              :value="backgroundColor"
+              :value = 'backgroundColor'
               @change="changeNewBackgroundColor($event.target.value)"
             >
             <button @click="inputBackgroundImage">导入背景</button>
@@ -166,12 +166,7 @@ export default {
           let reader = new FileReader();
           reader.addEventListener("load", () => {
             this.changeBackgroundImage(reader.result);
-            let image = new Image();
-            image.src = reader.result;
-            image.onload = () => {
-              this.changeBackgroundImage(image);
-              this.runningGame.mutate({ backgroundImage: image });
-            };
+            this.runningGame.mutate({ backgroundImage: reader.result });
           });
           reader.readAsDataURL(input.files[0]);
         }
