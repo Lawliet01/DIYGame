@@ -1,5 +1,6 @@
 <template>
   <div id="gameDesignContainer">
+    <!-- leftContainer -->
     <div class="leftContainer">
       <div class="gameLevelListContainer">
         <div class="gameList">
@@ -9,27 +10,43 @@
             :key="'block'+index"
             @click="changeToNewLevel(index)"
             :style="currentBlockStyle(index)"
-          >level{{index+1}}</div>
-          <button class="addLevelBtn" @click="addNewLevel()">添加</button>
+          >L{{index+1}}</div>
+          <button class="addLevelBtn" @click="addNewLevel()">
+            <font-awesome-icon icon="plus"/>
+          </button>
         </div>
       </div>
       <div class="gamePreviewContainer"></div>
     </div>
+
+    <!-- rightConatiner -->
     <div class="rightConatiner">
       <div class="returnBtnContainer">
-        <button class="returnBtn" @click='returnToEntireGame()'>返回</button>
+        <button class="returnBtn" @click="returnToEntireGame()">完成</button>
       </div>
       <div class="operationalContainer">
+        <div class="choices">
+          <button class="backgroundSettingBtn" @click="mode='backgroundSetting'">背景</button>
+          <button class="propertySettingBtn" @click="mode='propertySetting'">游戏属性</button>
+        </div>
         <div class="settingContainer">
-          <button class="backgroundSetting" @click="mode='backgroundSetting'">背景</button>
-          <button class="propertySetting" @click="mode='propertySetting'">游戏属性</button>
           <div class="backgroundSettingPanel" v-if="mode=='backgroundSetting'">
+            <br>更换背景颜色：
+            <br>
+            <br>
             <input
               type="color"
-              :value = 'backgroundColor'
+              :value="backgroundColor"
               @change="changeNewBackgroundColor($event.target.value)"
+              class="colorInput"
             >
-            <button @click="inputBackgroundImage">导入背景</button>
+            <br>
+            <br>
+            <hr>
+            <br>更换背景图片：
+            <br>
+            <br>
+            <button @click="inputBackgroundImage" class="backgroundInput">导入背景</button>
           </div>
           <div class="propertySetting" v-else>
             生命
@@ -45,6 +62,7 @@
               class="playerSpeed"
               min="5"
               max="15"
+              step='1'
               :value="globalPlayerSetting.speed"
               @change="changePlayerSetting($event.target.value,'speed')"
             >
@@ -54,6 +72,7 @@
               class="playerJumpSpeed"
               min="10"
               max="30"
+              step='1'
               :value="globalPlayerSetting.jumpSpeed"
               @change="changePlayerSetting($event.target.value,'jumpSpeed')"
             >
@@ -61,6 +80,12 @@
             <input
               type="range"
               class="playerSize"
+              min="0.7"
+              max="2"
+              step='0.1'
+              :value="globalPlayerSetting.size"
+              @input="changePlayerSetting($event.target.value,'size')"
+              @change="runGame()"
             >
             <hr>
           </div>
@@ -130,24 +155,34 @@ export default {
     currentBlockStyle(index) {
       if (index == this.currentLevel) {
         return {
-          backgroundColor: "red"
+          backgroundColor: "red",
+          color: "white"
         };
-      } else { 
+      } else {
         return {
-          backgroundColor: ""
+          backgroundColor: "",
+          color: "black"
         };
       }
     },
     runGame() {
       if (this.runningGame != null) this.runningGame.stopGame();
       this.runningGame = new Game(this.gamePreviewContainer);
-      this.runningGame.runGame([this.levelMap[this.currentLevel]],[this.levelSetting[this.currentLevel]],this.globalPlayerSetting);
+      this.runningGame.runGame(
+        [this.levelMap[this.currentLevel]],
+        [this.levelSetting[this.currentLevel]],
+        this.globalPlayerSetting
+      );
     },
     changeToNewLevel(index) {
       this.changeLevel(index);
       this.runGame();
     },
     addNewLevel() {
+      if (this.levelMap.length > 19) {
+        alert("最高不能超过20关");
+        return;
+      }
       this.addLevel();
       this.runGame();
     },
@@ -178,14 +213,14 @@ export default {
       this.runningGame.stopGame();
       this.toggleStructureDesign();
     },
-    changePlayerSetting(value,key) {
+    changePlayerSetting(value, key) {
       let valuePair = {};
-      valuePair[key] = Number(value)
+      valuePair[key] = Number(value);
       this.changeGlobalPlayerSetting(valuePair);
       this.runningGame.mutate(valuePair);
     },
-    returnToEntireGame(){
-      this.$router.push('/entireGame')
+    returnToEntireGame() {
+      this.$router.push("/entireGame");
     }
   }
 };
@@ -196,12 +231,12 @@ export default {
   box-sizing: border-box;
 }
 
+@import "../lib/_consistentStyle.scss";
+
 $previewWidth: 700px;
 $previewHeight: 400px;
 $levelListHeight: 25px;
 $borderStyle: 1px solid lightblue;
-// $leftFlex: 75%;
-// $rightFlex: 25%;
 @mixin hover-effect {
   &:hover {
     cursor: pointer;
@@ -210,6 +245,8 @@ $borderStyle: 1px solid lightblue;
 }
 
 #gameDesignContainer {
+  margin: auto;
+  width: 910px;
   display: flex;
   flex-flow: row nowrap;
 
@@ -236,18 +273,41 @@ $borderStyle: 1px solid lightblue;
       padding: 0 3px;
       border-right: $borderStyle;
       line-height: $levelListHeight;
-      @include hover-effect();
+      transition: all 0.3s;
+      &:hover {
+        cursor: pointer;
+        color: white;
+        background-color: red;
+      }
     }
 
     .addLevelBtn {
       position: absolute;
       right: 0;
       height: 100%;
+      @include hover-effect();
     }
   }
 }
 
+$rightContainerWidth: 200px;
+
 .returnBtnContainer {
+  width: $rightContainerWidth;
+  height: $levelListHeight;
+  margin: auto;
+  transition: all 0.3s;
+  font-weight: 700;
+  .returnBtn {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    &:hover {
+      cursor: pointer;
+      background-color: red;
+      color: white;
+    }
+  }
 }
 
 .gamePreviewContainer {
@@ -255,12 +315,49 @@ $borderStyle: 1px solid lightblue;
 }
 
 .operationalContainer {
-  .settingContainer {
-    margin-left: 5px;
-    width: 200px;
-    height: 350px;
+  width: $rightContainerWidth;
+  margin: auto;
+  padding-top: 5px;
+
+  .backgroundSettingBtn {
+    width: 50%;
+    height: 20px;
     border: $borderStyle;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    outline: none;
+    &:hover {
+      cursor: pointer;
+      background-color: red;
+      color: white;
+    }
   }
+  .propertySettingBtn {
+    @extend .backgroundSettingBtn;
+  }
+  .settingContainer {
+    background-color: white;
+    height: 300px;
+    border: $borderStyle;
+    border-top: none;
+    padding: 10px 20px;
+    .backgroundInput {
+      @include buttonStyle(100px, 20px);
+    }
+    .propertySetting {
+      padding-top: 10px;
+      input {
+        width: 70px;
+      }
+    }
+  }
+}
+
+.structureDesign {
+  margin: auto;
+  font-weight: 700;
+  margin-top: 5px;
+  @include buttonStyle($rightContainerWidth, $levelListHeight);
 }
 </style>
 

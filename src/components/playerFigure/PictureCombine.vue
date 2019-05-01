@@ -1,5 +1,6 @@
 <template>
   <div id="pictureCombine">
+    <!-- canvasContainer -->
     <div
       class="canvasContainer"
       @mousedown="moveCanvas($event)"
@@ -11,8 +12,6 @@
         :height="canvasContainerSize.height"
         :update="imgContentPos.top + imgContentPos.left + rotate + flip"
       ></canvas>
-      <span class="leftRotate" @click="rotate-=5">左转</span>
-      <span class="rightRotate" @click="rotate+=5">右转</span>
       <div
         class="previewContainer"
         :style="{width:previewSize.width+'px',height:previewSize.height+'px'}"
@@ -20,14 +19,25 @@
         <canvas class="previewCanvas" :width="previewSize.width" :height="previewSize.height"></canvas>
       </div>
     </div>
-    <div class="adjustOptions">
-      <div class="goback" @click="goBack()">back</div>
-      <div class="resize">
-        <input type="range" min="0.5" max="3" step="0.05" v-model.number="scale">
-      </div>
-      <div class="flip" @click="flip = !flip">flip</div>
-      <div class="done" @click="generatePlayerFigure()">done</div>
+
+    <!-- resize -->
+    <div class="resize">
+      <input type="range" min="0.5" max="3" step="0.05" v-model.number="scale">
     </div>
+
+    <!-- back and go  -->
+    <div class="goback" @click="goBack()">返回</div>
+    <div class="done" @click="generatePlayerFigure()">下一步</div>
+
+    <!-- options -->
+    <div class="adjustOptions">
+      <span class="leftRotate" @click="rotate-=5">
+        <font-awesome-icon icon="undo" class="fa-lg"/>
+      </span>
+      <div class="flip" @click="flip = !flip">&#8596;</div>
+      <span class="rightRotate" @click="rotate+=5">&#8635;</span>
+    </div>
+
     <!-- <img class='testImg'> -->
   </div>
 </template>
@@ -47,7 +57,7 @@ export default {
   mounted: function() {
     //起始的时候把图片放上去
     if (this.inputCanvasSize.width == null) return;
-    this.toCombineCanvasContext.putImageData(this.inputCanvasData,0,0)
+    this.toCombineCanvasContext.putImageData(this.inputCanvasData, 0, 0);
   },
   updated: function() {
     //清除canvas
@@ -106,8 +116,8 @@ export default {
   },
   computed: {
     //获取store的数据
-    inputCanvasData:function(){
-      return this.$store.state.playerFigure.imgData
+    inputCanvasData: function() {
+      return this.$store.state.playerFigure.imgData;
     },
     inputCanvasSize: function() {
       return {
@@ -203,7 +213,7 @@ export default {
     },
     //生成图像
     generatePlayerFigure() {
-      let testCanvas = document.createElement('canvas');
+      let testCanvas = document.createElement("canvas");
       //根据实际大小调整
       testCanvas.width = 480;
       testCanvas.height = 600;
@@ -223,8 +233,10 @@ export default {
       // 用来测试
       // let img = document.querySelector('.testImg');
       // img.src = testCanvas.toDataURL()
-      this.$store.commit('gameLevel/changeGlobalPlayerSetting',{playerSprites:testCanvas.toDataURL()})
-      this.$router.push('/entireGame')
+      this.$store.commit("gameLevel/changeGlobalPlayerSetting", {
+        playerSprites: testCanvas.toDataURL()
+      });
+      this.$router.push("/entireGame");
     }
   }
 };
@@ -241,11 +253,17 @@ export default {
   background-size: cover;
 }
 
+#pictureCombine {
+  position: relative;
+  width: 320px;
+  margin: auto;
+  overflow: hidden;
+}
+
 .canvasContainer {
   border: 0.5px solid lightblue;
   position: relative;
-  overflow: scroll;
-  background-color: beige;
+  background-color: #fcfcfc;
   @extend %background;
 
   .toCombineCanvas {
@@ -254,22 +272,6 @@ export default {
     left: 0;
   }
 
-  .leftRotate {
-    position: absolute;
-    left: 0;
-    border: 1px solid lightblue;
-    &:hover {
-      @extend %hover-effect;
-    }
-  }
-  .rightRotate {
-    position: absolute;
-    border: 1px solid lightblue;
-    right: 0;
-    &:hover {
-      @extend %hover-effect;
-    }
-  }
   .previewContainer {
     position: absolute;
     right: 0;
@@ -279,16 +281,94 @@ export default {
   }
 }
 
-.adjustOptions {
-  div {
-    display: inline;
-    padding: 0 3px;
-    border: 1px solid lightblue;
+.resize{
+  display: inline;
+  position: absolute;
+  bottom:0;
+  left:50%;
+  transform: translateX(-50%)
+}
+
+.goback {
+  display: inline;
+  position: absolute;
+  left: -35px;
+  top: 0;
+  border: 1px solid lightblue;
+  padding: 0 5px;
+  border-bottom-right-radius: 5px;
+  background-color: #d2caca;
+  color: #992424;
+  transition: all 0.3s;
+  &:hover {
+    cursor: pointer;
+    background-color: white;
+    left: 0;
   }
-  @each $option in goback flip done {
-    .#{$option}:hover {
+}
+
+.done {
+  display: inline;
+  position: absolute;
+  right: -50px;
+  top: 0;
+  border: 1px solid lightblue;
+  padding: 0 5px;
+  border-bottom-left-radius: 5px;
+  background-color: #d2caca;
+  transition: right 0.3s;
+  color: #992424;
+  &:hover {
+    cursor: pointer;
+    background-color: white;
+    right: 0;
+  }
+}
+
+.adjustOptions {
+  .leftRotate {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s;
+    color: #992424;
+    padding: 7px;
+    &:hover {
       @extend %hover-effect;
+      transform: translateY(-50%) rotate(-60deg);
     }
+  }
+  .rightRotate {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) rotate(30deg);
+    font-size: 30px;
+    transition: transform 0.3s;
+    color: #992424;
+    padding: 5px;
+    &:hover {
+      @extend %hover-effect;
+      transform: translateY(-50%) rotate(120deg);
+    }
+  }
+  .flip {
+    position: absolute;
+    display: inline-block;
+    top: 330px;
+    left:-20px;
+    padding: 0 5px;
+    border: 1px solid lightblue;
+    background-color: #d2caca;
+    transition:all 0.3s;
+    border-radius: 0 5px 5px 0;
+    &:hover {
+      @extend %hover-effect;
+      background-color: white;
+      left:0;
+    }
+
   }
 }
 </style>

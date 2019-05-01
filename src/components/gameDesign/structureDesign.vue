@@ -1,5 +1,6 @@
 <template>
   <div id="structureDesign">
+    <!-- leftContainer -->
     <div class="leftContainer">
       <div class="panel">
         <table
@@ -15,44 +16,49 @@
               :name="rowIndex+'-'+gridIndex"
               :style="{backgroundImage:map[rowIndex][gridIndex].backgroundImage,
                       borderStyle:showGrid==true?'solid':'none'}"
-            >
-            </td>
+            ></td>
           </tr>
         </table>
       </div>
-      <div class="optionsList">
-        <div class="selector">
-          <div v-show="hover" @mouseleave="hover=false" class="selectorGroup">
-            <div
-              v-for="selector in selectorList"
-              :key="selector"
-              :class="'selector-'+selector"
-              @click="selectedSelector = selector"
-            >{{selector}}</div>
-          </div>
-          <div v-show="!hover" class="selectedSelector" @mouseover="hover=true">{{selectedSelector}}</div>
+    </div>
+
+    <!-- rightContainer -->
+    <div class="rightContainer">
+
+      <!-- optionList -->
+      <div class="extendButton" @click="extendPanel.optionsList = !extendPanel.optionsList">游戏元素</div>
+      <div class="optionsListContainer" v-show="extendPanel.optionsList">
+        <div
+          class="currentOption"
+          :style="{backgroundImage:`url(${selectedOption.src})`}"
+          @click="cancelSelect()"
+        >
+          <span v-show="selectedOption.pattern != '.'" class="closeBtn">&Cross;</span>
         </div>
-        <div class="options">
-          <div
-            v-for="(option,index) in optionsForSelector[selectedSelector]"
-            :key="selectedSelector+index"
-            :style="{backgroundImage:'url('+option.src+')'}"
-            @click="selectedOption = option"
-          ></div>
+        <div class="selector">
+          <div class="selectorComponent" v-for="(selector,index) in selectorList" :key="selector">
+            <div class="selectorTitle" :class="'selector-'+selector">{{selectorChineseName[index]}}</div>
+            <div class="options">
+              <div
+                v-for="(option,opIndex) in optionsForSelector[selector]"
+                :key="selector+opIndex"
+                :style="optionStyle(option)"
+                @click="selectedOption = option"
+              ></div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="rightContainer">
-      <div class="setting">
-        <div class="currentOption" :style="{backgroundImage:`url(${selectedOption.src})`}" @click="cancelSelect()">
-          <span v-show="selectedOption.pattern != '.'" class='closeBtn'>&Cross;</span>
-        </div>
+
+      <!-- setting -->
+      <div class="extendButton" @click="extendPanel.setting = !extendPanel.setting">面板操作</div>
+      <div class="setting" v-show = 'extendPanel.setting'>
         <div>
           <input type="range" v-model="mapScale" min="0.2" max="1.5" step="0.1">
         </div>
         <div class="resize">
           长：
-          <input type="text" v-model.number="dimension.width" @change="changeDimension()">
+          <input type="text" v-model.number="dimension.width" @change="changeDimension()">&nbsp
           宽：
           <input type="text" v-model.number="dimension.height" @change="changeDimension()">
         </div>
@@ -64,14 +70,17 @@
         <div class="resetBtn" @click="reset()">reset</div>
         <div class="clearBtn" @click="clear()">clear</div>
       </div>
-      <div class="template">
+
+      <!-- template -->
+      <div class="extendButton" @click="extendPanel.template = !extendPanel.template">游戏模版</div>
+      <div class="template" v-show='extendPanel.template'>
         <div
           v-for="(template,index) in templates"
           :key="'template'+index"
           @click="useTemplate(template)"
         >模版{{index+1}}</div>
       </div>
-      <div class="cancelBtn">cancel</div>
+      <div class="cancelBtn" @click="cancel()">cancel</div>
       <div class="doneBtn" @click="done()">done</div>
     </div>
   </div>
@@ -82,8 +91,8 @@
 import defaultGameLevel from "@/lib/gameLevel.js";
 import gameTemplate from "@/lib/levelTemplate.js";
 import { stringToMap, mapToString } from "./lib/transversion.js";
-import {mapState} from 'vuex'
-
+import { mapState } from "vuex";
+import { constants } from 'crypto';
 
 let pics = {};
 importAll(require.context("@/pic/structureComponent/", false, /\.png$/));
@@ -109,10 +118,9 @@ export default {
         width: 0,
         height: 0
       },
-      selectorList: ["walls", "players", "monsters", "collectors", "lava"],
-      selectedSelector: "walls",
+      selectorChineseName: ["玩家", "墙体", "怪兽", "金币", "熔浆"],
+      selectorList: ["players", "walls", "monsters", "collectors", "lava"],
       selectedOption: { src: "", pattern: "." },
-      hover: false,
       optionsForSelector: {
         walls: [this.createOption("wallIcon", "#")],
         players: [this.createOption("playerIcon", "@")],
@@ -122,28 +130,53 @@ export default {
         ],
         collectors: [this.createOption("coinIcon", "o")],
         lava: [
-          this.createOption("lavaIcon", "+"),
-          this.createOption("lavaIcon", "="),
-          this.createOption("lavaIcon", "|"),
-          this.createOption("lavaIcon", "v")
+          this.createOption("lavaIcon1", "+"),
+          this.createOption("lavaIcon2", "="),
+          this.createOption("lavaIcon3", "|"),
+          this.createOption("lavaIcon4", "v")
         ]
       },
       mapScale: 1,
       showGrid: true,
       editHistory: [],
-      templates: gameTemplate
+      templates: gameTemplate,
+      extendPanel: {
+        optionsList: true,
+        setting: true,
+        template: false
+      }
     };
   },
   computed: {
-    ...mapState('gameLevel',[
-      'levelMap',
-      'currentLevel'
-    ]),
+    ...mapState("gameLevel", ["levelMap", "currentLevel"])
   },
   methods: {
+    optionStyle(option) {
+      let opacity = 0.6;
+      if (option.pattern == this.selectedOption.pattern) {
+        opacity = 1;
+      }
+      return {
+        backgroundImage: "url(" + option.src + ")",
+        opacity: opacity
+      };
+    },
+    cancel() {
+      this.$store.commit("gameLevel/toggleStructureDesign");
+    },
     done() {
-      this.$store.commit('gameLevel/changeGameMap',mapToString(this.map))
-      this.$store.commit('gameLevel/toggleStructureDesign')
+      let map = mapToString(this.map);
+      let countPlayer = (map.match(/@/g)||[]).length
+      let countCoin = (map.match(/o/g)||[]).length
+      if(countPlayer != 1){
+        alert('必须有且只有一个玩家')
+        return;
+      }
+      if(countCoin == 0){
+        alert('没有金币的情况下该等级可能无法通关！')
+      }
+      this.$store.commit("gameLevel/changeGameMap", mapToString(this.map));
+      this.$store.commit("gameLevel/toggleStructureDesign");
     },
     createOption(srcName, pattern) {
       return {
@@ -180,9 +213,9 @@ export default {
     },
     changeDimension() {
       let { width, height } = this.dimension;
-      if (typeof width != 'number'||typeof height != "number") {
+      if (typeof width != "number" || typeof height != "number") {
         //限制输入
-        alert('wrong inpit');
+        alert("wrong inpit");
         return;
       }
       let widthDiff = width - this.map[0].length;
@@ -234,7 +267,7 @@ export default {
       let level = this.levelMap[this.currentLevel];
       this.map = stringToMap(level, pics);
       this.dimension.width = this.map[0].length;
-      this.dimension.height = this.map.length
+      this.dimension.height = this.map.length;
       this.updateHistory();
     },
     clear() {
@@ -261,8 +294,8 @@ export default {
       this.dimension.height = this.map.length;
       return;
     },
-    cancelSelect(){
-      this.selectedOption = {src:"",pattern:"."}
+    cancelSelect() {
+      this.selectedOption = { src: "", pattern: "." };
     }
   }
 };
@@ -272,7 +305,8 @@ export default {
 //todo: 单独修改每一个option的样式（金币要小一点，人头要小一点。。。）
 
 $left-flex: 75%;
-$optionList-height: 40px;
+$optionList-height: 25px;
+$font-color: #247799;
 
 %flex-item-children {
   border: 1px solid lightblue;
@@ -291,19 +325,10 @@ $optionList-height: 40px;
   }
 }
 
-@mixin options($backgroundColor) {
-  display: inline-block;
-  height: 100%;
-  line-height: $optionList-height;
-  padding: 0px 5px;
-  border: 1px solid rgb(218, 210, 98);
-  background-color: $backgroundColor;
-  @include hover-effect();
-}
-
 * {
   box-sizing: border-box;
 }
+
 #structureDesign {
   position: fixed;
   top: 0;
@@ -325,15 +350,27 @@ $optionList-height: 40px;
     }
   }
   .rightContainer {
-    flex: 100% - $left-flex;
+    color: $font-color;
+    flex: 0 0 200px;
     padding: 0px 10px;
     & > div {
       margin-bottom: 10px;
       @extend %flex-item-children;
     }
+    .extendButton {
+      margin-bottom:0;
+      border-bottom:0;
+      background-color:red;
+      color:white;
+      &:hover{
+        cursor:pointer;
+        opacity: 0.7;
+      }
+    }
   }
 }
 
+// panel
 .panel {
   overflow: scroll;
   height: 90%;
@@ -343,84 +380,87 @@ $optionList-height: 40px;
   }
 
   .grid {
-    min-width: 40px;
-    height: 40px;
+    $gridWidth: 30px;
+    min-width: $gridWidth;
+    height: $gridWidth;
     border-width: 0.5px;
     border-color: lightblue;
     background-color: rgb(52, 166, 251);
-    @include backgroundAdj($optionList-height);
+    @include backgroundAdj($gridWidth);
     @include hover-effect();
   }
 }
-
-.optionsList {
-  height: $optionList-height;
+//optionslist
+.optionsListContainer {
+  height: 280px;
   text-align: left;
   position: relative;
-
-  .selector {
-    display: inline-block;
-    height: $optionList-height - 2px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-
-    .selectorGroup {
-      height: 100%;
-
-      @each $selector in walls players monsters collectors lava {
-        .selector-#{$selector} {
-          @include options(rgb(230, 233, 47));
-        }
-      }
-    }
-    .selectedSelector {
-      @include options(rgb(192, 72, 72));
-    }
-  }
-
-  .options {
-    display: inline-block;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 2 * $optionList-height;
-
-    div {
-      display: inline-block;
-      width: $optionList-height;
-      height: 100%;
-      @include backgroundAdj($optionList-height);
-      @include hover-effect();
-    }
-  }
-}
-
-.setting {
-  height: 280px;
   padding: 10px;
 
   $currentOptionWidth: 70px;
+
   .currentOption {
     position: relative;
+    margin: 10px auto 20px auto;
     width: $currentOptionWidth;
     height: $currentOptionWidth;
     border: 1px solid rgb(243, 69, 69);
-    @include backgroundAdj($optionList-height);
+    @include backgroundAdj($currentOptionWidth - 10px);
     @include hover-effect();
-
-    .closeBtn{
+    .closeBtn {
       position: absolute;
-      top:0;
-      right:0;
-      color:red;
-      font-size:50px;
-      line-height:10px;
+      top: 0;
+      right: 0;
+      color: red;
+      font-size: 50px;
+      line-height: 10px;
     }
-
   }
 
+  .selector {
+    height: $optionList-height - 2px;
+    z-index: 1;
+    margin-top: 10px;
+
+    .selectorComponent {
+      height: $optionList-height;
+      margin-top: 5px;
+
+      .selectorTitle {
+        width: 30%;
+        vertical-align: top;
+        line-height: $optionList-height;
+        display: inline-block;
+      }
+
+      .options {
+        height: 100%;
+        display: inline-block;
+
+        div {
+          display: inline-block;
+          width: $optionList-height;
+          height: 100%;
+          @include backgroundAdj($optionList-height);
+          transition: all 0.1s;
+          &:hover {
+            cursor: pointer;
+            transform: scale(1.3);
+          }
+        }
+      }
+    }
+  }
+}
+
+//setting
+.setting {
+  height: 220px;
+  padding: 10px;
+
+  div {
+    padding: 5px;
+  }
   .resize {
     input {
       width: 30px;
@@ -430,22 +470,47 @@ $optionList-height: 40px;
   .undoBtn,
   .resetBtn,
   .clearBtn {
-    @include hover-effect();
+    border: 1px solid $font-color;
+    margin: 5px 10px;
+    padding: 0 5px;
+    transition: all 0.2s;
+    &:hover {
+      cursor: pointer;
+      background-color: $font-color;
+      color: red;
+    }
   }
 }
 
+//template
 .template {
-  height: 200px;
+  height: 120px;
+  padding-top: 10px;
 
   div {
-    padding-top: 5px;
-    @include hover-effect();
+    display: inline-block;
+    border: 1px solid $font-color;
+    margin: 5px 10px;
+    padding: 0 5px;
+    transition: all 0.2s;
+    &:hover {
+      cursor: pointer;
+      background-color: $font-color;
+      color: red;
+    }
   }
 }
 
+//otherBtns
 .cancelBtn {
-  height: 20px;
-  @include hover-effect();
+  height: 30px;
+  line-height:30px;
+  margin-top:5px;
+  &:hover {
+      cursor: pointer;
+      background-color: $font-color;
+      color: red;
+    }
 }
 
 .doneBtn {

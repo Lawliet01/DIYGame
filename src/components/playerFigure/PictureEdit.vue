@@ -1,6 +1,8 @@
 <template>
   <div id="pictureEdit">
     <div class="pictureEditContainer" v-if="imgSrc.length != 0||imgData != null">
+      <!-- 4个部分：canvasContainer；forward and back button; resize; toolkit -->
+      <!-- canvasContainer -->
       <div
         class="canvasContainer"
         @mousedown="editCanvas($event)"
@@ -21,32 +23,72 @@
         ></div>
         <div class="eraser" :style="eraserStyle" v-else-if="mode=='erase'"></div>
       </div>
+
+      <!-- forward and back arrow -->
+      <div class="reInput" @click="reInput()">
+        <font-awesome-icon icon="angle-left"/>重新导入
+      </div>
+      <div class="done" @click="done()">
+        下一步
+        <font-awesome-icon icon="angle-right"/>
+      </div>
+
+      <!-- resize -->
+      <input
+        type="range"
+        min="0.5"
+        max="3"
+        step="0.05"
+        v-model="scale"
+        @input.stop="resize($event)"
+        class="resize"
+      >
+
+      <!-- toolKit -->
       <div class="pictureEdit_toolKit">
-        <div class="reInput" @click="reInput()">reInput</div>
-        <div class="resize">
-          <input type="range" min="0.5" max="3" step="0.05" v-model="scale" @input="resize($event)">
+        <div class="drag" @click="mode='drag'">
+          <font-awesome-icon icon="mouse-pointer"/>
         </div>
-        <div class="drag" @click="mode='drag'">drag</div>
-        <div class="crop" @click="mode='crop'">crop</div>
-        <div class="erase" @click="mode='erase'">erase</div>
-        <div class="undo" @click="undo()">undo</div>
-        <div class="reset" @click="reset()">reset</div>
-        <div class="done" @click="done()">done</div>
-        <div class="toolState">
-          <div v-if="mode == 'crop'">
-            <button @click="cutCanvas()">cut</button>
-            <button @click="removeCropFrame()">remove</button>
-          </div>
-          <div v-else-if="mode == 'erase'">
-            <span @click="eraserStyle.width = eraserStyle.height = '10px'">small</span>
-            <span @click="eraserStyle.width = eraserStyle.height = '20px'">middle</span>
-            <span @click="eraserStyle.width = eraserStyle.height = '30px'">large</span>
-          </div>
+        <div v-if="mode == 'crop'" class="cropState">
+          <span @click="cutCanvas()" class="cutBtn">
+            <font-awesome-icon icon="cut"/>
+          </span>
+          <span @click="removeCropFrame()" class="removeCropFrameBtn">
+            <font-awesome-icon icon="minus" class="fa-sm"/>
+          </span>
         </div>
+        <div v-else class="crop" @click="mode='crop'">
+          <font-awesome-icon icon="crop" class="fa-xs"/>
+        </div>
+        <div v-if="mode == 'erase'" class="eraseState">
+          <span @click="eraserStyle.width = eraserStyle.height = '10px'">
+            <font-awesome-icon icon="circle" class="fa-xs"/>
+          </span>
+          <span @click="eraserStyle.width = eraserStyle.height = '20px'">
+            <font-awesome-icon icon="circle" class="fa-sm"/>
+          </span>
+          <span @click="eraserStyle.width = eraserStyle.height = '30px'">
+            <font-awesome-icon icon="circle" class="fa-2px"/>
+          </span>
+          <span @click="mode = 'drag'" class="removeCropFrameBtn">
+            <font-awesome-icon icon="minus" class="fa-sm"/>
+          </span>
+        </div>
+        <div v-else class="erase" @click="mode='erase'">
+          <font-awesome-icon icon="eraser"/>
+        </div>
+        <div class="undo" @click="undo()" style="font-weight:blod">
+          <font-awesome-icon icon="arrow-left"/>
+        </div>
+        <div class="reset" @click="reset()">&#8635;</div>
       </div>
     </div>
     <br>
-    <button @click="addPicture()" v-if="imgSrc.length == 0&&imgData == null">添加图片</button>
+    <button
+      @click="addPicture()"
+      v-if="imgSrc.length == 0&&imgData == null"
+      class="inputImageBtn"
+    >导入照片</button>
   </div>
 </template>
 
@@ -89,12 +131,6 @@ export default {
         height: "10px",
         top: "0px",
         left: "0px"
-      },
-      contentPos: {
-        x: 0,
-        y: 0,
-        width: null,
-        height: null
       }
     };
   },
@@ -130,29 +166,28 @@ export default {
   },
   methods: {
     //reInput
-    reInput(){
+    reInput() {
       //清空数据，重新导入图片
-      this.$store.commit('playerFigure/clearAll')
-      this.imgSrc = ""
-      //这里有点难看，直接push会playerFigure的话，由于复用当前实例，会出错，遗留从前的数据
+      this.$store.commit("playerFigure/clearAll");
+      this.imgSrc = "";
+      //这里有点难看，直接push回playerFigure的话，由于复用当前实例，会出错，遗留从前的数据
       //如计算属性里面的context索引还是从前的。
       //所以导航到/playerFigure/combine,由于src数据为空，combine又会重新倒回来，组件实例被刷新
-      this.$router.push('/playerFigure/combine')
+      this.$router.push("/playerFigure/combine");
     },
-    //完成
+    //完成，把x,y传上去
     done() {
-      let { x, y, width, height } = this.contentPos;
+      let confirm = window.confirm("已完成剪切，要进入下一步？");
+      if (confirm == false) return;
+      let { x, y, width, height } = this.$store.state.playerFigure;
       width = width == null ? this.canvasDimension.width : width;
       height = height == null ? this.canvasDimension.height : height;
       let data = this.context.getImageData(x, y, width, height);
-      let dataToUploaded = {
+      this.$store.commit("playerFigure/uploadImgData", {
         imgData: data,
-        x: x,
-        y: y,
         width: width,
         height: height
-      };
-      this.$store.commit("playerFigure/uploadImgData", dataToUploaded);
+      });
       this.$router.push({ path: "/playerFigure/combine" });
     },
     //放大缩小
@@ -234,6 +269,10 @@ export default {
     //剪切canvas
     cutCanvas() {
       let { width, height } = posStringToNumber(this.cropFrameDimension);
+      if (width == 0 || height == 0) {
+        alert("点击并拖动鼠标选择要剪切的区域");
+        return;
+      }
       let { widthDiff, heightDiff } = this.cropFrameCanvasPosDiff();
       let x = widthDiff / this.scale;
       let y = heightDiff / this.scale;
@@ -243,7 +282,8 @@ export default {
         width / this.scale,
         height / this.scale
       );
-      Object.assign(this.contentPos, {
+      //上传有内容的图像到store里
+      this.$store.commit("playerFigure/uploadImgData", {
         x: x,
         y: y,
         width: width / this.scale,
@@ -367,12 +407,19 @@ export default {
         let imgWidth = img.width;
         let imgHeight = img.height;
         let { width, height } = this.canvasDimension;
+        //保证整个图片能囊括在canva里面，并自动填满canvas。
         let ratio =
           width / imgWidth < height / imgHeight
             ? width / imgWidth
             : height / imgHeight;
-        //保证整个图片能囊括在canva里面，并自动填满canvas。
         this.context.drawImage(img, 0, 0, imgWidth * ratio, imgHeight * ratio);
+        //使得图片居中
+        this.canvasDimension.top =
+          (this.canvasContainerRectPos().height - imgHeight * ratio) / 2 + "px";
+        this.canvasDimension.left =
+			 (this.canvasContainerRectPos().width - imgWidth * ratio) / 2 + "px";
+		  //上传图片实际大小
+		  this.$store.commit('playerFigure/uploadImgData',{width:imgWidth * ratio,height:imgHeight * ratio})
         this.historyUpdate();
       };
     },
@@ -423,25 +470,32 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-$toolKit-list: reInput resize drag crop erase undo reset done toolState;
+@import "@/lib/_consistentStyle.scss";
 
-%hover-effect {
-  cursor: pointer;
-  opacity: 0.8;
-}
 %move-effect {
   cursor: grab;
 }
 
+$border-color: lightBlue;
+
+.inputImageBtn {
+  @include buttonStyle(120px, 50px);
+  font-size: 15px;
+}
+
+.pictureEditContainer {
+  position: relative;
+}
+
+//canvascontainer
 .canvasContainer {
+  border: 0.5px solid $border-color;
   width: 100%;
-  height: 400px;
-  border: 0.5px solid lightblue;
+  height: 500px;
   position: relative;
   overflow: scroll;
-  background-color: beige;
+  background-color: #fcfcfc;
 
   canvas {
     position: absolute;
@@ -464,28 +518,82 @@ $toolKit-list: reInput resize drag crop erase undo reset done toolState;
     z-index: 1;
   }
 }
+
+//forward and back button
+.reInput {
+  z-index: 1;
+  position: absolute;
+  background-color: #d2caca;
+  top: 0;
+  color: #992424;
+  height: 20px;
+  padding: 5px;
+  font-size: 15px;
+  line-height: 20px;
+  transition: background-color 0.3s;
+  border-bottom-right-radius: 5px;
+
+  &:hover {
+    cursor: pointer;
+    background-color: black;
+    opacity: 0.6;
+  }
+}
+.done {
+  @extend .reInput;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 5px;
+  right: 0;
+}
+
+//resize
+.resize {
+  z-index: 1;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  left: 50%;
+  color: lightblue;
+  transform: translateX(-50%);
+}
+
+//toolkit
 .pictureEdit_toolKit {
-  div {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  .drag,
+  .crop,
+  .erase,
+  .undo,
+  .reset {
     display: inline-block;
-    border: 1px solid lightblue;
+    border: 1px solid $border-color;
+    background-color: #d2caca;
     padding: 0 3px;
     border-top: none;
-  }
-  @each $className in $toolKit-list {
-    @if $className != resize and $className != toolState {
-      .#{$className}:hover {
-        @extend %hover-effect;
-      }
+    opacity: 0.8;
+    transition: background-color 0.3s;
+    &:hover {
+      cursor: pointer;
+      background-color: white;
     }
   }
-  .toolState span {
-    border: 1px solid grey;
-    margin: 2px;
-    padding: 0 2px;
-  }
-  .toolState span {
-    &:hover {
-      @extend %hover-effect;
+
+  .eraseState,
+  .cropState {
+    background-color: white;
+    border: 1px solid $border-color;
+    display: inline-block;
+    span {
+      padding: 0 3px;
+      overflow: hidden;
+      &:hover {
+        cursor: pointer;
+        background-color: #03a9f4;
+      }
     }
   }
 }

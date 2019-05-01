@@ -1,0 +1,19 @@
+%hover-effect {
+  cursor: pointer;
+}
+
+@mixin buttonStyle($width,$height) {
+   background-color:white;
+   border-radius: 5px;
+   width:$width;
+   height:$height;
+   transition:background-color 0.3s;
+   &:hover{
+      color:white;
+      background-color:red;
+      @extend %hover-effect
+   }
+}
+
+$gameHeight:400px;
+$gameWidth:700px

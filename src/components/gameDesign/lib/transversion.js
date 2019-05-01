@@ -1,5 +1,5 @@
 
-export function stringToArray(string){
+export function stringToArray(string) {
    if (typeof string != 'string') throw new Error('argument not a string on stringToArray: ' + string)
    return string.trim().split("\n").map(l => {
       l = l.trim();
@@ -7,44 +7,51 @@ export function stringToArray(string){
    });
 }
 
-export function arrayToString(array){
+export function arrayToString(array) {
    if (typeof array != 'object') throw new Error('argument not an array on arrayToString: ' + array)
-   return array.map(row=> row.join('')).join('\n')
+   return array.map(row => row.join('')).join('\n')
 }
 
-export function stringToMap(source,context){
+export function stringToMap(source, context) {
    if (typeof source != 'string') throw new Error('argument not a string on stringToMap: ' + source)
-   return source.trim().split("\n").map(row=>{
-      return row.trim().split("").map(grid=>{
+   return source.trim().split("\n").map(row => {
+      return row.trim().split("").map(grid => {
          let fileName = "";
-         if (grid == 'o'){
+         if (grid == 'o') {
             fileName = 'coinIcon'
-         }else if (grid == '#'){
+         } else if (grid == '#') {
             fileName = 'wallIcon'
-         }else if(grid == '+'||grid == '='||grid =='|'||grid =='v'){
-            fileName = 'lavaIcon'
-         }else if (grid == '@'){
+         } else if (grid == '+') {
+            fileName = 'lavaIcon1'
+         } else if (grid == '@') {
             fileName = 'playerIcon'
-         }else if(grid == 'm'){
+         } else if (grid == 'm') {
             fileName = 'monsterIcon'
-         }else if (grid == 'd'){
+         } else if (grid == 'd') {
             fileName = 'dragonIcon'
+         } else if (grid == '=') {
+            fileName = 'lavaIcon2'
+         } else if (grid == '|') {
+            fileName = 'lavaIcon3'
+         } else if (grid == 'v') {
+            fileName = 'lavaIcon4'
          }
-         if (fileName.length == 0){
-            return {backgroundImage:"",pattern:'.'}
-         }else {
+
+         if (fileName.length == 0) {
+            return { backgroundImage: "", pattern: '.' }
+         } else {
             let src = context[fileName]
-            if (src == undefined) throw new Error('can not found the image on pics: '+fileName)
+            if (src == undefined) throw new Error('can not found the image on pics: ' + fileName)
             return {
-               backgroundImage:`url(${src})`,
-               pattern:grid
+               backgroundImage: `url(${src})`,
+               pattern: grid
             }
          }
       })
    })
 }
 
-export function mapToString(map){
+export function mapToString(map) {
    if (typeof map != 'object') throw new Error('map is not an object on mapToString', + map)
-   return map.map(row=>row.map(each=>{return each.pattern}).join('')).join('\n')
+   return map.map(row => row.map(each => { return each.pattern }).join('')).join('\n')
 }

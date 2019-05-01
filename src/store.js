@@ -11,17 +11,15 @@ let playerFigure = {
     imgData: null,
     width:null,
     height:null,
-    x:null,
-    y:null,
+    x:0,
+    y:0,
     src:null,
   },
   mutations: {
-    uploadImgData(state,playload){
-      state.imgData = playload.imgData
-      state.width = playload.width;
-      state.height = playload.height;
-      state.x = playload.x;
-      state.y = playload.y
+    uploadImgData(state, valuePair){
+      Object.keys(valuePair).forEach(key => {
+        state[key] = valuePair[key]
+      })
     },
     uploadImgSrc(state,src){
       state.src = src

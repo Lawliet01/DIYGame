@@ -179,7 +179,7 @@ export default `
       constructor(pos, speed, property) {
          this.pos = pos;
          this.speed = speed;
-         this.size = new Vec(0.8, 1.5)
+         this.size = new Vec(0.8, 1.5).times(property==undefined?1:property.size)
          this.playerXSpeed = property == undefined ? 7 : property.speed;
          this.gravity = 30;
          this.jumpSpeed = property == undefined ? 17 : property.jumpSpeed;
@@ -188,7 +188,7 @@ export default `
          return "player";
       }
       static create(pos) {
-         return new Player(pos.plus(new Vec(0, -0.5)), new Vec(0, 0));
+         return new Player(pos.plus(new Vec(0, -2.1)), new Vec(0, 0));
       }
       update(time, state, keys, property) {
          let xSpeed = 0;
@@ -582,8 +582,8 @@ export default `
          if (this.flipPlayer) {
             flipHorizontally(this.cx, x + width / 2);
          }
-         let tileX = tile * 2 * width;
-         this.cx.drawImage(this.gameClass.playerSprites, tileX, 0, 2 * width, 2 * height, x, y, width, height);
+         let tileX = tile *  48;
+         this.cx.drawImage(this.gameClass.playerSprites, tileX, 0, 48, 60, x, y, width, height);
          this.cx.restore();
       }
       drawMonster(monster, x, y, width, height) {
@@ -774,12 +774,13 @@ class Game {
     this.jumpSpeed = 17;
   }
       async runGame(plans, levelSettings = [], globalSettings) {
+         this.totalLevel = plans.length;
          if (globalSettings != undefined) {
             this.mutate(globalSettings) //更改全球设置
          }
          for (let level = 0; level < plans.length;) {
+            this.backgroundImage = null;
             this.level = level;
-            this.totalLevel = plans.length;
             if (levelSettings.length > 0) {
                this.mutate(levelSettings[level])
             }

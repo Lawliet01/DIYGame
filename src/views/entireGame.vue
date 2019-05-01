@@ -1,10 +1,9 @@
 <template>
-  <div>
-    entireGame
+  <div id='entireGame'> 
     <div class="gameContainer"></div>
-    <button @click="goToPlayerFigureDesign()">playerFigureDesign</button>
-    <button @click="goToGameDesign()">GameDesign</button>
-    <button @click="downloadTheGame()">downloadTheGame</button>
+    <button @click="goToPlayerFigureDesign()" class='playerFigureDesign'>人物形象设计</button>
+    <button @click="goToGameDesign()">游戏级别设计</button>
+    <button @click="downloadTheGame()">完成并下载</button>
   </div>
 </template>
 
@@ -69,6 +68,8 @@ export default {
       this.$router.push("/gameDesign");
     },
     downloadTheGame() {
+      var confirm = window.confirm('已经完成设计并要下载该游戏了吗？')
+      if (confirm == false) return;
       let blob = new Blob(manipulateHTML(gameTemplate, this), {
         text: "text/plain"
       });
@@ -93,21 +94,9 @@ export default {
         htmlFile = replaceFile("drgonToBeReplaced", dragonSpritesSRC);
         htmlFile = replaceFile("fileToBeReplaced", fireSpritesSRC);
         htmlFile = replaceFile("dragonToFireToBeReplaced", toFireSRC);
-
-        htmlFile = htmlFile.replace(
-          "gameLevelToBeReplaced",
-          JSON.stringify(self.levelMap.length == 0 ? gameLevel : self.levelMap)
-        );
-        //传入src而不是image
-        //let levelSetting = Object.assign({},self.levelSetting,)
-        htmlFile = htmlFile.replace(
-          "gameSettingsToBeReplaced",
-          JSON.stringify(self.levelSetting)
-        );
-        htmlFile = htmlFile.replace(
-          "globalSettingsToBeReplaced",
-          JSON.stringify(self.globalPlayerSetting)
-        );
+        htmlFile = replaceFile("gameLevelToBeReplaced",self.levelMap.length == 0 ? gameLevel : self.levelMap)
+        htmlFile = replaceFile("gameSettingsToBeReplaced",self.levelSetting)
+        htmlFile = replaceFile("globalSettingsToBeReplaced",self.globalPlayerSetting)
 
         function getImage(name, requireContext, length) {
           //获得每个图的url
@@ -147,4 +136,20 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+@import '../lib/_consistentStyle';
+
+.gameContainer{
+  padding: 0;
+}
+
+button{
+  @include buttonStyle(150px,25px);
+  margin: 0px 5px;
+}
+
+
+</style>
+
 
