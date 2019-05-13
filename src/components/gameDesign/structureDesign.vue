@@ -58,7 +58,7 @@
         </div>
         <div class="resize">
           长：
-          <input type="text" v-model.number="dimension.width" @change="changeDimension()">&nbsp
+          <input type="text" v-model.number="dimension.width" @change="changeDimension()">
           宽：
           <input type="text" v-model.number="dimension.height" @change="changeDimension()">
         </div>
@@ -88,11 +88,9 @@
 
 <script>
 //开发使用
-import defaultGameLevel from "@/lib/gameLevel.js";
 import gameTemplate from "@/lib/levelTemplate.js";
 import { stringToMap, mapToString } from "./lib/transversion.js";
 import { mapState } from "vuex";
-import { constants } from 'crypto';
 
 let pics = {};
 importAll(require.context("@/pic/structureComponent/", false, /\.png$/));
@@ -213,6 +211,10 @@ export default {
     },
     changeDimension() {
       let { width, height } = this.dimension;
+      if (width > 150 || height > 150){
+        alert('边长不能超过150')
+        return;
+      }
       if (typeof width != "number" || typeof height != "number") {
         //限制输入
         alert("wrong inpit");

@@ -1,16 +1,26 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">home</router-link> |
-      <router-link to="/entireGame">entireGame</router-link>
-    </div>
+    <nav>
+      <span>DIYGAME</span>
+      <router-link to="/">帮助</router-link>
+      <router-link to="/entireGame">开始设计</router-link>
+      <router-link to="/">预览</router-link>
+      <router-link to="/">主页</router-link>
+    </nav>
     <router-view/>
   </div>
 </template>
 
 <style lang="scss">
+*{
+  box-sizing:border-box
+}
+
 html{
   background-color:#f8f9fa;
+}
+body{
+ margin:0; 
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -19,13 +29,29 @@ html{
   text-align: center;
   color: #2c3e50;
 }
-#nav {
-  padding: 30px;
-  a {
+nav {
+  text-align: left;
+  $navHeight:50px;
+  padding: 10px;
+  span{
+    line-height: $navHeight;
     font-weight: bold;
-    color: #2c3e50;
+    font-size:30px;
+    padding: 0px 20px 
+  }
+
+  a {
+    text-decoration: none;
+    float:right;
+    line-height: $navHeight;
+    font-size:15px;
+    margin: 0px 15px;
+    color: #3eb0dd;
     &.router-link-exact-active {
-      color: #42b983;
+      color: #2c3e50;
+    }
+    &:hover{
+      text-decoration: underline;
     }
   }
 }
