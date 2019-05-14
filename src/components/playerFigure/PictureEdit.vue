@@ -417,9 +417,12 @@ export default {
         this.canvasDimension.top =
           (this.canvasContainerRectPos().height - imgHeight * ratio) / 2 + "px";
         this.canvasDimension.left =
-			 (this.canvasContainerRectPos().width - imgWidth * ratio) / 2 + "px";
-		  //上传图片实际大小
-		  this.$store.commit('playerFigure/uploadImgData',{width:imgWidth * ratio,height:imgHeight * ratio})
+          (this.canvasContainerRectPos().width - imgWidth * ratio) / 2 + "px";
+        //上传图片实际大小
+        this.$store.commit("playerFigure/uploadImgData", {
+          width: imgWidth * ratio,
+          height: imgHeight * ratio
+        });
         this.historyUpdate();
       };
     },
@@ -452,16 +455,13 @@ export default {
       input.setAttribute("type", "file");
       input.setAttribute("accept", "image/*");
       input.addEventListener("change", () => {
-        if (input.files[0] == null) {
-          console.log("failed to load img");
-        } else {
-          let reader = new FileReader();
-          reader.addEventListener("load", () => {
-            this.imgSrc = reader.result;
-            this.initCanvas();
-          });
-          reader.readAsDataURL(input.files[0]);
-        }
+        if (input.files[0] == null) return;
+        let reader = new FileReader();
+        reader.addEventListener("load", () => {
+          this.imgSrc = reader.result;
+          this.initCanvas();
+        });
+        reader.readAsDataURL(input.files[0]);
       });
       input.click();
       input.remove();

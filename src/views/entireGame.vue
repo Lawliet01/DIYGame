@@ -3,6 +3,7 @@
     <div class="gameContainer"></div>
     <button @click="goToPlayerFigureDesign()" class='playerFigureDesign'>人物形象设计</button>
     <button @click="goToGameDesign()">游戏级别设计</button>
+    <button @click='goToStartUpAndEndDesign()'>开始结束界面设计</button>
     <button @click="downloadTheGame()">完成并下载</button>
   </div>
 </template>
@@ -66,6 +67,9 @@ export default {
     },
     goToGameDesign() {
       this.$router.push("/gameDesign");
+    },
+    goToStartUpAndEndDesign(){
+      this.$router.push("/startUpAndEndDesign")
     },
     downloadTheGame() {
       var confirm = window.confirm('已经完成设计并要下载该游戏了吗？')
