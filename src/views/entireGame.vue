@@ -1,9 +1,26 @@
 <template>
-  <div id='entireGame'> 
+  <div id="entireGame">
+    <div class="startUpFace" v-bind:style="backgroundStyle" v-if="runningGame==null">
+      <button v-bind:style="startUpBtn" v-on:click="startGame()">{{startUpBtnText}}</button>
+      <div
+        class="textItem"
+        v-for="(item,index) in processTextComponent"
+        :key="'textItem' + index"
+        :style="item.style"
+      >{{item.textContent}}</div>
+      <div
+        class="imgItem"
+        v-for="(item,index) in processPictureComponent"
+        :key="'pictureItem' + index"
+        :style="item.style"
+      >
+        <img :src="item.url" :width="item.width">
+      </div>
+    </div>
     <div class="gameContainer"></div>
-    <button @click="goToPlayerFigureDesign()" class='playerFigureDesign'>人物形象设计</button>
+    <button @click="goToPlayerFigureDesign()" class="playerFigureDesign">人物形象设计</button>
     <button @click="goToGameDesign()">游戏级别设计</button>
-    <button @click='goToStartUpAndEndDesign()'>开始结束界面设计</button>
+    <button @click="goToStartUpAndEndDesign()">开始结束界面设计</button>
     <button @click="downloadTheGame()">完成并下载</button>
   </div>
 </template>
@@ -11,9 +28,8 @@
 <script>
 import Game from "../lib/pureGame";
 import gameLevel from "../lib/gameLevel";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import gameTemplate from "@/lib/gameTemplate";
-import { constants } from "crypto";
 
 let pics = {};
 importAll(require.context("../pic/pureGame/", false, /\.png$/));
@@ -24,18 +40,12 @@ function importAll(r) {
 export default {
   name: "entrieGame",
   beforeRouteLeave(to, from, next) {
+    if (this.runningGame == null) {
+      next();
+      return;
+    }
     this.runningGame.stopGame();
     next();
-  },
-  mounted: function() {
-    let levelMap = this.$store.state.gameLevel.levelMap;
-    levelMap = levelMap.length == 0 ? gameLevel : levelMap;
-    this.runningGame = new Game(this.gameContainer);
-    this.runningGame.runGame(
-      levelMap,
-      this.levelSetting,
-      this.globalPlayerSetting
-    );
   },
   data: function() {
     return {
@@ -50,6 +60,16 @@ export default {
       "structureDesign",
       "globalPlayerSetting"
     ]),
+    ...mapState("startUpFace", [
+      "startUpBtn",
+      "pictureComponents",
+      "backgroundStyle",
+      "startUpBtnText"
+    ]),
+    ...mapGetters("startUpFace", [
+      "processTextComponent",
+      "processPictureComponent"
+    ]),
     gameContainer() {
       return document.querySelector(".gameContainer");
     },
@@ -62,17 +82,26 @@ export default {
     }
   },
   methods: {
+    startGame() {
+      let levelMap = this.levelMap.length == 0 ? gameLevel : this.levelMap;
+      this.runningGame = new Game(this.gameContainer);
+      this.runningGame.runGame(
+        levelMap,
+        this.levelSetting,
+        this.globalPlayerSetting
+      );
+    },
     goToPlayerFigureDesign() {
       this.$router.push("/playerFigure/combine");
     },
     goToGameDesign() {
       this.$router.push("/gameDesign");
     },
-    goToStartUpAndEndDesign(){
-      this.$router.push("/startUpAndEndDesign")
+    goToStartUpAndEndDesign() {
+      this.$router.push("/startUpAndEndDesign");
     },
     downloadTheGame() {
-      var confirm = window.confirm('已经完成设计并要下载该游戏了吗？')
+      var confirm = window.confirm("已经完成设计并要下载该游戏了吗？");
       if (confirm == false) return;
       let blob = new Blob(manipulateHTML(gameTemplate, this), {
         text: "text/plain"
@@ -98,9 +127,15 @@ export default {
         htmlFile = replaceFile("drgonToBeReplaced", dragonSpritesSRC);
         htmlFile = replaceFile("fileToBeReplaced", fireSpritesSRC);
         htmlFile = replaceFile("dragonToFireToBeReplaced", toFireSRC);
-        htmlFile = replaceFile("gameLevelToBeReplaced",self.levelMap.length == 0 ? gameLevel : self.levelMap)
-        htmlFile = replaceFile("gameSettingsToBeReplaced",self.levelSetting)
-        htmlFile = replaceFile("globalSettingsToBeReplaced",self.globalPlayerSetting)
+        htmlFile = replaceFile(
+          "gameLevelToBeReplaced",
+          self.levelMap.length == 0 ? gameLevel : self.levelMap
+        );
+        htmlFile = replaceFile("gameSettingsToBeReplaced", self.levelSetting);
+        htmlFile = replaceFile(
+          "globalSettingsToBeReplaced",
+          self.globalPlayerSetting
+        );
 
         function getImage(name, requireContext, length) {
           //获得每个图的url
@@ -118,7 +153,7 @@ export default {
             cx.drawImage(image, 0, 0);
             let url = canvas.toDataURL();
             canvas.remove();
-            image.remove()
+            image.remove();
             return url;
           } else {
             return Array.apply(null, { length: length }).map(function(
@@ -142,18 +177,31 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../lib/_consistentStyle';
+@import "../lib/_consistentStyle";
 
-.gameContainer{
+.gameContainer {
   padding: 0;
 }
 
-button{
-  @include buttonStyle(150px,25px);
+button {
+  @include buttonStyle(150px, 25px);
   margin: 0px 5px;
 }
 
-
+.startUpFace {
+  margin: auto;
+  position: relative;
+  width: 700px;
+  height: 400px;
+  overflow: hidden;
+  background-position: center;
+  button {
+    position: absolute;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
 </style>
 
 

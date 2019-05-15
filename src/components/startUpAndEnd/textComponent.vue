@@ -24,8 +24,6 @@ export default {
   created(){
     let componentProperties = this.getComponentPropertyByIndex('text',this.index) ;
     if (componentProperties === undefined) return;
-    console.log('done');
-    
     this.pos.left = componentProperties.left;
     this.pos.top = componentProperties.top;
     this.textContent = componentProperties.textContent;

@@ -255,8 +255,7 @@ export default {
   name: "startUpAndEndDesign",
   mixins: [filterGroupMixin],
   created() {
-    if (this.startUpBtnFromVuex.left === undefined) return;
-    //二次进入时获取数据
+    //注入数据
     this.startBtnStyle = JSON.parse(JSON.stringify(this.startUpBtnFromVuex))
     this.pictureComponents = JSON.parse(JSON.stringify(this.pictureComponentsFormVuex))
     this.textComponents = JSON.parse(JSON.stringify(this.textComponentsFormVuex));
@@ -274,26 +273,9 @@ export default {
       currentPictureFocus: -1,
       currentTextFocus: -1,
       mode: "none",
-      backgroundStyle: {
-        backgroundImage: "",
-        backgroundColor: "#000000",
-        backgroundSize: "700px 400px",
-        backgroundRepeat: "no-repeat"
-      },
-      startBtnStyle: {
-        left: "300px",
-        top: "150px",
-        width: "100px",
-        height: "80px",
-        borderRadius: "10px",
-        color: "#000000",
-        backgroundColor: "#ffffff",
-        borderWidth: "1px",
-        borderColor: "#0000ff",
-        fontSize: "20px",
-        zIndex: 0
-      },
-      startUpBtnText: "开始游戏"
+      backgroundStyle: null,
+      startBtnStyle: null,
+      startUpBtnText: ""
     };
   },
   watch: {
@@ -315,7 +297,7 @@ export default {
     }
   },
   computed: {
-    //注入方法
+    //注入数据
     ...mapState("startUpFace", {
       startUpBtnFromVuex: "startUpBtn",
       pictureComponentsFormVuex: "pictureComponents",

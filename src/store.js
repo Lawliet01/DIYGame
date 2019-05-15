@@ -84,11 +84,28 @@ let gameLevel = {
 let startUpFace = {
   namespaced:true,
   state:{
-    startUpBtn:Object.create(null),
+    startUpBtn: {
+      left: "300px",
+      top: "150px",
+      width: "100px",
+      height: "80px",
+      borderRadius: "10px",
+      color: "#000000",
+      backgroundColor: "#ffffff",
+      borderWidth: "1px",
+      borderColor: "#0000ff",
+      fontSize: "20px",
+      zIndex: 0
+    },
     pictureComponents:[],
     textComponents:[],
-    backgroundStyle: Object.create(null),
-    startUpBtnText:"",
+    backgroundStyle: {
+      backgroundImage: "",
+      backgroundColor: "#000000",
+      backgroundSize: "700px 400px",
+      backgroundRepeat: "no-repeat"
+    },
+    startUpBtnText: "开始游戏",
   },
   getters:{
     getComponentPropertyByIndex:(state)=>(type,index)=>{
@@ -99,6 +116,42 @@ let startUpFace = {
       }else{
         throw new Error('no such type')
       }
+    },
+    //可直接使用的style
+    processTextComponent:(state)=>{
+      return state.textComponents.map(component=>{
+        return {
+          style:{
+            top: component.top + "px",
+            left: component.left + "px",
+            fontSize: component.fontSize + "px",
+            color: component.color,
+            opacity: component.opacity,
+            transform: `rotate(${component.rotate}deg)`,
+            zIndex: component.zIndex,
+            position: "absolute"
+          },
+          textContent:component.textContent
+        }
+      })
+    },
+    //可直接使用的style
+    processPictureComponent:(state)=>{
+      return state.pictureComponents.map(component=>{
+        return {
+          style:{
+            top: component.top + "px",
+            left: component.left + "px",
+            opacity: component.opacity,
+            transform: `rotate(${component.rotate}deg)`,
+            zIndex: component.zIndex,
+            filter: component.filter,
+            position: "absolute"
+          },
+          url:component.url,
+          width:component.width
+        }
+      })
     }
   },
   mutations:{
