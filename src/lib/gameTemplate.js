@@ -818,7 +818,57 @@ class Game {
 
 
 }
-new Game(document.querySelector('#game')).runGame(GAME_LEVELS,gameSettings,globalSettings);
+
+  function elt(type, props,style,...children) {
+    let dom = document.createElement(type);
+    if (props) Object.assign(dom, props);
+    if (style) {
+      for (let key in style){
+        dom.style[key] = style[key]
+      }
+    }
+    for (let child of children) {
+      if (typeof child != "string") dom.appendChild(child);
+      else dom.appendChild(document.createTextNode(child));
+    }
+    return dom;
+  }
+
+
+  let startUpFacebackgroundStyle = startUpFacebackgroundStyleToBeReplaced
+  let startBtnStyleFromVuex = startBtnStyleToBeReplace
+  let startUpBtnText = startUpBtnTextToBeReplace
+  let textComponents = textComponentsToBeReplace
+  let pictureComponents = pictureComponentsToBeReplace
+
+  let startUpFaceStyle = Object.assign({},startUpFacebackgroundStyle,{
+    margin: "auto",
+    position: "relative",
+    width: "700px",
+    height: "400px",
+    overflow: "hidden",
+    backgroundPosition: "center",
+  })
+
+  let startBtnStyle = Object.assign({},startBtnStyleFromVuex,{position: "absolute"})
+
+  let startBtnProps = {
+    type:'button',
+    onclick:()=>{
+      document.querySelector('.startUpFaceContainer').remove()
+      new Game(document.querySelector('#game')).runGame(GAME_LEVELS,gameSettings,globalSettings);
+    }
+  }
+
+  let pictureDom = pictureComponents.map(component=>{
+    return elt('div',null,component.style,elt('img',{src:component.url,width:component.width}))
+   })
+  let textDom = textComponents.map(component=>{
+    return elt('div',null,component.style,component.textContent);
+  }) 
+  let startBtn = elt('button', startBtnProps,startBtnStyle,startUpBtnText)
+  let startUpFaceContainer = elt('div', {className:'startUpFaceContainer'},startUpFaceStyle, startBtn,...textDom,...pictureDom)
+  document.body.appendChild(startUpFaceContainer)
 
 </script >
 

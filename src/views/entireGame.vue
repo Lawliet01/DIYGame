@@ -30,6 +30,7 @@ import Game from "../lib/pureGame";
 import gameLevel from "../lib/gameLevel";
 import { mapState, mapGetters } from "vuex";
 import gameTemplate from "@/lib/gameTemplate";
+import { doesNotThrow } from "assert";
 
 let pics = {};
 importAll(require.context("../pic/pureGame/", false, /\.png$/));
@@ -100,10 +101,10 @@ export default {
     goToStartUpAndEndDesign() {
       this.$router.push("/startUpAndEndDesign");
     },
-    downloadTheGame() {
+    async downloadTheGame() {
       var confirm = window.confirm("已经完成设计并要下载该游戏了吗？");
       if (confirm == false) return;
-      let blob = new Blob(manipulateHTML(gameTemplate, this), {
+      let blob = new Blob(await manipulateHTML(gameTemplate, this), {
         text: "text/plain"
       });
       let url = window.URL.createObjectURL(blob);
@@ -114,62 +115,116 @@ export default {
       link.remove();
 
       function manipulateHTML(htmlFile, self) {
-        let otherSprites = getImage("sprites.png", pics);
-        let playerSprites = getImage("player.png", pics);
-        let monsterSprites = getImage("Monster1.png", pics);
-        let dragonSpritesSRC = getImage("dragon.png", pics, 10);
-        let fireSpritesSRC = getImage("fire.png", pics, 4);
-        let toFireSRC = getImage("tofire.png", pics, 8);
+        return new Promise(async resolve => {
+          let otherSprites = await getImage("sprites.png", pics);
+          let playerSprites = await getImage("player.png", pics);
+          let monsterSprites = await getImage("Monster1.png", pics);
+          let dragonSpritesSRC = await getImage("dragon.png", pics, 10);
+          let fireSpritesSRC = await getImage("fire.png", pics, 4);
+          let toFireSRC = await getImage("tofire.png", pics, 8);
+          
+          let result = applyChange(htmlFile,[
+            {
+              spot:"pictureComponentsToBeReplace",
+              value:self.processPictureComponent
+            },
+            {
+              spot:"textComponentsToBeReplace",
+              value:self.processTextComponent
+            },
+            {
+              spot:"startUpFacebackgroundStyleToBeReplaced",
+              value:self.backgroundStyle
+            },
+            {
+              spot:"startBtnStyleToBeReplace",
+              value:self.startUpBtn
+            },
+            {
+              spot:"startUpBtnTextToBeReplace",
+              value:self.startUpBtnText
+            },
+            {
+              spot:"gameLevelToBeReplaced",
+              value:self.levelMap.length == 0 ? gameLevel : self.levelMap
+            },
+            {
+              spot:"gameSettingsToBeReplaced",
+              value:self.levelSetting
+            },
+            {
+              spot:"globalSettingsToBeReplaced",
+              value:self.globalPlayerSetting
+            },
+            {
+              spot:"spritesToBeReplaced",
+              value:otherSprites
+            },
+            {
+              spot:"playerToBeReplaced",
+              value:playerSprites
+            },
+            {
+              spot:"monsterToBeReplaced",
+              value:monsterSprites
+            },
+            {
+              spot:"drgonToBeReplaced",
+              value:dragonSpritesSRC
+            },
+            {
+              spot:"fileToBeReplaced",
+              value:fireSpritesSRC
+            },
+            {
+              spot:"dragonToFireToBeReplaced",
+              value:toFireSRC
+            },
+          ])
+          resolve([result]);
 
-        htmlFile = replaceFile("spritesToBeReplaced", otherSprites);
-        htmlFile = replaceFile("playerToBeReplaced", playerSprites);
-        htmlFile = replaceFile("monsterToBeReplaced", monsterSprites);
-        htmlFile = replaceFile("drgonToBeReplaced", dragonSpritesSRC);
-        htmlFile = replaceFile("fileToBeReplaced", fireSpritesSRC);
-        htmlFile = replaceFile("dragonToFireToBeReplaced", toFireSRC);
-        htmlFile = replaceFile(
-          "gameLevelToBeReplaced",
-          self.levelMap.length == 0 ? gameLevel : self.levelMap
-        );
-        htmlFile = replaceFile("gameSettingsToBeReplaced", self.levelSetting);
-        htmlFile = replaceFile(
-          "globalSettingsToBeReplaced",
-          self.globalPlayerSetting
-        );
-
-        function getImage(name, requireContext, length) {
-          //获得每个图的url
-          if (length == undefined) {
-            //先用canvas画出来，使用toDataURL获得url，然后最后去除canvas和image。
-            let src = requireContext["./" + name];
-            if (src == undefined) throw new Error("no such image");
-            let image = new Image();
-            image.src = src;
-            let canvas = document.createElement("canvas");
-            canvas.width = image.width;
-            canvas.height = image.height;
-            let cx = canvas.getContext("2d");
-            document.body.appendChild(canvas);
-            cx.drawImage(image, 0, 0);
-            let url = canvas.toDataURL();
-            canvas.remove();
-            image.remove();
-            return url;
-          } else {
-            return Array.apply(null, { length: length }).map(function(
-              _,
-              index
-            ) {
-              let fileIndex = index + 1;
-              let fileName = name.replace(/[.]/, fileIndex + ".");
-              return getImage(fileName, requireContext);
-            });
+          function getImage(name, requireContext, length) {
+            //获得每个图的url
+            if (length == undefined) {
+              //先用canvas画出来，使用toDataURL获得url，然后最后去除canvas和image。
+              let src = requireContext["./" + name];
+              if (src == undefined) throw new Error("no such image");
+              let image = new Image();
+              image.src = src;
+              return new Promise(resolve => {
+                image.onload = () => {
+                  let canvas = document.createElement("canvas");
+                  canvas.width = image.width;
+                  canvas.height = image.height;
+                  let cx = canvas.getContext("2d");
+                  document.body.appendChild(canvas);
+                  cx.drawImage(image, 0, 0);
+                  let url = canvas.toDataURL();
+                  canvas.remove();
+                  image.remove();
+                  resolve(url);
+                };
+              });
+            } else {
+              return new Promise(resolve => {
+                let pictureGroup = Array.apply(null, { length: length }).map(
+                  function(_, index) {
+                    let fileIndex = index + 1;
+                    let fileName = name.replace(/[.]/, fileIndex + ".");
+                    return getImage(fileName, requireContext);
+                  }
+                );
+                Promise.all(pictureGroup).then(result=>resolve(result))
+              });
+            }
           }
-        }
-        function replaceFile(name, value) {
-          return htmlFile.replace(name, JSON.stringify(value));
-        }
-        return [htmlFile];
+          function applyChange(file,changes){
+            for (let change of changes){
+              file = file.replace(new RegExp(change.spot),JSON.stringify(change.value))
+            }
+            return file
+          }
+        });
       }
     }
   }
