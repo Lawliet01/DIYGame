@@ -8,7 +8,7 @@
           v-bind:style="startBtnStyle"
           v-on:mousedown="moveButton()"
           v-on:click="mode = 'startUpBtnEditing'"
-        >开始游戏</button>
+        >{{startUpBtnText}}</button>
         <picture-component
           v-for="(item,index) in pictureComponents"
           v-bind:key="'pictureComponents'+index"
@@ -26,6 +26,7 @@
         <button @click="addText()">添加文字</button>
         <button @click="addPicture()">添加图片</button>
         <button @click="mode = 'backgroundEditing'">修改背景</button>
+        <button @click="done()">完成</button>
       </div>
     </div>
 
@@ -165,6 +166,9 @@
 
         <!-- startUpBtn -->
         <div class="startUpBtnSetting" v-show="mode == 'startUpBtnEditing'">
+          <div class="startUpBtnText">
+            <input type="text" v-model="startUpBtnText">
+          </div>
           <div class="startUpBtnWidth">
             长
             <input
@@ -186,7 +190,8 @@
             >
           </div>
           <div class="startUpBtnBorderRadius">
-            边角<input
+            边角
+            <input
               type="range"
               min="0"
               max="200"
@@ -196,7 +201,8 @@
             >
           </div>
           <div class="startUpBtnBorderWidth">
-            边框<input
+            边框
+            <input
               type="range"
               min="0"
               max="15"
@@ -206,7 +212,8 @@
             >
           </div>
           <div class="startUpBtnFontSize">
-            字体<input
+            字体
+            <input
               type="range"
               min="10"
               max="100"
@@ -242,10 +249,20 @@ import Vue from "vue";
 import pictureComponent from "@/components/startUpAndEnd/pictureComponent";
 import textComponent from "@/components/startUpAndEnd/textComponent";
 import filterGroupMixin from "@/components/startUpAndEnd/filterGroup";
+import { mapState, mapMutations } from "vuex";
 
 export default {
   name: "startUpAndEndDesign",
   mixins: [filterGroupMixin],
+  created() {
+    if (this.startUpBtnFromVuex.left === undefined) return;
+    //二次进入时获取数据
+    this.startBtnStyle = JSON.parse(JSON.stringify(this.startUpBtnFromVuex))
+    this.pictureComponents = JSON.parse(JSON.stringify(this.pictureComponentsFormVuex))
+    this.textComponents = JSON.parse(JSON.stringify(this.textComponentsFormVuex));
+    this.backgroundStyle = JSON.parse(JSON.stringify(this.backgroundStyleFromVuex));
+    this.startUpBtnText = this.startUpBtnTextFromVuex;
+  },
   components: {
     pictureComponent,
     textComponent
@@ -254,8 +271,8 @@ export default {
     return {
       pictureComponents: [],
       textComponents: [],
-      currentPictureFocus: 0,
-      currentTextFocus: 0,
+      currentPictureFocus: -1,
+      currentTextFocus: -1,
       mode: "none",
       backgroundStyle: {
         backgroundImage: "",
@@ -272,10 +289,11 @@ export default {
         color: "#000000",
         backgroundColor: "#ffffff",
         borderWidth: "1px",
-        borderColor:"#0000ff",
+        borderColor: "#0000ff",
         fontSize: "20px",
-        zIndex:0
-      }
+        zIndex: 0
+      },
+      startUpBtnText: "开始游戏"
     };
   },
   watch: {
@@ -296,7 +314,31 @@ export default {
         this.mode == "textEditing" ? this.currentTextFocus : -1;
     }
   },
+  computed: {
+    //注入方法
+    ...mapState("startUpFace", {
+      startUpBtnFromVuex: "startUpBtn",
+      pictureComponentsFormVuex: "pictureComponents",
+      textComponentsFormVuex: "textComponents",
+      backgroundStyleFromVuex: "backgroundStyle",
+      startUpBtnTextFromVuex: "startUpBtnText"
+    })
+  },
   methods: {
+    ...mapMutations("startUpFace", {
+      uploadDataToVuex: "changeData",
+      restart:"restart"
+    }),
+    done() {
+      //上传数据
+      this.restart();
+      this.uploadDataToVuex({
+        startUpBtn: this.startBtnStyle,
+        backgroundStyle: this.backgroundStyle,
+        startUpBtnText: this.startUpBtnText
+      });
+      this.$router.push("/entireGame");
+    },
     pixelTypeTransfer(value) {
       if (typeof value == "string") {
         return Number(value.match(/-?\d+/)[0]);

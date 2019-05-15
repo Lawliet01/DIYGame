@@ -79,12 +79,54 @@ let gameLevel = {
       })
     }
   }
+}
 
+let startUpFace = {
+  namespaced:true,
+  state:{
+    startUpBtn:Object.create(null),
+    pictureComponents:[],
+    textComponents:[],
+    backgroundStyle: Object.create(null),
+    startUpBtnText:"",
+  },
+  getters:{
+    getComponentPropertyByIndex:(state)=>(type,index)=>{
+      if (type === 'text'){
+        return state.textComponents[index]
+      }else if (type === 'picture'){
+        return state.pictureComponents[index]
+      }else{
+        throw new Error('no such type')
+      }
+    }
+  },
+  mutations:{
+    addPictureComponents(state,style){
+      style.index = state.pictureComponents.length;
+      state.pictureComponents.push(style)
+    },
+    addTextComponents(state,style){
+      style.index = state.textComponents.length;
+      state.textComponents.push(style)
+    },
+    restart(state){
+      state.pictureComponents = [];
+      state.textComponents = [];
+    },
+    changeData(state,style){
+      for (let key in style){
+        if (state[key] == undefined) throw new Error('no such keys')
+        state[key] = style[key]
+      }
+    }
+  }
 }
 
 export default new Vuex.Store({
   modules:{
     playerFigure,
-    gameLevel
+    gameLevel,
+    startUpFace,
   }
 })

@@ -1,7 +1,7 @@
 <template>
   <div
     class="textComponent"
-    v-on:mousedown.stop.prevent="moveComponent($event)"
+    v-on:mousedown.stop="moveComponent($event)"
     v-bind:style="style"
     v-on:click="$emit('change-textFocus',index)"
     v-if="!destroy"
@@ -9,32 +9,49 @@
     <div
       v-on:click="editText()"
       v-bind:contenteditable="editable"
-      v-on:blur="editable=false"
-    >双击编辑</div>
+      v-on:blur="saveText($event.target.textContent)"
+    >{{textContent}}</div>
   </div>
 </template>
 
 <script>
 import componentMixin from "@/components/startUpAndEnd/componentMixin";
+import {mapGetters} from "vuex"
 
 export default {
   name: "textComponent",
   mixins: [componentMixin],
+  created(){
+    let componentProperties = this.getComponentPropertyByIndex('text',this.index) ;
+    if (componentProperties === undefined) return;
+    console.log('done');
+    
+    this.pos.left = componentProperties.left;
+    this.pos.top = componentProperties.top;
+    this.textContent = componentProperties.textContent;
+  },
+  beforeDestroy(){
+    if(this.destroy == true) return;
+    const rawStyle = Object.assign({},this.$props,this.$data.pos,{textContent:this.$data.textContent})
+    this.$store.commit('startUpFace/addTextComponents',rawStyle)
+  },
   props: {
     fontSize: Number,
     color: String
   },
   data: function() {
     return {
-      editable: false
+      editable: false,
+      textContent:"双击编辑"
     };
   },
   computed: {
+    ...mapGetters('startUpFace',['getComponentPropertyByIndex']),
     style() {
       return {
         top: this.pos.top + "px",
         left: this.pos.left + "px",
-        border: this.currentFocus == this.index ? "2px solid blue" : "none",
+        border: this.currentFocus == this.index ? "2px solid red" : "none",
         fontSize: this.fontSize + "px",
         color: this.color,
         opacity: this.opacity,
@@ -47,6 +64,10 @@ export default {
     editText() {
       event.target.focus();
       this.editable = true;
+    },
+    saveText(content){
+      this.editable=false;
+      this.textContent = content;
     }
   }
 };

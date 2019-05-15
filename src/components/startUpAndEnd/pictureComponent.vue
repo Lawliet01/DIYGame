@@ -12,11 +12,27 @@
 
 <script>
 import componentMixin from "@/components/startUpAndEnd/componentMixin";
+import { mapGetters } from "vuex";
 
 export default {
   name: "pictureComponent",
   mixins: [componentMixin],
+  created() {
+    let componentProperties = this.getComponentPropertyByIndex(
+      "picture",
+      this.index
+    );
+    if (componentProperties === undefined) return;
+    this.pos.left = componentProperties.left;
+    this.pos.top = componentProperties.top;
+  },
+  beforeDestroy() {
+    if (this.destroy == true) return;
+    const rawStyle = Object.assign({}, this.$props, this.$data.pos);
+    this.$store.commit("startUpFace/addPictureComponents", rawStyle);
+  },
   computed: {
+    ...mapGetters("startUpFace", ["getComponentPropertyByIndex"]),
     style() {
       return {
         top: this.pos.top + "px",
@@ -35,7 +51,7 @@ export default {
       type: String
     },
     filter: { type: String },
-    width: { type: Number },
+    width: { type: Number }
   }
 };
 </script>
