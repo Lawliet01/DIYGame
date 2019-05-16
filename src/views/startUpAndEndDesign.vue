@@ -28,8 +28,13 @@ export default {
 
 <style scoped lang='scss'>
 
+#startUpAndEndFace{
+  padding-top:50px;
+
+}
+
 .faceSelected{
-  color:blue;
+  color:red;
   font-weight:900
 }
 
@@ -37,7 +42,6 @@ export default {
   div{
     display: inline;
     &:hover{
-      color:blue;
       text-decoration:underline;
       cursor: pointer;
     }

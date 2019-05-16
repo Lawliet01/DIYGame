@@ -1,5 +1,15 @@
 <template>
   <div id="entireGame">
+    <!-- 按键组 -->
+    <div class="btnGroup">
+      <button @click="goToPlayerFigureDesign()" class="playerFigureDesign">人物形象设计</button>
+      <button @click="goToGameDesign()">游戏级别设计</button>
+      <button @click="goToStartUpAndEndDesign()">开始结束界面设计</button>
+      <button @click="reset()">{{!gameEnd?'结束游戏':'重置游戏'}}</button>
+      <button @click="downloadTheGame()">完成并下载</button>
+    </div>
+
+    <!-- 开始界面 -->
     <div class="startUpFace" v-bind:style="backgroundStyle" v-if="runningGame==null">
       <button v-bind:style="startUpBtn" v-on:click="startGame()">{{startUpBtnText}}</button>
       <div
@@ -17,7 +27,10 @@
         <img :src="item.url" :width="item.width">
       </div>
     </div>
+
+    <!-- 结束界面 -->
     <div class="endFace" v-bind:style="endBackgroundStyle" v-if="gameEnd">
+      <pre class="textFlow" v-bind:style="textFlowRealTimeStyle">{{endProcessTextFlow.textContent}}</pre>
       <div
         class="textItem"
         v-for="(item,index) in endProcessTextComponent"
@@ -34,11 +47,6 @@
       </div>
     </div>
     <div class="gameContainer"></div>
-    <button @click="goToPlayerFigureDesign()" class="playerFigureDesign">人物形象设计</button>
-    <button @click="goToGameDesign()">游戏级别设计</button>
-    <button @click="goToStartUpAndEndDesign()">开始结束界面设计</button>
-    <button @click="downloadTheGame()">完成并下载</button>
-    
   </div>
 </template>
 
@@ -65,11 +73,55 @@ export default {
     this.runningGame.stopGame();
     next();
   },
+  mounted() {
+    this.textFlowRealTimeStyle = JSON.parse(
+      JSON.stringify(this.endProcessTextFlow.style)
+    );
+  },
   data: function() {
     return {
       runningGame: null,
-      gameEnd:false,
+      gameEnd: false,
+      textFlowRealTimeStyle: null
     };
+  },
+  watch: {
+    gameEnd() {
+      if (this.gameEnd == false) return;
+      let {
+        animation,
+        animationTime,
+        animationDistance,
+        animationDir
+      } = this.endProcessTextFlow.animate;
+      if (animation == false || animationTime == 0 || animationDistance == 0)
+        return;
+      let time = animationTime * 1000;
+      let start = 0;
+      if (animationDir == "top" || animationDir == "bottom") {
+        let distance =
+          animationDir == "top" ? -1 * animationDistance : animationDistance;
+        let animate = setInterval(() => {
+          this.textFlowRealTimeStyle.top =
+            this.pixelTypeTransfer(this.textFlowRealTimeStyle.top) +
+            (distance / time) * 60 +
+            "px";
+          start += 60;
+          if (start > time) clearInterval(animate);
+        }, 60);
+      } else {
+        let distance =
+          animationDir == "left" ? -1 * animationDistance : animationDistance;
+        let animate = setInterval(() => {
+          this.textFlowRealTimeStyle.left =
+            this.pixelTypeTransfer(this.textFlowRealTimeStyle.left) +
+            (distance / time) * 60 +
+            "px";
+          start += 60;
+          if (start > time) clearInterval(animate);
+        }, 60);
+      }
+    }
   },
   computed: {
     ...mapState("gameLevel", [
@@ -88,14 +140,14 @@ export default {
       "processTextComponent",
       "processPictureComponent"
     ]),
-     ...mapState("endFace", {
-      endBackgroundStyle:"backgroundStyle",
-     }),
-    ...mapGetters("endFace", {
-      endProcessTextComponent:"processTextComponent",
-      endProcessPictureComponent:"processPictureComponent"
+    ...mapState("endFace", {
+      endBackgroundStyle: "backgroundStyle"
     }),
-
+    ...mapGetters("endFace", {
+      endProcessTextComponent: "processTextComponent",
+      endProcessPictureComponent: "processPictureComponent",
+      endProcessTextFlow: "processTextFlow"
+    }),
     gameContainer() {
       return document.querySelector(".gameContainer");
     },
@@ -108,6 +160,24 @@ export default {
     }
   },
   methods: {
+    reset() {
+      if (this.gameEnd == true) {
+        //游戏已经结束
+        this.gameEnd = false;
+        this.runningGame = null;
+        return;
+      } else {
+        //游戏正在进行中或还没有开始
+        if (this.runningGame != null) this.runningGame.stopGame();
+      }
+    },
+    pixelTypeTransfer(value) {
+      if (typeof value == "string") {
+        return Number(value.match(/-?\d+/)[0]);
+      } else {
+        return value + "px";
+      }
+    },
     async startGame() {
       let levelMap = this.levelMap.length == 0 ? gameLevel : this.levelMap;
       this.runningGame = new Game(this.gameContainer);
@@ -148,65 +218,89 @@ export default {
           let dragonSpritesSRC = await getImage("dragon.png", pics, 10);
           let fireSpritesSRC = await getImage("fire.png", pics, 4);
           let toFireSRC = await getImage("tofire.png", pics, 8);
-          
-          let result = applyChange(htmlFile,[
+
+          let result = applyChange(htmlFile, [
             {
-              spot:"pictureComponentsToBeReplace",
-              value:self.processPictureComponent
+              spot: "endFacebackgroundStyleToBeReplaced",
+              value: self.endBackgroundStyle
             },
             {
-              spot:"textComponentsToBeReplace",
-              value:self.processTextComponent
+              spot: "textFlowStyleFromVuexToBeReplaced",
+              value: self.endProcessTextFlow.style
             },
             {
-              spot:"startUpFacebackgroundStyleToBeReplaced",
-              value:self.backgroundStyle
+              spot: "textFlowAnimationFromVuexToBeReplaced",
+              value: self.endProcessTextFlow.animate
             },
             {
-              spot:"startBtnStyleToBeReplace",
-              value:self.startUpBtn
+              spot: "textFlowContentToBeReplaced",
+              value: self.endProcessTextFlow.textContent
             },
             {
-              spot:"startUpBtnTextToBeReplace",
-              value:self.startUpBtnText
+              spot: "endTextComponentsToBeReplace",
+              value: self.endProcessTextComponent
             },
             {
-              spot:"gameLevelToBeReplaced",
-              value:self.levelMap.length == 0 ? gameLevel : self.levelMap
+              spot: "endPictureComponentsToBeReplace",
+              value: self.endProcessPictureComponent
             },
             {
-              spot:"gameSettingsToBeReplaced",
-              value:self.levelSetting
+              spot: "pictureComponentsToBeReplace",
+              value: self.processPictureComponent
             },
             {
-              spot:"globalSettingsToBeReplaced",
-              value:self.globalPlayerSetting
+              spot: "textComponentsToBeReplace",
+              value: self.processTextComponent
             },
             {
-              spot:"spritesToBeReplaced",
-              value:otherSprites
+              spot: "startUpFacebackgroundStyleToBeReplaced",
+              value: self.backgroundStyle
             },
             {
-              spot:"playerToBeReplaced",
-              value:playerSprites
+              spot: "startBtnStyleToBeReplace",
+              value: self.startUpBtn
             },
             {
-              spot:"monsterToBeReplaced",
-              value:monsterSprites
+              spot: "startUpBtnTextToBeReplace",
+              value: self.startUpBtnText
             },
             {
-              spot:"drgonToBeReplaced",
-              value:dragonSpritesSRC
+              spot: "gameLevelToBeReplaced",
+              value: self.levelMap.length == 0 ? gameLevel : self.levelMap
             },
             {
-              spot:"fileToBeReplaced",
-              value:fireSpritesSRC
+              spot: "gameSettingsToBeReplaced",
+              value: self.levelSetting
             },
             {
-              spot:"dragonToFireToBeReplaced",
-              value:toFireSRC
+              spot: "globalSettingsToBeReplaced",
+              value: self.globalPlayerSetting
             },
-          ])
+            {
+              spot: "spritesToBeReplaced",
+              value: otherSprites
+            },
+            {
+              spot: "playerToBeReplaced",
+              value: playerSprites
+            },
+            {
+              spot: "monsterToBeReplaced",
+              value: monsterSprites
+            },
+            {
+              spot: "drgonToBeReplaced",
+              value: dragonSpritesSRC
+            },
+            {
+              spot: "fileToBeReplaced",
+              value: fireSpritesSRC
+            },
+            {
+              spot: "dragonToFireToBeReplaced",
+              value: toFireSRC
+            }
+          ]);
           resolve([result]);
 
           function getImage(name, requireContext, length) {
@@ -240,15 +334,18 @@ export default {
                     return getImage(fileName, requireContext);
                   }
                 );
-                Promise.all(pictureGroup).then(result=>resolve(result))
+                Promise.all(pictureGroup).then(result => resolve(result));
               });
             }
           }
-          function applyChange(file,changes){
-            for (let change of changes){
-              file = file.replace(new RegExp(change.spot),JSON.stringify(change.value))
+          function applyChange(file, changes) {
+            for (let change of changes) {
+              file = file.replace(
+                new RegExp(change.spot),
+                JSON.stringify(change.value)
+              );
             }
-            return file
+            return file;
           }
         });
       }
@@ -260,19 +357,33 @@ export default {
 <style lang="scss" scoped>
 @import "../lib/_consistentStyle";
 
+#entireGame{
+  padding-top:50px;
+}
+
 .gameContainer {
   padding: 0;
 }
 
-button {
-  @include buttonStyle(150px, 25px);
-  margin: 0px 5px;
+.btnGroup {
+  width:700px;
+  min-width: 700px;
+  margin: auto;
+  button {
+    @include buttonStyle(20%, 25px);
+    border-radius: 0px;
+    background-color: white;
+    &:hover{
+      outline: none
+    }
+  }
 }
 
 .startUpFace {
   margin: auto;
   position: relative;
-  width: 700px;
+  width:700px;
+  min-width: 700px;
   height: 400px;
   overflow: hidden;
   background-position: center;
@@ -284,9 +395,9 @@ button {
   }
 }
 
-.endFace{
-    @extend .startUpFace
-  }
+.endFace {
+  @extend .startUpFace;
+}
 </style>
 
 

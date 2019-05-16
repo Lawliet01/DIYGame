@@ -18,10 +18,10 @@ export default {
   name: "pictureComponent",
   mixins: [componentMixin],
   created() {
-    let componentProperties = this.face=="start"?this.getComponentPropertyByIndex(
-      "picture",
-      this.index
-    ):this.endGetComponentPropertyByIndex("picture",this.index)
+    let componentProperties =
+      this.face == "start"
+        ? this.getComponentPropertyByIndex("picture", this.index)
+        : this.endGetComponentPropertyByIndex("picture", this.index);
     if (componentProperties === undefined) return;
     this.pos.left = componentProperties.left;
     this.pos.top = componentProperties.top;
@@ -29,15 +29,17 @@ export default {
   beforeDestroy() {
     if (this.destroy == true) return;
     const rawStyle = Object.assign({}, this.$props, this.$data.pos);
-    if (this.face == 'start'){
+    if (this.face == "start") {
       this.$store.commit("startUpFace/addPictureComponents", rawStyle);
-    }else if (this.face =='end'){
+    } else if (this.face == "end") {
       this.$store.commit("endFace/addPictureComponents", rawStyle);
     }
   },
   computed: {
     ...mapGetters("startUpFace", ["getComponentPropertyByIndex"]),
-    ...mapGetters("startUpFace", {endGetComponentPropertyByIndex:"getComponentPropertyByIndex"}),
+    ...mapGetters("endFace", {
+      endGetComponentPropertyByIndex: "getComponentPropertyByIndex"
+    }),
     style() {
       return {
         top: this.pos.top + "px",

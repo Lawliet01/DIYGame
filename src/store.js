@@ -5,27 +5,27 @@ import defaultGameMap from './lib/gameLevel'
 Vue.use(Vuex)
 
 let playerFigure = {
-  namespaced:true,
+  namespaced: true,
   state: {
     //存储的是能拿来渲染的image的数据
     imgData: null,
-    width:null,
-    height:null,
-    x:0,
-    y:0,
-    src:null,
+    width: null,
+    height: null,
+    x: 0,
+    y: 0,
+    src: null,
   },
   mutations: {
-    uploadImgData(state, valuePair){
+    uploadImgData(state, valuePair) {
       Object.keys(valuePair).forEach(key => {
         state[key] = valuePair[key]
       })
     },
-    uploadImgSrc(state,src){
+    uploadImgSrc(state, src) {
       state.src = src
     },
-    clearAll(state){
-      Object.keys(state).forEach(key=>{
+    clearAll(state) {
+      Object.keys(state).forEach(key => {
         state[key] = null
       })
     }
@@ -33,48 +33,48 @@ let playerFigure = {
 };
 
 let gameLevel = {
-  namespaced:true,
-  state:{
-    levelMap:[],
-    levelSetting:[],
-    currentLevel:0,
-    structureDesign:false,
-    globalPlayerSetting:{
-      lives:3,
-      size:1,
-      speed:7,
-      jumpSpeed:17,
-      playerSprites:null
+  namespaced: true,
+  state: {
+    levelMap: [],
+    levelSetting: [],
+    currentLevel: 0,
+    structureDesign: false,
+    globalPlayerSetting: {
+      lives: 3,
+      size: 1,
+      speed: 7,
+      jumpSpeed: 17,
+      playerSprites: null
     }
   },
-  mutations:{
-    addLevel(state){
+  mutations: {
+    addLevel(state) {
       state.levelMap.push(defaultGameMap[0]);
-      state.levelSetting.push({ 
-        backgroundColor:'#34a6fb',
-        backgroundImage:null
+      state.levelSetting.push({
+        backgroundColor: '#34a6fb',
+        backgroundImage: null
       })
-      state.currentLevel = state.levelMap.length -1
+      state.currentLevel = state.levelMap.length - 1
     },
-    changeGameMap(state,newMap){
+    changeGameMap(state, newMap) {
       //看看是否需要注意响应式属性的问题
-      if (typeof newMap != 'string') throw new Error('the map not a string' + newMap )
-      Vue.set(state.levelMap,state.currentLevel,newMap)
+      if (typeof newMap != 'string') throw new Error('the map not a string' + newMap)
+      Vue.set(state.levelMap, state.currentLevel, newMap)
     },
-    changeLevel(state,newLevel){
+    changeLevel(state, newLevel) {
       state.currentLevel = newLevel
     },
-    toggleStructureDesign(state){
+    toggleStructureDesign(state) {
       state.structureDesign = !state.structureDesign
     },
-    changeBackgroundColor(state,color){
+    changeBackgroundColor(state, color) {
       state.levelSetting[state.currentLevel].backgroundColor = color
     },
-    changeBackgroundImage(state,image){
+    changeBackgroundImage(state, image) {
       state.levelSetting[state.currentLevel].backgroundImage = image
     },
-    changeGlobalPlayerSetting(state,valuePair){
-      Object.keys(valuePair).forEach(key=>{
+    changeGlobalPlayerSetting(state, valuePair) {
+      Object.keys(valuePair).forEach(key => {
         state.globalPlayerSetting[key] = valuePair[key]
       })
     }
@@ -151,8 +151,8 @@ const startUpFaceMutations = {
 }
 
 let startUpFace = {
-  namespaced:true,
-  state:{
+  namespaced: true,
+  state: {
     startUpBtn: {
       left: "300px",
       top: "150px",
@@ -166,50 +166,73 @@ let startUpFace = {
       fontSize: "20px",
       zIndex: 0
     },
-    pictureComponents:[],
-    textComponents:[],
-    backgroundStyle: {
-      backgroundImage: "",
-      backgroundColor: "#000000",
-      backgroundSize: "700px 400px",
-      backgroundRepeat: "no-repeat"
-    },
-    startUpBtnText: "开始游戏",
-  },
-  getters:startUpAndEndFaceGetters,
-  mutations:startUpFaceMutations
-}
-
-let endFace = {
-  namespaced:true,
-  state:{
     pictureComponents: [],
     textComponents: [],
     backgroundStyle: {
       backgroundImage: "",
       backgroundColor: "#000000",
       backgroundSize: "700px 400px",
-      backgroundRepeat: "no-repeat"
+      backgroundRepeat: "no-repeat",
+      
     },
-    textFlowStyle:{
-      top:"150px",
-      left:"225px",
-      fontSize:"20px",
-      color:'#ff0000',
-      animation:false,
-      animationTime:0,
-      animationDir:'top',
-      animationDistance:0,
-    },
-    textFlowText:"结束的话"
+    startUpBtnText: "开始游戏",
   },
   getters: startUpAndEndFaceGetters,
   mutations: startUpFaceMutations
 }
 
+let endFace = {
+  namespaced: true,
+  state: {
+    pictureComponents: [],
+    textComponents: [],
+    backgroundStyle: {
+      backgroundImage: "",
+      backgroundColor: "#000000",
+      backgroundSize: "700px 400px",
+      backgroundRepeat: "no-repeat",
+    },
+    textFlowStyle: {
+      //top left存储的是实时位置
+      //startTop startLeft是有动画时候的初始位置
+      top: "150px",
+      left: "225px",
+      fontSize: "20px",
+      color: '#ff0000',
+      animation: false,
+      animationTime: 0,
+      animationDir: 'top',
+      animationDistance: 0,
+    },
+    textFlowText: "结束的话"
+  },
+  getters: Object.assign({}, startUpAndEndFaceGetters, {
+    processTextFlow: (state) => {
+      return {
+        style: {
+          position: 'absolute',
+          top: state.textFlowStyle.top,
+          left: state.textFlowStyle.left,
+          fontSize: state.textFlowStyle.fontSize,
+          color: state.textFlowStyle.color,
+          zIndex:1000,
+        },
+        animate: {
+          animation: state.textFlowStyle.animation,
+          animationTime: state.textFlowStyle.animationTime,
+          animationDir: state.textFlowStyle.animationDir,
+          animationDistance: state.textFlowStyle.animationDistance,
+        },
+        textContent: state.textFlowText
+      }
+    }
+  }),
+  mutations: startUpFaceMutations
+}
+
 export default new Vuex.Store({
-  strict:process.env.NODE_ENV!=='production',
-  modules:{
+  strict: process.env.NODE_ENV !== 'production',
+  modules: {
     playerFigure,
     gameLevel,
     startUpFace,

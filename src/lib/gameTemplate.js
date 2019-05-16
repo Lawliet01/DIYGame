@@ -773,14 +773,19 @@ class Game {
     this.size = 1;
     this.jumpSpeed = 17;
   }
-      async runGame(plans, levelSettings = [], globalSettings) {
-         this.totalLevel = plans.length;
+   async runGame(plans, levelSettings = [], globalSettings) {
+      return new Promise(async (resolve) => {
+         //更改全球设置
          if (globalSettings != undefined) {
-            this.mutate(globalSettings) //更改全球设置
+            this.mutate(globalSettings)
          }
+         let startLives = this.lives
+         this.totalLevel = plans.length;
          for (let level = 0; level < plans.length;) {
+            //重置属性
             this.backgroundImage = null;
             this.level = level;
+            //修改级别属性
             if (levelSettings.length > 0) {
                this.mutate(levelSettings[level])
             }
@@ -790,13 +795,13 @@ class Game {
             } else {
                this.lives--;
             }
-            if (this.lives == 0) break;
+            if (this.lives == 0) {
+               level = 0;
+               this.lives = startLives;
+            }
          }
-         if (this.lives > 0) {
-            console.log("You've won!");
-         } else {
-            console.log("Game over");
-         }
+         resolve('won')
+      })
       }
       mutate(valueToBeMutated) {
          let keys = Object.keys(valueToBeMutated);
@@ -841,6 +846,15 @@ class Game {
   let textComponents = textComponentsToBeReplace
   let pictureComponents = pictureComponentsToBeReplace
 
+
+  let endFacebackgroundStyle = endFacebackgroundStyleToBeReplaced
+  let textFlowStyleFromVuex = textFlowStyleFromVuexToBeReplaced
+  let textFlowAnimationFromVuex = textFlowAnimationFromVuexToBeReplaced
+  let textFlowContent = textFlowContentToBeReplaced
+  let endTextComponents = endTextComponentsToBeReplace
+  let endPictureComponents = endPictureComponentsToBeReplace
+ 
+  //开头界面部分
   let startUpFaceStyle = Object.assign({},startUpFacebackgroundStyle,{
     margin: "auto",
     position: "relative",
@@ -854,9 +868,11 @@ class Game {
 
   let startBtnProps = {
     type:'button',
-    onclick:()=>{
+    onclick: async ()=>{
       document.querySelector('.startUpFaceContainer').remove()
-      new Game(document.querySelector('#game')).runGame(GAME_LEVELS,gameSettings,globalSettings);
+      await new Game(document.querySelector('#game')).runGame(GAME_LEVELS,gameSettings,globalSettings);
+      document.body.appendChild(endFaceContainer)
+      return endFaceAnimation()
     }
   }
 
@@ -869,6 +885,69 @@ class Game {
   let startBtn = elt('button', startBtnProps,startBtnStyle,startUpBtnText)
   let startUpFaceContainer = elt('div', {className:'startUpFaceContainer'},startUpFaceStyle, startBtn,...textDom,...pictureDom)
   document.body.appendChild(startUpFaceContainer)
+
+   //结尾界面部分
+  let endFaceStyle = Object.assign({},endFacebackgroundStyle,{
+    margin: "auto",
+    position: "relative",
+    width: "700px",
+    height: "400px",
+    overflow: "hidden",
+    backgroundPosition: "center",
+  })
+  let endPictureDom = endPictureComponents.map(component=>{
+    return elt('div',null,component.style,elt('img',{src:component.url,width:component.width}))
+   })
+  let endTextDom = endTextComponents.map(component=>{
+    return elt('div',null,component.style,component.textContent);
+  }) 
+
+  let textFlowDom = elt('pre',null,textFlowStyleFromVuex,textFlowContent);
+  let endFaceContainer = elt('div',{className:'endFaceContainer'},endFaceStyle,textFlowDom,...endTextDom,...endPictureDom)
+
+  function pixelTypeTransfer(value) {
+      if (typeof value == "string") {
+        return Number(value.match(/-?\\d+/)[0]);
+      } else {
+        return value + "px";
+      }
+   }
+
+  function endFaceAnimation(){
+     let {
+        animation,
+        animationTime,
+        animationDistance,
+        animationDir
+      } = textFlowAnimationFromVuex
+      if (animation == false || animationTime == 0 || animationDistance == 0)
+        return;
+      let time = animationTime * 1000;
+      let start = 0;
+      if (animationDir == "top" || animationDir == "bottom") {
+        let distance =
+          animationDir == "top" ? -1 * animationDistance : animationDistance;
+        let animate = setInterval(() => {
+          textFlowDom.style.top =
+            pixelTypeTransfer(textFlowDom.style.top) +
+            (distance / time) * 60 +
+            "px";
+          start += 60;
+          if (start > time) clearInterval(animate);
+        }, 60);
+      } else {
+        let distance =
+          animationDir == "left" ? -1 * animationDistance : animationDistance;
+        let animate = setInterval(() => {
+          textFlowDom.style.left =
+            pixelTypeTransfer(textFlowDom.style.left) +
+            (distance / time) * 60 +
+            "px";
+          start += 60;
+          if (start > time) clearInterval(animate);
+        }, 60);
+      }
+  }
 
 </script >
 
