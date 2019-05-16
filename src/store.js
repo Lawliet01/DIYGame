@@ -81,6 +81,75 @@ let gameLevel = {
   }
 }
 
+const startUpAndEndFaceGetters = {
+  getComponentPropertyByIndex: (state) => (type, index) => {
+    if (type === 'text') {
+      return state.textComponents[index]
+    } else if (type === 'picture') {
+      return state.pictureComponents[index]
+    } else {
+      throw new Error('no such type')
+    }
+  },
+  //可直接使用的style
+  processTextComponent: (state) => {
+    return state.textComponents.map(component => {
+      return {
+        style: {
+          top: component.top + "px",
+          left: component.left + "px",
+          fontSize: component.fontSize + "px",
+          color: component.color,
+          opacity: component.opacity,
+          transform: `rotate(${component.rotate}deg)`,
+          zIndex: component.zIndex,
+          position: "absolute"
+        },
+        textContent: component.textContent
+      }
+    })
+  },
+  //可直接使用的style
+  processPictureComponent: (state) => {
+    return state.pictureComponents.map(component => {
+      return {
+        style: {
+          top: component.top + "px",
+          left: component.left + "px",
+          opacity: component.opacity,
+          transform: `rotate(${component.rotate}deg)`,
+          zIndex: component.zIndex,
+          filter: component.filter,
+          position: "absolute"
+        },
+        url: component.url,
+        width: component.width
+      }
+    })
+  }
+}
+
+const startUpFaceMutations = {
+  addPictureComponents(state, style) {
+    style.index = state.pictureComponents.length;
+    state.pictureComponents.push(style)
+  },
+  addTextComponents(state, style) {
+    style.index = state.textComponents.length;
+    state.textComponents.push(style)
+  },
+  restart(state) {
+    state.pictureComponents = [];
+    state.textComponents = [];
+  },
+  changeData(state, style) {
+    for (let key in style) {
+      if (state[key] == undefined) throw new Error('no such keys')
+      state[key] = style[key]
+    }
+  }
+}
+
 let startUpFace = {
   namespaced:true,
   state:{
@@ -107,79 +176,43 @@ let startUpFace = {
     },
     startUpBtnText: "开始游戏",
   },
-  getters:{
-    getComponentPropertyByIndex:(state)=>(type,index)=>{
-      if (type === 'text'){
-        return state.textComponents[index]
-      }else if (type === 'picture'){
-        return state.pictureComponents[index]
-      }else{
-        throw new Error('no such type')
-      }
+  getters:startUpAndEndFaceGetters,
+  mutations:startUpFaceMutations
+}
+
+let endFace = {
+  namespaced:true,
+  state:{
+    pictureComponents: [],
+    textComponents: [],
+    backgroundStyle: {
+      backgroundImage: "",
+      backgroundColor: "#000000",
+      backgroundSize: "700px 400px",
+      backgroundRepeat: "no-repeat"
     },
-    //可直接使用的style
-    processTextComponent:(state)=>{
-      return state.textComponents.map(component=>{
-        return {
-          style:{
-            top: component.top + "px",
-            left: component.left + "px",
-            fontSize: component.fontSize + "px",
-            color: component.color,
-            opacity: component.opacity,
-            transform: `rotate(${component.rotate}deg)`,
-            zIndex: component.zIndex,
-            position: "absolute"
-          },
-          textContent:component.textContent
-        }
-      })
+    textFlowStyle:{
+      top:"150px",
+      left:"225px",
+      fontSize:"20px",
+      color:'#ff0000',
+      animation:false,
+      animationTime:0,
+      animationDir:'top',
+      animationDistance:0,
     },
-    //可直接使用的style
-    processPictureComponent:(state)=>{
-      return state.pictureComponents.map(component=>{
-        return {
-          style:{
-            top: component.top + "px",
-            left: component.left + "px",
-            opacity: component.opacity,
-            transform: `rotate(${component.rotate}deg)`,
-            zIndex: component.zIndex,
-            filter: component.filter,
-            position: "absolute"
-          },
-          url:component.url,
-          width:component.width
-        }
-      })
-    }
+    textFlowText:"结束的话"
   },
-  mutations:{
-    addPictureComponents(state,style){
-      style.index = state.pictureComponents.length;
-      state.pictureComponents.push(style)
-    },
-    addTextComponents(state,style){
-      style.index = state.textComponents.length;
-      state.textComponents.push(style)
-    },
-    restart(state){
-      state.pictureComponents = [];
-      state.textComponents = [];
-    },
-    changeData(state,style){
-      for (let key in style){
-        if (state[key] == undefined) throw new Error('no such keys')
-        state[key] = style[key]
-      }
-    }
-  }
+  getters: startUpAndEndFaceGetters,
+  mutations: startUpFaceMutations
 }
 
 export default new Vuex.Store({
+  strict:process.env.NODE_ENV!=='production',
   modules:{
     playerFigure,
     gameLevel,
     startUpFace,
+    endFace
   }
 })

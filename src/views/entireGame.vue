@@ -17,11 +17,28 @@
         <img :src="item.url" :width="item.width">
       </div>
     </div>
+    <div class="endFace" v-bind:style="endBackgroundStyle" v-if="gameEnd">
+      <div
+        class="textItem"
+        v-for="(item,index) in endProcessTextComponent"
+        :key="'textItem' + index"
+        :style="item.style"
+      >{{item.textContent}}</div>
+      <div
+        class="imgItem"
+        v-for="(item,index) in endProcessPictureComponent"
+        :key="'pictureItem' + index"
+        :style="item.style"
+      >
+        <img :src="item.url" :width="item.width">
+      </div>
+    </div>
     <div class="gameContainer"></div>
     <button @click="goToPlayerFigureDesign()" class="playerFigureDesign">人物形象设计</button>
     <button @click="goToGameDesign()">游戏级别设计</button>
     <button @click="goToStartUpAndEndDesign()">开始结束界面设计</button>
     <button @click="downloadTheGame()">完成并下载</button>
+    
   </div>
 </template>
 
@@ -50,7 +67,8 @@ export default {
   },
   data: function() {
     return {
-      runningGame: null
+      runningGame: null,
+      gameEnd:false,
     };
   },
   computed: {
@@ -63,7 +81,6 @@ export default {
     ]),
     ...mapState("startUpFace", [
       "startUpBtn",
-      "pictureComponents",
       "backgroundStyle",
       "startUpBtnText"
     ]),
@@ -71,6 +88,14 @@ export default {
       "processTextComponent",
       "processPictureComponent"
     ]),
+     ...mapState("endFace", {
+      endBackgroundStyle:"backgroundStyle",
+     }),
+    ...mapGetters("endFace", {
+      endProcessTextComponent:"processTextComponent",
+      endProcessPictureComponent:"processPictureComponent"
+    }),
+
     gameContainer() {
       return document.querySelector(".gameContainer");
     },
@@ -83,14 +108,15 @@ export default {
     }
   },
   methods: {
-    startGame() {
+    async startGame() {
       let levelMap = this.levelMap.length == 0 ? gameLevel : this.levelMap;
       this.runningGame = new Game(this.gameContainer);
-      this.runningGame.runGame(
+      await this.runningGame.runGame(
         levelMap,
         this.levelSetting,
         this.globalPlayerSetting
       );
+      this.gameEnd = true;
     },
     goToPlayerFigureDesign() {
       this.$router.push("/playerFigure/combine");
@@ -257,6 +283,10 @@ button {
     }
   }
 }
+
+.endFace{
+    @extend .startUpFace
+  }
 </style>
 
 

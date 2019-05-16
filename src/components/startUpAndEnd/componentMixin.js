@@ -13,7 +13,8 @@ export default {
       opacity: { type: Number },
       rotate: { type: Number },
       zIndex: { type: Number },
-      destroy: { type: Boolean }
+      destroy: { type: Boolean },
+      face:{type:String}
    },
    methods: {
       moveComponent(event) {

@@ -16,22 +16,31 @@
 
 <script>
 import componentMixin from "@/components/startUpAndEnd/componentMixin";
-import {mapGetters} from "vuex"
+import { mapGetters } from "vuex";
 
 export default {
   name: "textComponent",
   mixins: [componentMixin],
-  created(){
-    let componentProperties = this.getComponentPropertyByIndex('text',this.index) ;
+  created() {
+    let componentProperties =
+      this.face == "start"
+        ? this.getComponentPropertyByIndex("text", this.index)
+        : this.endGetComponentPropertyByIndex("text", this.index);
     if (componentProperties === undefined) return;
     this.pos.left = componentProperties.left;
     this.pos.top = componentProperties.top;
     this.textContent = componentProperties.textContent;
   },
-  beforeDestroy(){
-    if(this.destroy == true) return;
-    const rawStyle = Object.assign({},this.$props,this.$data.pos,{textContent:this.$data.textContent})
-    this.$store.commit('startUpFace/addTextComponents',rawStyle)
+  beforeDestroy() {
+    if (this.destroy == true) return;
+    const rawStyle = Object.assign({}, this.$props, this.$data.pos, {
+      textContent: this.$data.textContent
+    });
+    if (this.face == 'start'){
+      this.$store.commit("startUpFace/addTextComponents", rawStyle);
+    }else if (this.face == 'end'){
+      this.$store.commit("endFace/addTextComponents", rawStyle)
+    }
   },
   props: {
     fontSize: Number,
@@ -40,11 +49,14 @@ export default {
   data: function() {
     return {
       editable: false,
-      textContent:"双击编辑"
+      textContent: "双击编辑"
     };
   },
   computed: {
-    ...mapGetters('startUpFace',['getComponentPropertyByIndex']),
+    ...mapGetters("startUpFace", ["getComponentPropertyByIndex"]),
+    ...mapGetters("endFace", {
+      endGetComponentPropertyByIndex: "getComponentPropertyByIndex"
+    }),
     style() {
       return {
         top: this.pos.top + "px",
@@ -63,8 +75,8 @@ export default {
       event.target.focus();
       this.editable = true;
     },
-    saveText(content){
-      this.editable=false;
+    saveText(content) {
+      this.editable = false;
       this.textContent = content;
     }
   }

@@ -10,9 +10,9 @@ importAll(require.context('../pic/pureGame/', false, /\.png$/))
 
 let otherSprites = getImage('sprites.png', pics)
 let monsterSprites = getImage('Monster1.png', pics)
-let dragonSpritesSRC = getImage('dragon.png',pics,10);
-let fireSpritesSRC = getImage('fire.png',pics,4);
-let toFireSRC = getImage('tofire.png',pics,8)
+let dragonSpritesSRC = getImage('dragon.png', pics, 10);
+let fireSpritesSRC = getImage('fire.png', pics, 4);
+let toFireSRC = getImage('tofire.png', pics, 8)
 
 function importAll(r) {
    r.keys().forEach(key => pics[key] = r(key))
@@ -128,11 +128,11 @@ var Player = class Player {
    constructor(pos, speed, property) {
       this.pos = pos;
       this.speed = speed;
-      this.size = new Vec(0.8, 1.5).times(property==undefined?1:property.size)
-      this.sizeCompensate = this.size.y - 1>0?this.size.y-1:0;
-      this.playerXSpeed = property == undefined?7:property.speed;
+      this.size = new Vec(0.8, 1.5).times(property == undefined ? 1 : property.size)
+      this.sizeCompensate = this.size.y - 1 > 0 ? this.size.y - 1 : 0;
+      this.playerXSpeed = property == undefined ? 7 : property.speed;
       this.gravity = 30;
-      this.jumpSpeed = property==undefined?17:property.jumpSpeed;
+      this.jumpSpeed = property == undefined ? 17 : property.jumpSpeed;
    }
    get type() {
       return "player";
@@ -482,15 +482,15 @@ class CanvasDisplay {
          //处理游戏背景
          this.cx.drawImage(backgroundImage, 0, 0, this.canvas.width, this.canvas.height)
       } else {
-      //default background setting
-      if (status == "won") {
-         this.cx.fillStyle = "rgb(68, 191, 255)";
-      } else if (status == "lost") {
-         this.cx.fillStyle = "rgb(44, 136, 214)";
-      } else {
-         this.cx.fillStyle = this.gameClass.backgroundColor || "rgb(52, 166, 251)";
-      }
-      this.cx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+         //default background setting
+         if (status == "won") {
+            this.cx.fillStyle = "rgb(68, 191, 255)";
+         } else if (status == "lost") {
+            this.cx.fillStyle = "rgb(44, 136, 214)";
+         } else {
+            this.cx.fillStyle = this.gameClass.backgroundColor || "rgb(52, 166, 251)";
+         }
+         this.cx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       }
    }
    drawBackground(level) {
@@ -532,7 +532,7 @@ class CanvasDisplay {
       if (this.flipPlayer) {
          flipHorizontally(this.cx, x + width / 2);
       }
-      let tileX = tile *  48;
+      let tileX = tile * 48;
       this.cx.drawImage(this.gameClass.playerSprites, tileX, 0, 48, 60, x, y, width, height);
       this.cx.restore();
    }
@@ -613,17 +613,17 @@ class CanvasDisplay {
          }
       }
    }
-   drawProperty(actors){
+   drawProperty(actors) {
       let numberOfCoin = actors.reduce((total, each) => {
          each = each.type == 'coin' ? 1 : 0;
          return total + each
       }, 0);
       this.font = '40px Arial';
       this.cx.fillStyle = 'red';
-      this.cx.fillText(`生命: ${this.gameClass.lives}`,20,20);
-      this.cx.fillText(`剩余金币: ${numberOfCoin}`,20,40)
-      if (this.gameClass.totalLevel != 1){
-         this.cx.fillText(`关卡: ${this.gameClass.level+1}/${this.gameClass.totalLevel}`, 20, 60)
+      this.cx.fillText(`生命: ${this.gameClass.lives}`, 20, 20);
+      this.cx.fillText(`剩余金币: ${numberOfCoin}`, 20, 40)
+      if (this.gameClass.totalLevel != 1) {
+         this.cx.fillText(`关卡: ${this.gameClass.level + 1}/${this.gameClass.totalLevel}`, 20, 60)
       }
    }
    syncState(state) {
@@ -671,6 +671,7 @@ function runLevel(level, gameClass) {
       }
       window.addEventListener("keydown", escHandler);
       let arrowKeys = trackKeys(["ArrowLeft", "ArrowRight", "ArrowUp"]);
+
       function frame(time) {
          if (running == "no") {
             return false;
@@ -680,7 +681,7 @@ function runLevel(level, gameClass) {
             resolve('won');
             return false;
          }
-         state = state.update(time, arrowKeys,gameClass);
+         state = state.update(time, arrowKeys, gameClass);
          display.syncState(state);
          if (state.status == "playing") {
             return true;
@@ -728,44 +729,46 @@ export default class Game {
       this.size = 1;
       this.jumpSpeed = 17;
    }
-   async runGame(plans,levelSettings=[],globalSettings) {
-      //更改全球设置
-      if(globalSettings != undefined){
-         this.mutate(globalSettings)
-      }
-      this.totalLevel = plans.length;
-      for (let level = 0; level < plans.length;) {
-         //重置属性
-         this.backgroundImage = null;
-         this.level = level;
-         //修改级别属性
-         if (levelSettings.length>0){
-            this.mutate(levelSettings[level])
+   async runGame(plans, levelSettings = [], globalSettings) {
+      return new Promise(async (resolve) => {
+         //更改全球设置
+         if (globalSettings != undefined) {
+            this.mutate(globalSettings)
          }
-         let status = await runLevel(new Level(plans[level]), this);
-         if (status == 'won'){
-            level++
-         }else{
-            this.lives -- ;
+         let startLives = this.lives
+         this.totalLevel = plans.length;
+         for (let level = 0; level < plans.length;) {
+            //重置属性
+            this.backgroundImage = null;
+            this.level = level;
+            //修改级别属性
+            if (levelSettings.length > 0) {
+               this.mutate(levelSettings[level])
+            }
+            let status = await runLevel(new Level(plans[level]), this);
+            if (status == 'won') {
+               level++
+            } else {
+               this.lives--;
+            }
+            if (this.lives == 0) {
+               level = 0;
+               this.lives = startLives;
+            }
          }
-         if (this.lives == 0) break;
-      }
-      if (this.lives > 0) {
-         console.log("You've won!");
-      } else {
-         console.log("Game over");
-      }
+         resolve('won')
+      })
    }
    stopGame() {
       this.killTheGame = true
    }
-   mutate(valueToBeMutated){
+   mutate(valueToBeMutated) {
       //方便在游戏中更新属性
       let keys = Object.keys(valueToBeMutated);
-      keys.forEach(key=>{
+      keys.forEach(key => {
          if (this[key] === undefined) throw new Error('no such property: ' + key)
          if (valueToBeMutated[key] != undefined) {
-            if (key == 'backgroundImage' || key =='playerSprites'){
+            if (key == 'backgroundImage' || key == 'playerSprites') {
                let image = new Image();
                image.src = valueToBeMutated[key];
                this[key] = image;
