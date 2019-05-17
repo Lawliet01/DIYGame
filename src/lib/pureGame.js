@@ -265,7 +265,7 @@ class Dragon {
    constructor(pos, speed, fire = { isFire: false, lastShot: 0 }) {
       this.pos = pos;
       this.speed = speed;
-      this.size = new Vec(2.5, 2.5)
+      this.size = new Vec(1.5, 1.5)
       this.fire = fire;
    }
    get type() {
@@ -759,6 +759,7 @@ export default class Game {
                this.lives = startLives;
             }
          }
+         console.log("You've won")
          resolve(this.killTheGame)
       })
    }

@@ -164,7 +164,7 @@ let startUpFace = {
       borderWidth: "1px",
       borderColor: "#0000ff",
       fontSize: "20px",
-      zIndex: 0
+      zIndex: 100
     },
     pictureComponents: [],
     textComponents: [],
@@ -203,7 +203,7 @@ let endFace = {
       animation: true,
       animationTime: 10,
       animationDir: 'top',
-      animationDistance: 100,
+      animationDistance: 200,
     },
     textFlowText: "在这里写下\n游戏结束的话"
   },

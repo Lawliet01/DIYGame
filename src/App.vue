@@ -4,7 +4,7 @@
       <span>DIYGAME</span>
       <router-link to="/">帮助</router-link>
       <router-link to="/entireGame">开始设计</router-link>
-      <router-link to="/">预览</router-link>
+      <router-link to="/previewPage">预览</router-link>
       <router-link to="/">主页</router-link>
     </nav>
     <transition name='pageTransition'>

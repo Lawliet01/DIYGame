@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
+
+<body>
+  <div class="game">
+
+  </div>
+</body>
+<script src='./gameClass.js'></script>
+<script>
+  function elt(type, props, style, ...children) {
+    let dom = document.createElement(type);
+    if (props) Object.assign(dom, props);
+    if (style) {
+      for (let key in style) {
+        dom.style[key] = style[key]
+      }
+    }
+    for (let child of children) {
+      if (typeof child != "string") dom.appendChild(child);
+      else dom.appendChild(document.createTextNode(child));
+    }
+    return dom;
+  }
+
+  let startUpFaceStyle = {
+    margin: "auto",
+    position: "relative",
+    width: "700px",
+    height: "400px",
+    overflow: "hidden",
+    backgroundPosition: "center",
+    backgroundColor: 'black'
+  }
+
+  let startBtnStyle = {
+    position: "absolute",
+    left: "300px",
+    top: "150px",
+    width: "100px",
+    height: "80px",
+    borderRadius: "10px",
+    color: "#000000",
+    backgroundColor: "#ffffff",
+    borderWidth: "1px",
+    borderColor: "#0000ff",
+    fontSize: "20px",
+    zIndex: 0
+  }
+  let startBtnProps = {
+    type: 'button',
+    onclick: async () => {
+      document.querySelector('.startUpFaceContainer').remove()
+      document.querySelector('.game').appendChild(game.dom)
+      await game.runGame(defaultGameMap, CanvasDisplay)
+      console.log('happy')
+      let endFaceContainer = elt('div',{className:'startUpFaceContainer'}, startUpFaceStyle, startBtn)
+      document.body.appendChild(endFaceContainer)
+    }
+  }
+  let startUpBtnText = "开始游戏";
+
+  let startBtn = elt('button', startBtnProps, startBtnStyle, startUpBtnText)
+  let startUpFaceContainer = elt('div', { className: 'startUpFaceContainer' }, startUpFaceStyle, startBtn)
+  document.body.appendChild(startUpFaceContainer)
+
+  // async function runGameWidthEndGameFace(dom){
+  //   let game = new Game()
+  //   document.querySelector('.game').appendChild(game.dom);
+  //   let promise = new Promise((resolve)=>{
+  //     await game.runGame(defaultGameMap, CanvasDisplay);
+  //   })
+
+  // }
+
+
+      // game.runGame(defaultGameMap, CanvasDisplay)
+      // document.querySelector('.game').appendChild(game.dom)
+</script>
+
+</html>

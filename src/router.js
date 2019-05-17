@@ -39,6 +39,10 @@ export default new Router({
     {
       path:'/startUpAndEndDesign',
       component:()=>import(/* webpackChunkName:"startUpAndEndDesign"*/ './views/startUpAndEndDesign.vue')
+    },
+    {
+      path:'/previewPage',
+      component:()=>import(/*webpackChunkName:"previewPage"*/ './views/previewPage.vue')
     }
   ]
 })

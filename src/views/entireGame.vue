@@ -5,23 +5,23 @@
       style="font-size:15px;color:red;font-weight:600"
     >上、左、右键移动角色，esc键暂停</div>
     <!-- 开始界面 -->
-      <div class="startUpFace" v-bind:style="backgroundStyle" v-if="runningGame==null">
-        <button v-bind:style="startUpBtn" v-on:click="startGame()">{{startUpBtnText}}</button>
-        <div
-          class="textItem"
-          v-for="(item,index) in processTextComponent"
-          :key="'textItem' + index"
-          :style="item.style"
-        >{{item.textContent}}</div>
-        <div
-          class="imgItem"
-          v-for="(item,index) in processPictureComponent"
-          :key="'pictureItem' + index"
-          :style="item.style"
-        >
-          <img :src="item.url" :width="item.width">
-        </div>
+    <div class="startUpFace" v-bind:style="backgroundStyle" v-if="runningGame==null">
+      <button v-bind:style="startUpBtn" v-on:click="startGame()">{{startUpBtnText}}</button>
+      <div
+        class="textItem"
+        v-for="(item,index) in processTextComponent"
+        :key="'textItem' + index"
+        :style="item.style"
+      >{{item.textContent}}</div>
+      <div
+        class="imgItem"
+        v-for="(item,index) in processPictureComponent"
+        :key="'pictureItem' + index"
+        :style="item.style"
+      >
+        <img :src="item.url" :width="item.width">
       </div>
+    </div>
 
     <!-- 结束界面 -->
     <div class="endFace" v-bind:style="endBackgroundStyle" v-if="gameEnd">
@@ -41,7 +41,7 @@
         <img :src="item.url" :width="item.width">
       </div>
     </div>
-    
+
     <div class="gameContainer"></div>
 
     <!-- 按键组 -->
@@ -96,6 +96,8 @@ export default {
   watch: {
     gameEnd() {
       if (this.gameEnd == false) return;
+      this.textFlowRealTimeStyle.top = this.endProcessTextFlow.style.top;
+      this.textFlowRealTimeStyle.left = this.endProcessTextFlow.style.left;
       let {
         animation,
         animationTime,

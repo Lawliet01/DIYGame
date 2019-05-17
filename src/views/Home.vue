@@ -8,7 +8,7 @@
         <div class="introductionTitle">DIYGAME</div>
         <p class="introductionBody">是一款自主游戏设计平台，允许使用者在没有任何技术背景的情况下打造个人专属的冒险游戏。</p>
         <div class="startBtn">
-          <router-link to="/" class="preview">预览</router-link>
+          <router-link to="/previewPage" class="preview">预览</router-link>
           <router-link to="/entireGame" class="startDesign">开始设计</router-link>
         </div>
       </div>
@@ -63,7 +63,7 @@
     </section>
     <footer class='footer'>
       <pre>
-        联系作者：
+        联系方式：
         邮箱：cxz40901993@qq.com
       </pre>
     </footer>
@@ -220,11 +220,14 @@ export default {
     @extend .firstFunction;
     background-image: url("../pic/home/secondPoster.png");
     min-height: 500px;
-    background-color: rgb(40, 46, 52);
+    background-color: rgb(52, 166, 251);
   }
 
   .thirdFunction {
     @extend .firstFunction;
+    background-image: url("../pic/home/thirdPoster.jpg");
+    min-height: 400px;
+    background-color: #f7d10afc
   }
 
   .explanation {

@@ -91,7 +91,9 @@
           </div>
         </div>
       </div>
-      <button class="structureDesign" @click="openStructureDesign()">结构设计</button>
+      <button class="structureDesign" @click="openStructureDesign()">
+        <font-awesome-icon icon="cogs" class="fa-sm"/>&nbsp;结构设计
+      </button>
     </div>
     <transition name="pageTransition">
       <structure-design v-if="structureDesign == true"></structure-design>
@@ -142,6 +144,14 @@ export default {
     structureDesign() {
       if (this.structureDesign == false) {
         this.runGame();
+      }
+      if (
+        this.structureDesign == true &&
+        this.gamePreviewContainer.children[0] != undefined
+      ) {
+        //因为stopGame只会直接帮游戏通关，但是暂停时的游戏的流动断了
+        //所以避免暂停的情况下进入structureDesign，回来后出现了两个游戏
+        this.gamePreviewContainer.children[0].remove();
       }
     }
   },
@@ -364,6 +374,8 @@ $rightContainerWidth: 200px;
   margin: auto;
   font-weight: 700;
   margin-top: 5px;
+  color: red;
+  background-color: antiquewhite;
   @include buttonStyle($rightContainerWidth, $levelListHeight);
 }
 </style>

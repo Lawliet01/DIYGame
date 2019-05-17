@@ -66,9 +66,9 @@
           网格：
           <input type="checkbox" v-model="showGrid">
         </div>
-        <div class="undoBtn" @click="undo()">undo</div>
-        <div class="resetBtn" @click="reset()">reset</div>
-        <div class="clearBtn" @click="clear()">clear</div>
+        <div class="undoBtn" @click="undo()">撤销</div>
+        <div class="resetBtn" @click="reset()">重置</div>
+        <div class="clearBtn" @click="clear()">清空界面</div>
       </div>
 
       <!-- template -->
@@ -80,8 +80,8 @@
           @click="useTemplate(template)"
         >模版{{index+1}}</div>
       </div>
-      <div class="cancelBtn" @click="cancel()">cancel</div>
-      <div class="doneBtn" @click="done()">done</div>
+      <div class="cancelBtn" @click="cancel()">取消</div>
+      <div class="doneBtn" @click="done()">完成</div>
     </div>
   </div>
 </template>

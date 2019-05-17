@@ -231,8 +231,11 @@ export default {
         );
       }
       // 用来测试
-      // let img = document.querySelector('.testImg');
-      // img.src = testCanvas.toDataURL()
+      // let img = new Image();
+      // img.setAttribute('width','480');
+      // img.setAttribute('height','60');
+      // img.src = testCanvas.toDataURL();
+      // document.body.appendChild(img);
       this.$store.commit("gameLevel/changeGlobalPlayerSetting", {
         playerSprites: testCanvas.toDataURL()
       });
