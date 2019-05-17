@@ -278,7 +278,6 @@ export default `
    }
 
    class Monster {
-      //从头顶踩下去就会死
       constructor(pos, speed) {
          this.pos = pos;
          this.speed = speed;
@@ -291,13 +290,7 @@ export default `
          return new Monster(pos, new Vec(-2, 7))
       }
       collide(state) {
-         let { top } = overlap(state.player, this);
-         if (top != true) {
-            return new State(state.level, state.actors, 'lost');
-         } else {
-            let filtered = state.actors.filter(a => a != this);
-            return new State(state.level, filtered, state.status)
-         }
+         return new State(state.level, state.actors, 'lost');
       }
       update(time, state) {
          let xSpeed = this.speed.x;
@@ -487,6 +480,8 @@ export default `
    class CanvasDisplay {
       constructor(level, gameClass) {
          this.canvas = document.createElement("canvas");
+         this.canvas.style.display = 'block';
+         this.canvas.style.margin = 'auto'
          this.canvas.width = Math.min(gameWidth, level.width * scale);
          this.canvas.height = Math.min(gameHeight, level.height * scale);
          gameClass.dom.appendChild(this.canvas);
@@ -643,14 +638,20 @@ export default `
          this.cx.drawImage(fireSpritesSRC[tile], x, y, width, height)
          this.cx.restore()
       }
-      drawActors(actors) {
+      drawActors(actors,status) {
          for (let actor of actors) {
             let width = actor.size.x * scale;
             let height = actor.size.y * scale;
             let x = (actor.pos.x - this.viewport.left) * scale;
             let y = (actor.pos.y - this.viewport.top) * scale;
             if (actor.type == "player") {
+               if (status !== 'lost'){
                this.drawPlayer(actor, x, y, width, height);
+            }else{
+               this.cx.font =\`\${actor.size.y * 30 }px Arial\`
+               this.cx.fillText("💥",x,y+actor.size.y*20)
+               this.cx.restore()
+            }
             } else if (actor.type == "monster") {
                this.drawMonster(actor, x, y, width, height)
             } else if (actor.type == "dragon") {
@@ -668,7 +669,7 @@ export default `
             each = each.type == 'coin' ? 1 : 0;
             return total + each
          }, 0);
-         this.font = '40px Arial';
+         this.cx.font = '10px Arial';
          this.cx.fillStyle = 'red';
          this.cx.fillText(\`生命: \${ this.gameClass.lives } \`, 20, 20);
          this.cx.fillText(\`剩余金币: \${ numberOfCoin } \`, 20, 40)
@@ -680,7 +681,7 @@ syncState(state) {
   this.updateViewport(state);
   this.clearDisplay(state.status);
   this.drawBackground(state.level);
-  this.drawActors(state.actors);
+  this.drawActors(state.actors,state.status);
   this.drawProperty(state.actors)
 }
    }

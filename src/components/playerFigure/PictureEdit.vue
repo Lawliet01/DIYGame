@@ -84,6 +84,8 @@
       </div>
     </div>
     <br>
+
+    <!-- 导入照片 -->
     <button
       @click="addPicture()"
       v-if="imgSrc.length == 0&&imgData == null"
@@ -175,10 +177,7 @@ export default {
       //所以导航到/playerFigure/combine,由于src数据为空，combine又会重新倒回来，组件实例被刷新
       this.$router.push("/playerFigure/combine");
     },
-    //完成，把x,y传上去
-    done() {
-      let confirm = window.confirm("已完成剪切，要进入下一步？");
-      if (confirm == false) return;
+    uploadData() {
       let { x, y, width, height } = this.$store.state.playerFigure;
       width = width == null ? this.canvasDimension.width : width;
       height = height == null ? this.canvasDimension.height : height;
@@ -188,6 +187,12 @@ export default {
         width: width,
         height: height
       });
+    },
+    //完成，把x,y传上去
+    done() {
+      let confirm = window.confirm("已完成剪切，要进入下一步？");
+      if (confirm == false) return;
+      this.uploadData();
       this.$router.push({ path: "/playerFigure/combine" });
     },
     //放大缩小
@@ -482,6 +487,7 @@ $border-color: lightBlue;
 .inputImageBtn {
   @include buttonStyle(120px, 50px);
   font-size: 15px;
+  margin-top: 150px;
 }
 
 .pictureEditContainer {
@@ -526,7 +532,7 @@ $border-color: lightBlue;
   background-color: #d2caca;
   top: 0;
   color: #992424;
-  height: 20px;
+  height: 30px;
   padding: 5px;
   font-size: 15px;
   line-height: 20px;

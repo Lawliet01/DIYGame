@@ -61,7 +61,7 @@ export default {
       return {
         top: this.pos.top + "px",
         left: this.pos.left + "px",
-        border: this.currentFocus == this.index ? "2px solid red" : "none",
+        border: this.currentFocus == this.index ? "1px dashed red" : "none",
         fontSize: this.fontSize + "px",
         color: this.color,
         opacity: this.opacity,

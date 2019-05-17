@@ -195,16 +195,17 @@ let endFace = {
     textFlowStyle: {
       //top left存储的是实时位置
       //startTop startLeft是有动画时候的初始位置
-      top: "150px",
-      left: "225px",
-      fontSize: "20px",
-      color: '#ff0000',
-      animation: false,
-      animationTime: 0,
+      top: "270px",
+      left: "265px",
+      fontSize: "30px",
+      color: '#fbff20',
+      zIndex:100,
+      animation: true,
+      animationTime: 10,
       animationDir: 'top',
-      animationDistance: 0,
+      animationDistance: 100,
     },
-    textFlowText: "结束的话"
+    textFlowText: "在这里写下\n游戏结束的话"
   },
   getters: Object.assign({}, startUpAndEndFaceGetters, {
     processTextFlow: (state) => {
@@ -215,7 +216,7 @@ let endFace = {
           left: state.textFlowStyle.left,
           fontSize: state.textFlowStyle.fontSize,
           color: state.textFlowStyle.color,
-          zIndex:1000,
+          zIndex:100,
         },
         animate: {
           animation: state.textFlowStyle.animation,

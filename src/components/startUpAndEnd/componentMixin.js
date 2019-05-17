@@ -3,7 +3,7 @@ export default {
       return {
          pos: {
             top: 100,
-            left: 100
+            left: 300
          }
       };
    },

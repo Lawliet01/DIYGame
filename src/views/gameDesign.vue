@@ -62,7 +62,7 @@
               class="playerSpeed"
               min="5"
               max="15"
-              step='1'
+              step="1"
               :value="globalPlayerSetting.speed"
               @change="changePlayerSetting($event.target.value,'speed')"
             >
@@ -72,7 +72,7 @@
               class="playerJumpSpeed"
               min="10"
               max="30"
-              step='1'
+              step="1"
               :value="globalPlayerSetting.jumpSpeed"
               @change="changePlayerSetting($event.target.value,'jumpSpeed')"
             >
@@ -82,7 +82,7 @@
               class="playerSize"
               min="0.7"
               max="2"
-              step='0.1'
+              step="0.1"
               :value="globalPlayerSetting.size"
               @input="changePlayerSetting($event.target.value,'size')"
               @change="runGame()"
@@ -93,7 +93,9 @@
       </div>
       <button class="structureDesign" @click="openStructureDesign()">结构设计</button>
     </div>
-    <structure-design v-if="structureDesign == true"></structure-design>
+    <transition name="pageTransition">
+      <structure-design v-if="structureDesign == true"></structure-design>
+    </transition>
   </div>
 </template>
 
@@ -165,14 +167,18 @@ export default {
         };
       }
     },
-    runGame() {
+    async runGame() {
       if (this.runningGame != null) this.runningGame.stopGame();
       this.runningGame = new Game(this.gamePreviewContainer);
-      this.runningGame.runGame(
+      let killGame = await this.runningGame.runGame(
         [this.levelMap[this.currentLevel]],
         [this.levelSetting[this.currentLevel]],
         this.globalPlayerSetting
       );
+      if (killGame == false) {
+        //如果是因为游戏赢了才结束，那就重启游戏
+        this.runGame();
+      }
     },
     changeToNewLevel(index) {
       this.changeLevel(index);
@@ -249,6 +255,7 @@ $borderStyle: 1px solid lightblue;
   width: 910px;
   display: flex;
   flex-flow: row nowrap;
+  padding-top: 50px;
 
   .leftContainer {
     flex: 75%;

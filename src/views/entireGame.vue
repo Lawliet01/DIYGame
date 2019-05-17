@@ -1,32 +1,27 @@
 <template>
   <div id="entireGame">
-    <!-- 按键组 -->
-    <div class="btnGroup">
-      <button @click="goToPlayerFigureDesign()" class="playerFigureDesign">人物形象设计</button>
-      <button @click="goToGameDesign()">游戏级别设计</button>
-      <button @click="goToStartUpAndEndDesign()">开始结束界面设计</button>
-      <button @click="reset()">{{!gameEnd?'结束游戏':'重置游戏'}}</button>
-      <button @click="downloadTheGame()">完成并下载</button>
-    </div>
-
+    <div
+      v-if="runningGame!=null&&gameEnd==false"
+      style="font-size:15px;color:red;font-weight:600"
+    >上、左、右键移动角色，esc键暂停</div>
     <!-- 开始界面 -->
-    <div class="startUpFace" v-bind:style="backgroundStyle" v-if="runningGame==null">
-      <button v-bind:style="startUpBtn" v-on:click="startGame()">{{startUpBtnText}}</button>
-      <div
-        class="textItem"
-        v-for="(item,index) in processTextComponent"
-        :key="'textItem' + index"
-        :style="item.style"
-      >{{item.textContent}}</div>
-      <div
-        class="imgItem"
-        v-for="(item,index) in processPictureComponent"
-        :key="'pictureItem' + index"
-        :style="item.style"
-      >
-        <img :src="item.url" :width="item.width">
+      <div class="startUpFace" v-bind:style="backgroundStyle" v-if="runningGame==null">
+        <button v-bind:style="startUpBtn" v-on:click="startGame()">{{startUpBtnText}}</button>
+        <div
+          class="textItem"
+          v-for="(item,index) in processTextComponent"
+          :key="'textItem' + index"
+          :style="item.style"
+        >{{item.textContent}}</div>
+        <div
+          class="imgItem"
+          v-for="(item,index) in processPictureComponent"
+          :key="'pictureItem' + index"
+          :style="item.style"
+        >
+          <img :src="item.url" :width="item.width">
+        </div>
       </div>
-    </div>
 
     <!-- 结束界面 -->
     <div class="endFace" v-bind:style="endBackgroundStyle" v-if="gameEnd">
@@ -46,7 +41,20 @@
         <img :src="item.url" :width="item.width">
       </div>
     </div>
+    
     <div class="gameContainer"></div>
+
+    <!-- 按键组 -->
+    <div class="btnGroup">
+      <button @click="goToPlayerFigureDesign()" class="playerFigureDesign">人物形象设计</button>
+      <button @click="goToGameDesign()">游戏级别设计</button>
+      <button @click="goToStartUpAndEndDesign()">开始结束界面设计</button>
+      <button @click="reset()">{{!gameEnd?'结束游戏':'重置游戏'}}</button>
+      <button @click="downloadTheGame()">完成并下载</button>
+    </div>
+
+    <!-- 下载弹出框 -->
+    <div class="downLoadConfirm"></div>
   </div>
 </template>
 
@@ -198,15 +206,15 @@ export default {
       this.$router.push("/startUpAndEndDesign");
     },
     async downloadTheGame() {
-      var confirm = window.confirm("已经完成设计并要下载该游戏了吗？");
-      if (confirm == false) return;
+      var gameName = window.prompt("输入游戏名称", "diyGame");
+      if (gameName == null) return;
       let blob = new Blob(await manipulateHTML(gameTemplate, this), {
         text: "text/plain"
       });
       let url = window.URL.createObjectURL(blob);
       let link = document.createElement("a");
       link.setAttribute("href", url);
-      link.setAttribute("download", "DIYGame.html");
+      link.setAttribute("download", gameName + ".html");
       link.click();
       link.remove();
 
@@ -357,8 +365,8 @@ export default {
 <style lang="scss" scoped>
 @import "../lib/_consistentStyle";
 
-#entireGame{
-  padding-top:50px;
+#entireGame {
+  padding-top: 50px;
 }
 
 .gameContainer {
@@ -366,15 +374,15 @@ export default {
 }
 
 .btnGroup {
-  width:700px;
+  width: 700px;
   min-width: 700px;
   margin: auto;
   button {
     @include buttonStyle(20%, 25px);
     border-radius: 0px;
     background-color: white;
-    &:hover{
-      outline: none
+    &:hover {
+      outline: none;
     }
   }
 }
@@ -382,7 +390,7 @@ export default {
 .startUpFace {
   margin: auto;
   position: relative;
-  width:700px;
+  width: 700px;
   min-width: 700px;
   height: 400px;
   overflow: hidden;

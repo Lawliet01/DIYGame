@@ -1,13 +1,19 @@
 <template>
-   <div class='playerFigure'>
+  <div class="playerFigure">
+    <transition name="pageTransition">
       <router-view></router-view>
-   </div>
+    </transition>
+  </div>
 </template>
 
 <script>
-
-
 export default {
-   name:'playerFigure',
-}
+  name: "playerFigure"
+};
 </script>
+
+<style lang="scss" scoped>
+.playerFigure {
+  padding-top: 50px;
+}
+</style>

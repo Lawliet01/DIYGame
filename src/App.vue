@@ -7,23 +7,33 @@
       <router-link to="/">预览</router-link>
       <router-link to="/">主页</router-link>
     </nav>
-    <router-view/>
+    <transition name='pageTransition'>
+      <router-view/>
+    </transition>
   </div>
 </template>
 
 <style lang="scss">
-*{
-  box-sizing:border-box
+* {
+  box-sizing: border-box;
 }
 
-html{
-  background-color:#f8f9fa;
+//动画效果
+.pageTransition-enter-active{
+  transition: all .06s
 }
-body{
- margin:0; 
+.pageTransition-enter{
+  transform: scale(0)
+}
+
+html {
+  background-color: #f8f9fa;
+}
+body {
+  margin: 0;
 }
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -31,26 +41,26 @@ body{
 }
 nav {
   text-align: left;
-  $navHeight:50px;
+  $navHeight: 50px;
   padding: 10px;
-  span{
+  span {
     line-height: $navHeight;
     font-weight: bold;
-    font-size:30px;
-    padding: 0px 20px 
+    font-size: 30px;
+    padding: 0px 20px;
   }
 
   a {
     text-decoration: none;
-    float:right;
+    float: right;
     line-height: $navHeight;
-    font-size:15px;
+    font-size: 15px;
     margin: 0px 15px;
     color: #3eb0dd;
     &.router-link-exact-active {
       color: #2c3e50;
     }
-    &:hover{
+    &:hover {
       text-decoration: underline;
     }
   }

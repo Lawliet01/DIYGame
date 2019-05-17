@@ -50,13 +50,13 @@ export default {
 
   created: function() {
     //如果没有图片数据，就返回编辑页
-    if (this.inputCanvasSize.width == null) {
+    if (this.inputCanvasData == null) {
       this.$router.push({ path: "/playerFigure" });
     }
   },
   mounted: function() {
     //起始的时候把图片放上去
-    if (this.inputCanvasSize.width == null) return;
+    if (this.inputCanvasData == null) return;
     this.toCombineCanvasContext.putImageData(this.inputCanvasData, 0, 0);
   },
   updated: function() {
@@ -281,12 +281,12 @@ export default {
   }
 }
 
-.resize{
+.resize {
   display: inline;
   position: absolute;
-  bottom:0;
-  left:50%;
-  transform: translateX(-50%)
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .goback {
@@ -357,18 +357,17 @@ export default {
     position: absolute;
     display: inline-block;
     top: 330px;
-    left:-20px;
+    left: -20px;
     padding: 0 5px;
     border: 1px solid lightblue;
     background-color: #d2caca;
-    transition:all 0.3s;
+    transition: all 0.3s;
     border-radius: 0 5px 5px 0;
     &:hover {
       @extend %hover-effect;
       background-color: white;
-      left:0;
+      left: 0;
     }
-
   }
 }
 </style>
