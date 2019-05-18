@@ -82,9 +82,6 @@ export default {
     next();
   },
   mounted() {
-    window.onload=()=>{
-      console.log('done')
-    }
     this.textFlowRealTimeStyle = JSON.parse(
       JSON.stringify(this.endProcessTextFlow.style)
     );

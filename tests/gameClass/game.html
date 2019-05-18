@@ -4,15 +4,141 @@
 <head>
   <meta charset="utf-8">
   <title></title>
+  <style>
+    .game {
+      width: 700px;
+      position: relative;
+    }
+
+    .topBtn,.rightBtn,.leftBtn {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      font-size: 50px;
+      background-color: rgb(0, 0, 0, 0);
+      border-style: none;
+      color:pink;
+    }
+
+    .leftBtn {
+      top: 250px;
+      left: 20px;
+    }
+
+    .rightBtn {
+      top: 250px;
+      left: 100px;
+      transform: scale(-1,1)
+    }
+
+    .topBtn {
+      top: 250px;
+      right: 50px;
+    }
+  </style>
 </head>
 
 <body>
   <div class="game">
-
+    <div class='topBtn'>⬆</div>
+    <div class='leftBtn'>⬅</div>
+    <div class='rightBtn'>⬅</div>
   </div>
 </body>
 <script src='./gameClass.js'></script>
 <script>
+
+  // document.querySelector('.topBtn').addEventListener('touchstart', function () {
+  //   return trackTouchEvent('ArrowUp', true)
+  // })
+  // document.querySelector('.topBtn').addEventListener('touchend', function () {
+  //   return trackTouchEvent('ArrowUp', false)
+  // })
+  // document.querySelector('.leftBtn').addEventListener('touchstart', function () {
+  //   return trackTouchEvent('ArrowLeft', true)
+  // })
+  // document.querySelector('.leftBtn').addEventListener('touchend', function () {
+  //   return trackTouchEvent('ArrowLeft', false)
+  // })
+  // document.querySelector('.rightBtn').addEventListener('touchstart', function () {
+  //   return trackTouchEvent('ArrowRight', true)
+  // })
+  // document.querySelector('.rightBtn').addEventListener('touchend', function () {
+  //   return trackTouchEvent('ArrowRight', false)
+  // })
+  // function trackTouchEvent(dir, isFire) {
+  //   console.log(event.touches[0])
+  //   if (touchKeys.hasOwnProperty(dir)) {
+  //     touchKeys[dir] = isFire
+  //   }
+  // }
+
+  let gameContainer = document.querySelector('.game');
+
+  let touchKeys = {
+    ArrowLeft: false,
+    ArrowRight: false,
+    ArrowUp: false
+  }
+
+
+  gameContainer.addEventListener('touchstart', event => {
+    event.preventDefault()
+    for (let touch of event.touches) {
+      if (pointerPosition(touch).x < 300 && pointerPosition(touch).x > 0) {
+        touchKeys['ArrowLeft'] = true
+      } else if (pointerPosition(touch).x > 400 && pointerPosition(touch).x < 700) {
+        touchKeys['ArrowRight'] = true
+      }
+    }
+  })
+
+  gameContainer.addEventListener('touchmove', event => {
+
+    event.preventDefault();
+    gameContainer.addEventListener('touchend',event=>{
+
+    })
+
+  })
+
+  function touchmove(event){
+    event.preventDefault()
+    if (pointerPosition(event.touches[0]).y > 0) {
+      touchKeys['ArrowUp'] = true
+    }
+  }
+
+  function stopMove(){
+    for (let key in touchKeys) {
+      touchKeys[key] = false
+    }
+  }
+
+  // function touchMove(touchEvent) {
+  //   touchEvent.preventDefault()
+  //   for (let touch of touchEvent.touches) {
+  //     if (pointerPosition(touch) < 300 && pointerPosition(touch) > 0) {
+  //       touchKeys['ArrowLeft'] = true
+  //     } else if (pointerPosition(touch) > 400 && pointerPosition(touch) < 700) {
+  //       touchKeys['ArrowRight'] = true
+  //     }
+  //   }
+  // }
+
+  function pointerPosition(touchEvent) {
+    let gameContainerPos = gameContainer.getBoundingClientRect();
+    return {x: touchEvent.clientX - gameContainerPos.left,
+            y: touchEvent.clientY - gameContainerPos.top}
+  }
+
+
+  document.querySelector('.game').appendChild(game.dom)
+  game.runGame(defaultGameMap, CanvasDisplay)
+
+
+
+
   function elt(type, props, style, ...children) {
     let dom = document.createElement(type);
     if (props) Object.assign(dom, props);
@@ -28,59 +154,51 @@
     return dom;
   }
 
-  let startUpFaceStyle = {
-    margin: "auto",
-    position: "relative",
-    width: "700px",
-    height: "400px",
-    overflow: "hidden",
-    backgroundPosition: "center",
-    backgroundColor: 'black'
-  }
 
-  let startBtnStyle = {
-    position: "absolute",
-    left: "300px",
-    top: "150px",
-    width: "100px",
-    height: "80px",
-    borderRadius: "10px",
-    color: "#000000",
-    backgroundColor: "#ffffff",
-    borderWidth: "1px",
-    borderColor: "#0000ff",
-    fontSize: "20px",
-    zIndex: 0
-  }
-  let startBtnProps = {
-    type: 'button',
-    onclick: async () => {
-      document.querySelector('.startUpFaceContainer').remove()
-      document.querySelector('.game').appendChild(game.dom)
-      await game.runGame(defaultGameMap, CanvasDisplay)
-      console.log('happy')
-      let endFaceContainer = elt('div',{className:'startUpFaceContainer'}, startUpFaceStyle, startBtn)
-      document.body.appendChild(endFaceContainer)
-    }
-  }
-  let startUpBtnText = "开始游戏";
-
-  let startBtn = elt('button', startBtnProps, startBtnStyle, startUpBtnText)
-  let startUpFaceContainer = elt('div', { className: 'startUpFaceContainer' }, startUpFaceStyle, startBtn)
-  document.body.appendChild(startUpFaceContainer)
-
-  // async function runGameWidthEndGameFace(dom){
-  //   let game = new Game()
-  //   document.querySelector('.game').appendChild(game.dom);
-  //   let promise = new Promise((resolve)=>{
-  //     await game.runGame(defaultGameMap, CanvasDisplay);
-  //   })
-
+  // let startUpFaceStyle = {
+  //   margin: "auto",
+  //   position: "relative",
+  //   width: "700px",
+  //   height: "400px",
+  //   overflow: "hidden",
+  //   backgroundPosition: "center",
+  //   backgroundColor: 'black'
   // }
 
+  // let startBtnStyle = {
+  //   position: "absolute",
+  //   left: "300px",
+  //   top: "150px",
+  //   width: "100px",
+  //   height: "80px",
+  //   borderRadius: "10px",
+  //   color: "#000000",
+  //   backgroundColor: "#ffffff",
+  //   borderWidth: "1px",
+  //   borderColor: "#0000ff",
+  //   fontSize: "20px",
+  //   zIndex: 0
+  // }
+  // let startBtnProps = {
+  //   type: 'button',
+  //   onclick: async () => {
+  //     document.querySelector('.startUpFaceContainer').remove()
+  //     document.querySelector('.game').appendChild(game.dom)
+  //     await game.runGame(defaultGameMap, CanvasDisplay)
+  //     console.log('happy')
+  //     let endFaceContainer = elt('div',{className:'startUpFaceContainer'}, startUpFaceStyle, startBtn)
+  //     document.body.appendChild(endFaceContainer)
+  //   }
+  // }
+  // let startUpBtnText = "开始游戏";
 
-      // game.runGame(defaultGameMap, CanvasDisplay)
-      // document.querySelector('.game').appendChild(game.dom)
+  // let startBtn = elt('button', startBtnProps, startBtnStyle, startUpBtnText)
+  // let startUpFaceContainer = elt('div', { className: 'startUpFaceContainer' }, startUpFaceStyle, startBtn)
+  // document.body.appendChild(startUpFaceContainer)
+
+
+
+
 </script>
 
 </html>

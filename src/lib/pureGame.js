@@ -589,18 +589,18 @@ class CanvasDisplay {
       this.cx.drawImage(fireSpritesSRC[tile], x, y, width, height)
       this.cx.restore()
    }
-   drawActors(actors,status) {
+   drawActors(actors, status) {
       for (let actor of actors) {
          let width = actor.size.x * scale;
          let height = actor.size.y * scale;
          let x = (actor.pos.x - this.viewport.left) * scale;
          let y = (actor.pos.y - this.viewport.top) * scale;
          if (actor.type == "player") {
-            if (status !== 'lost'){
+            if (status !== 'lost') {
                this.drawPlayer(actor, x, y, width, height);
-            }else{
-               this.cx.font =`${actor.size.y*30}px Arial`
-               this.cx.fillText("💥",x,y+actor.size.y*20)
+            } else {
+               this.cx.font = `${actor.size.y * 30}px Arial`
+               this.cx.fillText("💥", x, y + actor.size.y * 20)
                this.cx.restore()
             }
          } else if (actor.type == "monster") {
@@ -632,12 +632,30 @@ class CanvasDisplay {
       this.updateViewport(state);
       this.clearDisplay(state.status);
       this.drawBackground(state.level);
-      this.drawActors(state.actors,state.status);
+      this.drawActors(state.actors, state.status);
       this.drawProperty(state.actors)
    }
 }
 
 //最后一章：游戏的运行
+//电脑端运行
+
+function trackKeys(keys) {
+   let down = Object.create(null);
+   function track(event) {
+      if (keys.includes(event.key)) {
+         down[event.key] = event.type == "keydown";
+         event.preventDefault();
+      }
+   }
+   window.addEventListener("keydown", track);
+   window.addEventListener("keyup", track);
+   down.unregister = () => {
+      window.removeEventListener("keydown", track);
+      window.removeEventListener("keyup", track);
+   };
+   return down;
+}
 
 function runAnimation(frameFunc) {
    let lastTime = null;
@@ -702,27 +720,127 @@ function runLevel(level, gameClass) {
    });
 }
 
-function trackKeys(keys) {
-   let down = Object.create(null);
-   function track(event) {
-      if (keys.includes(event.key)) {
-         down[event.key] = event.type == "keydown";
-         event.preventDefault();
+//移动端
+
+function elt(type, props, style, ...children) {
+   let dom = document.createElement(type);
+   if (props) Object.assign(dom, props);
+   if (style) {
+      for (let key in style) {
+         dom.style[key] = style[key]
       }
    }
-   window.addEventListener("keydown", track);
-   window.addEventListener("keyup", track);
-   down.unregister = () => {
-      window.removeEventListener("keydown", track);
-      window.removeEventListener("keyup", track);
-   };
-   return down;
+   for (let child of children) {
+      if (typeof child != "string") dom.appendChild(child);
+      else dom.appendChild(document.createTextNode(child));
+   }
+   return dom;
+}
+
+function trackTouchKeys(touchEvent,dir,isFire){
+   touchEvent.preventDefault();
+   touchKeys[dir] = isFire;
+}
+
+
+const touchKeys = {
+   ArrowLeft: false,
+   ArrowRight: false,
+   ArrowUp: false
+}
+
+
+const btnStyle = {
+   position: "absolute",
+   width: "50px",
+   height: "50px",
+   fontSize: "50px",
+   backgroundColor: "rgb(0, 0, 0, 0)",
+   borderStyle: "none",
+   color: "pink",
+   top: "250px",
+   opacity:0.6
+}
+const topBtnStyle = Object.assign({}, btnStyle, { right: "50px" });
+const topBtn = elt('div', {
+   ontouchstart: (event) => trackTouchKeys(event,'ArrowUp',true),
+   ontouchend: (event) => trackTouchKeys(event, 'ArrowUp', false)
+}, topBtnStyle, "⬆");
+const rightBtnStyle = Object.assign({}, btnStyle, { left: "100px", transform: "scale(-1,1)", "-webkit -transform": "scale(-1,1)", "-ms-transform": "scale(-1,1)" })
+const rightBtn = elt('div', {
+   ontouchstart: (event) => trackTouchKeys(event, 'ArrowRight', true),
+   ontouchend: (event) => trackTouchKeys(event, 'ArrowRight', false)
+}, rightBtnStyle, "⬅");
+const leftBtnStyle = Object.assign({}, btnStyle, { left: "20px" })
+const leftBtn = elt('div', {
+   ontouchstart: (event) => trackTouchKeys(event, 'ArrowLeft', true),
+   ontouchend: (event) => trackTouchKeys(event, 'ArrowLeft', false)
+}, leftBtnStyle, "⬅")
+
+
+
+function runLevelonMobile(level, gameClass) {
+   let display = new CanvasDisplay(level, gameClass);
+   let state = State.start(level);
+   let ending = 1;
+   let running = "yes";
+
+   return new Promise(resolve => {
+      function escHandler(event) {
+         if (event.key != "Escape") return;
+         event.preventDefault();
+         if (running == "no") {
+            running = "yes";
+            //true的时候，再call一次runAnimation
+            runAnimation(frame);
+         } else {
+            running = "no";
+         }
+      }
+      window.addEventListener("keydown", escHandler);
+      // let arrowKeys = trackKeys(["ArrowLeft", "ArrowRight", "ArrowUp"]);
+
+      function frame(time) {
+         if (running == "no") {
+            return false;
+         }
+         if (gameClass.killTheGame == true) {
+            display.clear();
+            resolve('won');
+            return false;
+         }
+         state = state.update(time, touchKeys, gameClass);
+         // console.log(touchKeys)
+         display.syncState(state);
+         if (state.status == "playing") {
+            return true;
+         } else if (ending > 0) {
+            ending -= time;
+            return true;
+         } else {
+            display.clear();
+            window.removeEventListener("keydown", escHandler);
+            //arrowKeys.unregister();
+            resolve(state.status);
+            return false;
+         }
+      }
+      runAnimation(frame);
+   });
 }
 
 
 export default class Game {
    constructor(dom) {
       this.dom = dom;
+      //如果在移动端运行
+      //if()
+      dom.style.position = "relative";
+      dom.style.width = '700px';
+      dom.style.margin = 'auto';
+      dom.appendChild(topBtn);
+      dom.appendChild(rightBtn);
+      dom.appendChild(leftBtn);
       this.playerSprites = getImage('player.png', pics);
       this.backgroundColor = "rgb(52, 166, 251)";
       this.backgroundImage = null;
@@ -734,33 +852,33 @@ export default class Game {
    }
    async runGame(plans, levelSettings = [], globalSettings) {
       return new Promise(async (resolve) => {
-            //更改全球设置
-            if (globalSettings != undefined) {
-               this.mutate(globalSettings)
+         //更改全球设置
+         if (globalSettings != undefined) {
+            this.mutate(globalSettings)
+         }
+         let startLives = this.lives
+         this.totalLevel = plans.length;
+         for (let level = 0; level < plans.length;) {
+            //重置属性
+            this.backgroundImage = null;
+            this.level = level;
+            //修改级别属性
+            if (levelSettings.length > 0) {
+               this.mutate(levelSettings[level])
             }
-            let startLives = this.lives
-            this.totalLevel = plans.length;
-            for (let level = 0; level < plans.length;) {
-               //重置属性
-               this.backgroundImage = null;
-               this.level = level;
-               //修改级别属性
-               if (levelSettings.length > 0) {
-                  this.mutate(levelSettings[level])
-               }
-               let status = await runLevel(new Level(plans[level]), this);
-               if (status == 'won') {
-                  level++
-               } else {
-                  this.lives--;
-               }
-               if (this.lives == 0) {
-                  level = 0;
-                  this.lives = startLives;
-               }
+            let status = await runLevelonMobile(new Level(plans[level]), this);
+            if (status == 'won') {
+               level++
+            } else {
+               this.lives--;
             }
-            console.log("You've won")
-            resolve(this.killTheGame)
+            if (this.lives == 0) {
+               level = 0;
+               this.lives = startLives;
+            }
+         }
+         console.log("You've won")
+         resolve(this.killTheGame)
       })
    }
    stopGame() {
