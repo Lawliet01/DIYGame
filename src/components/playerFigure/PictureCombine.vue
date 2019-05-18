@@ -32,7 +32,7 @@
     <!-- options -->
     <div class="adjustOptions">
       <span class="leftRotate" @click="rotate-=5">
-        <font-awesome-icon icon="undo" class="fa-lg"/>
+        <font-awesome-icon icon="undo"/>
       </span>
       <div class="flip" @click="flip = !flip">&#8596;</div>
       <span class="rightRotate" @click="rotate+=5">&#8635;</span>
@@ -301,7 +301,6 @@ export default {
   padding: 0 5px;
   border-bottom-right-radius: 5px;
   background-color: #d2caca;
-  color: #992424;
   transition: all 0.3s;
   &:hover {
     cursor: pointer;
@@ -320,7 +319,6 @@ export default {
   border-bottom-left-radius: 5px;
   background-color: #d2caca;
   transition: right 0.3s;
-  color: #992424;
   &:hover {
     cursor: pointer;
     background-color: white;
@@ -335,8 +333,9 @@ export default {
     top: 50%;
     transform: translateY(-50%);
     transition: transform 0.3s;
-    color: #992424;
+    color: #03a9f4;
     padding: 7px;
+    font-size: 20px;
     &:hover {
       @extend %hover-effect;
       transform: translateY(-50%) rotate(-60deg);
@@ -347,15 +346,23 @@ export default {
     right: 0;
     top: 50%;
     transform: translateY(-50%) rotate(30deg);
+    -moz-transform: translateY(-50%) rotate(100deg);
     font-size: 30px;
     transition: transform 0.3s;
-    color: #992424;
+    color: #03a9f4;
     padding: 5px;
     &:hover {
       @extend %hover-effect;
       transform: translateY(-50%) rotate(120deg);
+      -moz-transform: translateY(-50%) rotate(180deg);
     }
   }
+  @supports (-moz-appearance: none) {
+      .rightRotate {
+       font-size: 45px;
+      }
+    }
+    
   .flip {
     position: absolute;
     display: inline-block;
@@ -363,12 +370,12 @@ export default {
     left: -20px;
     padding: 0 5px;
     border: 1px solid lightblue;
-    background-color: #d2caca;
+    background-color: lightblue;
     transition: all 0.3s;
     border-radius: 0 5px 5px 0;
     &:hover {
       @extend %hover-effect;
-      background-color: white;
+      background-color: #03a9f4;
       left: 0;
     }
   }

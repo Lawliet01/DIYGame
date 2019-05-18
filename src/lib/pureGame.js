@@ -620,12 +620,12 @@ class CanvasDisplay {
          each = each.type == 'coin' ? 1 : 0;
          return total + each
       }, 0);
-      this.cx.font = '10px Arial';
+      this.cx.font = '15px Arial';
       this.cx.fillStyle = 'red';
-      this.cx.fillText(`生命: ${this.gameClass.lives}`, 20, 20);
-      this.cx.fillText(`剩余金币: ${numberOfCoin}`, 20, 40)
+      this.cx.fillText(`👦: ${this.gameClass.lives}`, 10, 30);
+      this.cx.fillText(`💰: ${numberOfCoin}`, 10, 55)
       if (this.gameClass.totalLevel != 1) {
-         this.cx.fillText(`关卡: ${this.gameClass.level + 1}/${this.gameClass.totalLevel}`, 20, 60)
+         this.cx.fillText(`L: ${this.gameClass.level + 1}/${this.gameClass.totalLevel}`, 15, 80)
       }
    }
    syncState(state) {
@@ -734,33 +734,33 @@ export default class Game {
    }
    async runGame(plans, levelSettings = [], globalSettings) {
       return new Promise(async (resolve) => {
-         //更改全球设置
-         if (globalSettings != undefined) {
-            this.mutate(globalSettings)
-         }
-         let startLives = this.lives
-         this.totalLevel = plans.length;
-         for (let level = 0; level < plans.length;) {
-            //重置属性
-            this.backgroundImage = null;
-            this.level = level;
-            //修改级别属性
-            if (levelSettings.length > 0) {
-               this.mutate(levelSettings[level])
+            //更改全球设置
+            if (globalSettings != undefined) {
+               this.mutate(globalSettings)
             }
-            let status = await runLevel(new Level(plans[level]), this);
-            if (status == 'won') {
-               level++
-            } else {
-               this.lives--;
+            let startLives = this.lives
+            this.totalLevel = plans.length;
+            for (let level = 0; level < plans.length;) {
+               //重置属性
+               this.backgroundImage = null;
+               this.level = level;
+               //修改级别属性
+               if (levelSettings.length > 0) {
+                  this.mutate(levelSettings[level])
+               }
+               let status = await runLevel(new Level(plans[level]), this);
+               if (status == 'won') {
+                  level++
+               } else {
+                  this.lives--;
+               }
+               if (this.lives == 0) {
+                  level = 0;
+                  this.lives = startLives;
+               }
             }
-            if (this.lives == 0) {
-               level = 0;
-               this.lives = startLives;
-            }
-         }
-         console.log("You've won")
-         resolve(this.killTheGame)
+            console.log("You've won")
+            resolve(this.killTheGame)
       })
    }
    stopGame() {

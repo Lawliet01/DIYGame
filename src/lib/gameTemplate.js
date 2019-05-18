@@ -5,8 +5,14 @@ export default `
 <head>
    <meta charset="utf-8">
    <title></title>
+
 </head>
 
+<style>
+html{
+   padding-top:100px
+}
+</style>
 
 <body>
    <div id='game'></div>
@@ -669,12 +675,12 @@ export default `
             each = each.type == 'coin' ? 1 : 0;
             return total + each
          }, 0);
-         this.cx.font = '10px Arial';
+         this.cx.font = '15px Arial';
          this.cx.fillStyle = 'red';
-         this.cx.fillText(\`生命: \${ this.gameClass.lives } \`, 20, 20);
-         this.cx.fillText(\`剩余金币: \${ numberOfCoin } \`, 20, 40)
+         this.cx.fillText(\`👦: \${ this.gameClass.lives } \`, 10, 30);
+         this.cx.fillText(\`💰: \${ numberOfCoin } \`, 10, 55)
          if (this.gameClass.totalLevel != 1) {
-            this.cx.fillText(\`关卡: \${ this.gameClass.level + 1 } /\${this.gameClass.totalLevel}\`, 20, 60)
+            this.cx.fillText(\`L: \${ this.gameClass.level + 1 } /\${this.gameClass.totalLevel}\`, 15, 80)
          }
       }
 syncState(state) {

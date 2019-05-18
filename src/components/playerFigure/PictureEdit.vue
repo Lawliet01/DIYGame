@@ -26,7 +26,7 @@
 
       <!-- forward and back arrow -->
       <div class="reInput" @click="reInput()">
-        <font-awesome-icon icon="angle-left"/>重新导入
+        <font-awesome-icon icon="angle-left"/> 重新导入
       </div>
       <div class="done" @click="done()">
         下一步
@@ -529,9 +529,8 @@ $border-color: lightBlue;
 .reInput {
   z-index: 1;
   position: absolute;
-  background-color: #d2caca;
   top: 0;
-  color: #992424;
+  color: black;
   height: 30px;
   padding: 5px;
   font-size: 15px;
@@ -540,6 +539,7 @@ $border-color: lightBlue;
   border-bottom-right-radius: 5px;
 
   &:hover {
+    color:#03a9f4;
     cursor: pointer;
     background-color: black;
     opacity: 0.6;
@@ -559,8 +559,8 @@ $border-color: lightBlue;
   bottom: 0;
   left: 50%;
   left: 50%;
-  color: lightblue;
   transform: translateX(-50%);
+  width:100px;
 }
 
 //toolkit

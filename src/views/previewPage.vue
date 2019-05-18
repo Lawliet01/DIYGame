@@ -1,9 +1,7 @@
 <template>
   <div id="gameRunner">
-    <div
-      style="font-size:15px;color:red;font-weight:600"
-    >上、左、右键移动角色，esc键暂停</div>
     <!-- 开始界面 -->
+
     <div class="startUpFace" v-bind:style="startBackgroundStyle" v-if='runningGame==false'>
       <button v-bind:style="startUpBtn" v-on:click="startGame()">{{startUpBtnText}}</button>
       <div
@@ -26,6 +24,10 @@
     <div class="endFace" v-bind:style="endBackgroundStyle" v-if="gameEnd">
       <pre class="textFlow" v-bind:style="processTextFlow.style">{{processTextFlow.textContent}}</pre>
     </div>
+
+    <div v-if='runningGame==false&&gameEnd==false'
+      style="font-size:15px;color:red;font-weight:600"
+    >上、左、右键移动角色，esc键暂停</div>
   </div>
 </template>
 
@@ -49,10 +51,17 @@ importAll(require.context("@/pic/preViewPage", false, /(\.png|\.jpg)$/));
 function importAll(r) {
   r.keys().forEach(key => (pics[key] = r(key)));
 }
-// console.log(pics);
+document.addEventListener('readystatechange',()=>{
+      console.log(document.readyState)
+    })
 
 export default {
   name: "previewPage",
+  created(){
+    document.addEventListener('readystatechange',()=>{
+      console.log(document.readyState)
+    })
+  },
   mounted() {
     levelSetting[0].backgroundImage = pics["./previewLevelBackground1.jpg"];
     levelSetting[1].backgroundImage = pics["./previewLevelBackground2.png"];
@@ -69,10 +78,11 @@ export default {
       startBackgroundStyle,
       startTextComponents,
       startPictureComponents,
+      endBackgroundStyle,
+      processTextFlow,
       runningGame:false,
       gameEnd:false,
-      endBackgroundStyle,
-      processTextFlow
+      doneLoading:true
     };
   },
   methods: {

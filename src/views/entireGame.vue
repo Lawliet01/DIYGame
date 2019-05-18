@@ -82,6 +82,9 @@ export default {
     next();
   },
   mounted() {
+    window.onload=()=>{
+      console.log('done')
+    }
     this.textFlowRealTimeStyle = JSON.parse(
       JSON.stringify(this.endProcessTextFlow.style)
     );
@@ -215,6 +218,7 @@ export default {
       });
       let url = window.URL.createObjectURL(blob);
       let link = document.createElement("a");
+      document.body.appendChild(link)
       link.setAttribute("href", url);
       link.setAttribute("download", gameName + ".html");
       link.click();
@@ -382,7 +386,7 @@ export default {
   button {
     @include buttonStyle(20%, 25px);
     border-radius: 0px;
-    background-color: white;
+    background-color: #f1f1f1;
     &:hover {
       outline: none;
     }

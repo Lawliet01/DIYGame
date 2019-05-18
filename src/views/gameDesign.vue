@@ -300,8 +300,12 @@ $borderStyle: 1px solid lightblue;
 
     .addLevelBtn {
       position: absolute;
+      border-radius:0px;
+      border-style:solid;
+      border-width:1px;
       right: 0;
       height: 100%;
+      margin: 0;
       @include hover-effect();
     }
   }
@@ -319,6 +323,9 @@ $rightContainerWidth: 200px;
     width: 100%;
     height: 100%;
     border-radius: 5px;
+    background-color: white;
+    border-style: solid;
+    border-width: 1px;
     &:hover {
       cursor: pointer;
       background-color: red;
@@ -343,6 +350,7 @@ $rightContainerWidth: 200px;
     border-bottom: none;
     border-radius: 5px 5px 0 0;
     outline: none;
+    background-color:white;
     &:hover {
       cursor: pointer;
       background-color: red;

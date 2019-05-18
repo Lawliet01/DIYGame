@@ -740,6 +740,9 @@ export default {
     div {
       text-align: left;
       padding-left: 10px;
+      input[type=range]{
+        width:100px;
+      }
     }
     .changeBtnColor {
       margin-top: 5px;

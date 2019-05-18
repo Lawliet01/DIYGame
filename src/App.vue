@@ -3,7 +3,7 @@
     <nav>
       <span>DIYGAME</span>
       <router-link to="/">帮助</router-link>
-      <router-link to="/entireGame">开始设计</router-link>
+      <router-link to="/entireGame">设计总面板</router-link>
       <router-link to="/previewPage">预览</router-link>
       <router-link to="/">主页</router-link>
     </nav>
@@ -14,6 +14,8 @@
 </template>
 
 <style lang="scss">
+@import './lib/rangeInputStyle.css';
+
 * {
   box-sizing: border-box;
 }
@@ -57,6 +59,7 @@ nav {
     font-size: 15px;
     margin: 0px 15px;
     color: #3eb0dd;
+    font-weight:600;
     &.router-link-exact-active {
       color: #2c3e50;
     }
@@ -65,4 +68,6 @@ nav {
     }
   }
 }
+
+
 </style>
