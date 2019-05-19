@@ -64,6 +64,7 @@ import gameLevel from "../lib/gameLevel";
 import { mapState, mapGetters } from "vuex";
 import gameTemplate from "@/lib/gameTemplate";
 import { doesNotThrow } from "assert";
+import mobileRouterDevice from '@/lib/mobileRouterProtect';
 
 let pics = {};
 importAll(require.context("../pic/pureGame/", false, /\.png$/));
@@ -73,6 +74,7 @@ function importAll(r) {
 
 export default {
   name: "entrieGame",
+  mixins:[mobileRouterDevice],
   beforeRouteLeave(to, from, next) {
     if (this.runningGame == null) {
       next();
@@ -385,6 +387,9 @@ export default {
     border-radius: 0px;
     background-color: #f1f1f1;
     &:hover {
+      outline: none;
+    }
+    &:focus{
       outline: none;
     }
   }

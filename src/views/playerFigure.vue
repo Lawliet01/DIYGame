@@ -7,8 +7,11 @@
 </template>
 
 <script>
+import mobileRouterDevice from '@/lib/mobileRouterProtect';
+
 export default {
-  name: "playerFigure"
+  name: "playerFigure",
+  mixins:[mobileRouterDevice],
 };
 </script>
 

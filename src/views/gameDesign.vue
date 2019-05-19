@@ -105,6 +105,7 @@
 import { mapState, mapMutations } from "vuex";
 import Game from "@/lib/pureGame";
 import StructureDesign from "@/components/gameDesign/structureDesign";
+import mobileRouterDevice from '@/lib/mobileRouterProtect';
 
 export default {
   name: "gameDesign",
@@ -112,6 +113,7 @@ export default {
     this.runningGame.stopGame();
     next();
   },
+  mixins:[mobileRouterDevice],
   mounted: function() {
     if (this.levelMap.length == 0) {
       this.$store.commit("gameLevel/addLevel");

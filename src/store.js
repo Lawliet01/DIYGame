@@ -173,7 +173,6 @@ let startUpFace = {
       backgroundColor: "#000000",
       backgroundSize: "700px 400px",
       backgroundRepeat: "no-repeat",
-      
     },
     startUpBtnText: "开始游戏",
   },

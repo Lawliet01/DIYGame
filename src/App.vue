@@ -1,38 +1,43 @@
 <template>
   <div id="app">
-    <nav>
-      <span>DIYGAME</span>
-      <router-link to="/">帮助</router-link>
-      <router-link to="/entireGame">设计总面板</router-link>
-      <router-link to="/previewPage">预览</router-link>
-      <router-link to="/">主页</router-link>
-    </nav>
-    <transition name='pageTransition'>
+    <header>
+      <nav>
+        <router-link to="/">主页</router-link>
+        <router-link to="/previewPage">预览</router-link>
+        <router-link to="/entireGame">设计总面板</router-link>
+        <router-link to="/">帮助</router-link>
+      </nav>
+    </header>
+    <transition name="pageTransition">
       <router-view/>
     </transition>
   </div>
 </template>
 
 <style lang="scss">
-@import './lib/rangeInputStyle.css';
+@import "./lib/rangeInputStyle.css";
 
 * {
   box-sizing: border-box;
 }
 
 //动画效果
-.pageTransition-enter-active{
-  transition: all .06s
+.pageTransition-enter-active {
+  transition: all 0.06s;
 }
-.pageTransition-enter{
-  transform: scale(0)
+.pageTransition-enter {
+  transform: scale(0);
 }
 
 html {
   background-color: #f8f9fa;
+  max-width:100%;
+  overflow-x:hidden;
 }
 body {
   margin: 0;
+  width:100%;
+  overflow-x:hidden;
 }
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
@@ -41,33 +46,51 @@ body {
   text-align: center;
   color: #2c3e50;
 }
-nav {
+header {
   text-align: left;
   $navHeight: 50px;
   padding: 10px;
-  span {
+  &::before {
+    content: "DIYGAME";
     line-height: $navHeight;
     font-weight: bold;
     font-size: 30px;
     padding: 0px 20px;
   }
 
-  a {
-    text-decoration: none;
-    float: right;
-    line-height: $navHeight;
-    font-size: 15px;
-    margin: 0px 15px;
-    color: #3eb0dd;
-    font-weight:600;
-    &.router-link-exact-active {
-      color: #2c3e50;
+  nav {
+    float:right;
+    a {
+      text-decoration: none;
+      line-height: $navHeight;
+      font-size: 15px;
+      margin: 0px 15px;
+      color: #3eb0dd;
+      font-weight: 600;
+      &.router-link-exact-active {
+        color: #2c3e50;
+      }
+      &:hover {
+        text-decoration: underline;
+      }
     }
-    &:hover {
-      text-decoration: underline;
+  }
+  
+}
+
+@media screen and (max-width: 500px) {
+  header{
+    text-align: center;
+    &::before{
+      position: absolute;
+      content:''
+    }
+    nav{
+      display: block;
+      float:none;
+      margin: auto;
     }
   }
 }
-
 
 </style>

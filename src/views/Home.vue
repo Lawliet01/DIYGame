@@ -35,16 +35,16 @@
     </section>
     <section class="functionsIntro">
       <h1>三大功能</h1>
-      <div class="firstFunction">
+      <div class="firstFunction" v-bind:style="backgroundStyle">
         <span class="caption">①角色形象设计</span>
       </div>
       <div class="explanation">
         <div>
-          <p>导入图片，把自己或他人的头像刻在游戏角色的身体上，宛如身临其境游戏当中。</p>
+          <p>导入图片，把自己或他人的头像与游戏角色融为一体，宛如身临其境游戏当中。</p>
         </div>
       </div>
 
-      <div class="secondFunction">
+      <div class="secondFunction" v-bind:style="backgroundStyle">
         <span class="caption">②关卡结构设计</span>
       </div>
       <div class="explanation">
@@ -52,16 +52,16 @@
           <p>根据自己的构想设计游戏关卡，按照自己的意愿在关卡里面添加金币、熔浆、怪物等元素， 还可以发挥创造力作出各种有意义的图案。</p>
         </div>
       </div>
-      <div class="thirdFunction">
-        <span class="caption">③游戏结束动画设计</span>
+      <div class="thirdFunction" v-bind:style="backgroundStyle">
+        <span class="caption">③游戏开始与结束界面设计</span>
       </div>
       <div class="explanation">
         <div>
-          <p>通关后，设计一段游戏结束的文字动画，如一段真诚的生日祝福，如一封深情的情书。</p>
+          <p>游戏开始前，设计游戏初始化界面，可自定义任意文字、图片、背景等元素。通关后，设计一段游戏结束的文字动画，如一段真诚的生日祝福，如一封深情的情书。</p>
         </div>
       </div>
     </section>
-    <footer class='footer'>
+    <footer class="footer">
       <pre>
         联系方式：
         邮箱：cxz40901993@qq.com
@@ -75,7 +75,25 @@
 
 export default {
   //name: 'home',
-  components: {}
+  mounted() {
+    if (!is_touch_device()) {
+      this.backgroundStyle.backgroundAttachment = "fixed";
+    }
+    function is_touch_device() {
+      return (
+        "ontouchstart" in window ||
+        navigator.MaxTouchPoints > 0 ||
+        navigator.msMaxTouchPoints > 0
+      );
+    }
+  },
+  data: function() {
+    return {
+      backgroundStyle: {
+        backgroundAttachment: "none"
+      }
+    };
+  }
 };
 </script>
 
@@ -100,6 +118,16 @@ export default {
       text-align: center;
       img {
         float: none;
+      }
+    }
+
+    @media screen and (max-width: 400px) {
+      width: 100%;
+      padding: 0;
+      text-align: center;
+      img {
+        float: none;
+        width: 100%;
       }
     }
   }
@@ -148,6 +176,21 @@ export default {
         margin: 10px;
       }
     }
+    @media screen and (max-width: 400px) {
+      width: 100%;
+      text-align: center;
+      .introductionTitle {
+        padding: 0;
+        width: 100%;
+      }
+      .introductionBody {
+        width: 100%;
+      }
+      .startBtn a {
+        padding: 5px 10px;
+        font-size: 10vw;
+      }
+    }
   }
 }
 
@@ -193,12 +236,12 @@ export default {
 
   .firstFunction {
     position: relative;
-    background-attachment: fixed;
+    //background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
     background-image: url("../pic/home/firstPoster.png");
-    min-height: 600px;
+    min-height: 700px;
     background-color: rgb(95, 173, 228);
 
     .caption {
@@ -207,12 +250,18 @@ export default {
       top: 50%;
       transform: translate(-50%, -50%);
       text-align: center;
-      background-color: #111;
+      background-color: rgba(17, 17, 17, 1);
       color: #fff;
       padding: 18px;
-      font-size: 25px;
+      font-size: 3vw;
       letter-spacing: 10px;
       border-radius: 10px;
+    }
+    @media screen and (max-width: 500px) {
+      .caption {
+        padding: 5px;
+        background-color: rgba(17, 17, 17, 0.6);
+      }
     }
   }
 
@@ -227,7 +276,7 @@ export default {
     @extend .firstFunction;
     background-image: url("../pic/home/thirdPoster.jpg");
     min-height: 400px;
-    background-color: #f7d10afc
+    background-color: #f7d10afc;
   }
 
   .explanation {
@@ -254,8 +303,8 @@ export default {
   }
 }
 
-.footer{
-  background-color:#f6f6f6
+.footer {
+  background-color: #f6f6f6;
 }
 </style>
 

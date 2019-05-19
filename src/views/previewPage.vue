@@ -2,7 +2,7 @@
   <div id="gameRunner">
     <!-- 开始界面 -->
 
-    <div class="startUpFace" v-bind:style="startBackgroundStyle" v-if='runningGame==false'>
+    <div class="startUpFace" v-bind:style="startBackgroundStyle" v-if="runningGame==false">
       <button v-bind:style="startUpBtn" v-on:click="startGame()">{{startUpBtnText}}</button>
       <div
         class="textItem"
@@ -25,9 +25,14 @@
       <pre class="textFlow" v-bind:style="processTextFlow.style">{{processTextFlow.textContent}}</pre>
     </div>
 
-    <div v-if='runningGame==false&&gameEnd==false'
+    <!-- 提示 -->
+    <div
+      v-if="runningGame==false&&gameEnd==false"
       style="font-size:15px;color:red;font-weight:600"
-    >上、左、右键移动角色，esc键暂停</div>
+    >{{is_touch_device()?"操作屏幕按键移动角色,横屏再开始游戏体验更加":"上、左、右键移动角色，esc键暂停"}}</div>
+
+    <!-- 游戏容器 -->
+    <div class="preViewGameContainer" v-bind:style="gameDimension"></div>
   </div>
 </template>
 
@@ -51,47 +56,166 @@ importAll(require.context("@/pic/preViewPage", false, /(\.png|\.jpg)$/));
 function importAll(r) {
   r.keys().forEach(key => (pics[key] = r(key)));
 }
-document.addEventListener('readystatechange',()=>{
-      console.log(document.readyState)
-    })
 
 export default {
   name: "previewPage",
-  created(){
-    document.addEventListener('readystatechange',()=>{
-      console.log(document.readyState)
-    })
-  },
   mounted() {
-    levelSetting[0].backgroundImage = pics["./previewLevelBackground1.jpg"];
-    levelSetting[1].backgroundImage = pics["./previewLevelBackground2.png"];
-    globalSetting.playerSprites = pics["./previewPagePlayer.png"];
-    startPictureComponents[0].url = pics["./DIYGAMElogo.png"];
+    this.levelSetting[0].backgroundImage =
+      pics["./previewLevelBackground1.jpg"];
+    this.levelSetting[1].backgroundImage =
+      pics["./previewLevelBackground2.png"];
+    this.globalSetting.playerSprites = pics["./previewPagePlayer.png"];
+    this.startPictureComponents[0].url = pics["./DIYGAMElogo.png"];
+
+    this.responsiveInit();
+    window.addEventListener("resize", this.resizeTheStartUpFace);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.resizeTheStartUpFace);
   },
   data: function() {
     return {
       levelMap,
       levelSetting,
       globalSetting,
-      startUpBtn,
       startUpBtnText,
-      startBackgroundStyle,
-      startTextComponents,
-      startPictureComponents,
-      endBackgroundStyle,
-      processTextFlow,
-      runningGame:false,
-      gameEnd:false,
-      doneLoading:true
+      startUpBtn: JSON.parse(JSON.stringify(startUpBtn)),
+      startBackgroundStyle: JSON.parse(JSON.stringify(startBackgroundStyle)),
+      startTextComponents: JSON.parse(JSON.stringify(startTextComponents)),
+      startPictureComponents: JSON.parse(
+        JSON.stringify(startPictureComponents)
+      ),
+      endBackgroundStyle: JSON.parse(JSON.stringify(endBackgroundStyle)),
+      processTextFlow: JSON.parse(JSON.stringify(processTextFlow)),
+      runningGame: false,
+      gameEnd: false,
+      doneLoading: true,
+      gameDimension: {
+        width: "700px",
+        height: "400px",
+        margin: "auto",
+        position: "relative"
+      }
     };
   },
   methods: {
     async startGame() {
-      this.runningGame = true
-      let game = new Game(document.querySelector("#gameRunner"));
-      await game.runGame(levelMap, levelSetting, globalSetting);
+      this.runningGame = new Game(
+        document.querySelector(".preViewGameContainer")
+      );
+      await this.runningGame.runGame(levelMap, levelSetting, globalSetting);
       this.gameEnd = true;
-      this.gameEndAnimation()
+      window.scrollTo(0, 0);
+      if (this.is_touch_device()) {
+        Array.from(
+          document.querySelector(".preViewGameContainer").children
+        ).forEach(child => child.remove());
+      }
+      this.gameEndAnimation();
+    },
+    resizeTheStartUpFace() {
+      if (this.runningGame !== false && this.gameEnd != true) return;
+      this.responsiveInit();
+    },
+    screenDimension() {
+      //获得屏幕界面
+      return {
+        width: window.innerWidth - 20,
+        height: window.innerHeight
+      };
+    },
+    is_touch_device() {
+      return (
+        "ontouchstart" in window ||
+        navigator.MaxTouchPoints > 0 ||
+        navigator.msMaxTouchPoints > 0
+      );
+    },
+    responsiveInit() {
+      //界面responsive
+      let { width, height } = this.screenDimension();
+      //先修改游戏界面
+      this.gameDimension.width = width + "px";
+      this.gameDimension.height = height + "px";
+      //根据width height按比率调整长宽
+      let ratio = height / width;
+      let adjRatio = 1;
+      if (ratio > 400 / 700) {
+        //依赖宽来定义size
+        adjRatio = width / 700;
+        //改变container的宽
+        this.$set(
+          this.startBackgroundStyle,
+          "width",
+          this.pixelTypeTransfer(width)
+        );
+        this.$set(
+          this.startBackgroundStyle,
+          "height",
+          this.pixelTypeTransfer(400 * adjRatio)
+        );
+        this.$set(
+          this.endBackgroundStyle,
+          "width",
+          this.pixelTypeTransfer(width)
+        );
+        this.$set(
+          this.endBackgroundStyle,
+          "height",
+          this.pixelTypeTransfer(400 * adjRatio)
+        );
+      } else {
+        //依赖长来定义size
+        adjRatio = height / 400;
+        this.$set(
+          this.startBackgroundStyle,
+          "width",
+          this.pixelTypeTransfer(700 * adjRatio)
+        );
+        this.$set(
+          this.startBackgroundStyle,
+          "height",
+          this.pixelTypeTransfer(height)
+        );
+        this.$set(
+          this.endBackgroundStyle,
+          "width",
+          this.pixelTypeTransfer(700 * adjRatio)
+        );
+        this.$set(
+          this.endBackgroundStyle,
+          "height",
+          this.pixelTypeTransfer(height)
+        );
+      }
+
+      mutateProp(this.startUpBtn, startUpBtn, this);
+      mutateProp(
+        this.startTextComponents[0].style,
+        startTextComponents[0].style,
+        this
+      );
+      mutateProp(
+        this.startPictureComponents[0].style,
+        startPictureComponents[0].style,
+        this
+      );
+      mutateProp(
+        this.startPictureComponents[0],
+        startPictureComponents[0],
+        this
+      );
+      mutateProp(this.processTextFlow.style, processTextFlow.style, this);
+
+      function mutateProp(item, base, self) {
+        ["top", "left", "width", "height", "fontSize"].forEach(property => {
+          if (item[property] != undefined)
+            item[property] =
+              typeof item[property] == "string"
+                ? self.pixelTypeTransfer(base[property]) * adjRatio + "px"
+                : base[property] * adjRatio;
+        });
+      }
     },
     pixelTypeTransfer(value) {
       if (typeof value == "string") {
@@ -100,8 +224,8 @@ export default {
         return value + "px";
       }
     },
-    gameEndAnimation(){
-       let {
+    gameEndAnimation() {
+      let {
         animation,
         animationTime,
         animationDistance,
@@ -140,18 +264,14 @@ export default {
 </script>
 
 <style scoped lang='scss'>
-
-
 #gameRunner {
   padding-top: 50px;
+  text-align: center;
 }
 
 .startUpFace {
   margin: auto;
   position: relative;
-  width: 700px;
-  min-width: 700px;
-  height: 400px;
   overflow: hidden;
   background-position: center;
   button {
@@ -164,8 +284,6 @@ export default {
 
 .endFace {
   @extend .startUpFace;
-   background-image: url('../pic/preViewPage/endFaceBackground.jpg')
+  background-image: url("../pic/preViewPage/endFaceBackground.jpg");
 }
-
-
 </style>

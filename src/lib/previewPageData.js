@@ -10,7 +10,7 @@ exports.globalSetting = {
    playerSprites: null
 }
 
-exports.startUpBtn = { "left": "301px", "top": "164px", "width": "131px", "height": "131px", "borderRadius": "129px", "color": "#000000", "backgroundColor": "#ffbea7", "borderWidth": "7px", "borderColor": "#ff8560", "fontSize": "42px", "zIndex": 100,"position":"absolute" }
+exports.startUpBtn = { "left": "301px", "top": "164px", "width": "131px", "height": "131px", "borderRadius": "129px", "color": "#000000", "backgroundColor": "#ffbea7", "borderWidth": "7px", "borderColor": "#ff8560", "fontSize": "30px", "zIndex": 100,"position":"absolute",}
 
 exports.startUpBtnText = "GO";
 
@@ -20,6 +20,6 @@ exports.startTextComponents = [{ "style": { "top": "34px", "left": "-18px", "fon
 
 exports.startPictureComponents = [{ style: { "top": "-28px", "left": "104px", "opacity": 0.2, "transform": "rotate(0deg)", "zIndex": 0, "filter": "none", "position": "absolute" }, width: 493, url: "" }]
 
-exports.endBackgroundStyle = { "backgroundImage": "", "backgroundColor": "#000000", "backgroundSize": "700px 400px", "backgroundRepeat": "no-repeat" }
+exports.endBackgroundStyle = { "backgroundImage": "", "backgroundColor": "#000000", "backgroundSize": "cover", "backgroundRepeat": "no-repeat" }
 
 exports.processTextFlow = { "style": { "position": "absolute", "top": "223px", "left": "207px", "fontSize": "30px", "color": "#ff0029", "zIndex": 100 }, "animate": { "animation": true, "animationTime": 20, "animationDir": "top", "animationDistance": 935 }, "textContent": "\n五星红旗迎风飘扬，\n胜利歌声多么响亮；\n歌唱我们亲爱的祖国，\n从今走向繁荣富强。\n歌唱我们亲爱的祖国，\n从今走向繁荣富强。\n越过高山，越过平原，\n跨过奔腾的黄河长江；\n宽广美丽的土地，\n是我们亲爱的家乡，\n英雄的人民站起来了！\n我们团结友爱坚强如钢。\n五星红旗迎风飘扬，\n胜利歌声多么响亮；" }

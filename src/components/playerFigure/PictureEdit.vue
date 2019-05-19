@@ -99,9 +99,11 @@ import { isTSExpressionWithTypeArguments } from "@babel/types";
 import { transform } from "@babel/core";
 import { posStringToNumber } from "./lib/posStringToNumber";
 import { eraseCanvas as goErase } from "./lib/eraseCanvasTool";
+import mobileRouterDevice from '@/lib/mobileRouterProtect';
 
 export default {
   name: "pictureEdit",
+  mixins:[mobileRouterDevice],
   mounted: function() {
     // 如果图片已经加载了，就不用重头再来
     if (this.imgData == null) return;

@@ -11,12 +11,14 @@
 
 <script>
 
-import faceComponent from '@/components/startUpAndEnd/faceComponent'
+import faceComponent from '@/components/startUpAndEnd/faceComponent';
+import mobileRouterDevice from '@/lib/mobileRouterProtect';
 
 
 
 export default {
   name:'startUpAndEndFace',
+  mixins:[mobileRouterDevice],
   components:{faceComponent},
   data:function(){
     return{

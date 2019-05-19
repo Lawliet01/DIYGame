@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 ////放大倍数
-var scale = 20;
-var gameWidth = 700;
-var gameHeight = 400;
+// var scale = 20;
+// var gameWidth = 700;
+// var gameHeight = 400;
 
 ////每个actor的图片来源
 let pics = {}
@@ -430,11 +430,12 @@ function flipHorizontally(context, around) {
 ////渲染模式
 class CanvasDisplay {
    constructor(level, gameClass) {
+      this.gameClass = gameClass;
       this.canvas = document.createElement("canvas");
       this.canvas.style.display = 'block';
       this.canvas.style.margin = 'auto'
-      this.canvas.width = Math.min(gameWidth, level.width * scale);
-      this.canvas.height = Math.min(gameHeight, level.height * scale);
+      this.canvas.width = Math.min(gameClass.gameWidth, level.width * gameClass.scale);
+      this.canvas.height = Math.min(gameClass.gameHeight, level.height * gameClass.scale);
       gameClass.dom.appendChild(this.canvas);
       this.cx = this.canvas.getContext("2d");
       this.flipPlayer = false;
@@ -445,10 +446,9 @@ class CanvasDisplay {
          left: 0,
          top: 0,
          //屏幕的3分之一
-         width: this.canvas.width / scale,
-         height: this.canvas.height / scale
+         width: this.canvas.width / gameClass.scale,
+         height: this.canvas.height / gameClass.scale
       };
-      this.gameClass = gameClass;
    }
    clear() {
       this.canvas.remove();
@@ -476,6 +476,10 @@ class CanvasDisplay {
       let backgroundImage = this.gameClass.backgroundImage;
       if (backgroundImage !== null) {
          //处理游戏背景
+         //也要画背景颜色，避免出现“拖人”的情况
+         this.cx.fillStyle = this.gameClass.backgroundColor || "rgb(52, 166, 251)";
+         this.cx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
          this.cx.drawImage(backgroundImage, 0, 0, this.canvas.width, this.canvas.height)
       } else {
          //default background setting
@@ -500,11 +504,11 @@ class CanvasDisplay {
          for (let x = xStart; x < xEnd; x++) {
             let tile = level.rows[y][x];
             if (tile == "empty") continue;
-            let screenX = (x - left) * scale;
-            let screenY = (y - top) * scale;
-            let tileX = tile == "lava" ? 2 * scale : 0;
-            this.cx.drawImage(otherSprites, tileX, 0, 2 * scale, 2 * scale,
-               screenX, screenY, scale, scale);
+            let screenX = (x - left) * this.gameClass.scale;
+            let screenY = (y - top) * this.gameClass.scale;
+            let tileX = tile == "lava" ? 40 : 0;
+            this.cx.drawImage(otherSprites, tileX, 0, 40, 40,
+               screenX, screenY, this.gameClass.scale, this.gameClass.scale);
          }
       }
    }
@@ -591,10 +595,10 @@ class CanvasDisplay {
    }
    drawActors(actors, status) {
       for (let actor of actors) {
-         let width = actor.size.x * scale;
-         let height = actor.size.y * scale;
-         let x = (actor.pos.x - this.viewport.left) * scale;
-         let y = (actor.pos.y - this.viewport.top) * scale;
+         let width = actor.size.x * this.gameClass.scale;
+         let height = actor.size.y * this.gameClass.scale;
+         let x = (actor.pos.x - this.viewport.left) * this.gameClass.scale;
+         let y = (actor.pos.y - this.viewport.top) * this.gameClass.scale;
          if (actor.type == "player") {
             if (status !== 'lost') {
                this.drawPlayer(actor, x, y, width, height);
@@ -610,8 +614,8 @@ class CanvasDisplay {
          } else if (actor.type == "fire") {
             this.drawFire(actor, x, y, width, height)
          } else {
-            let tileX = (actor.type == "coin" ? 2 : 1) * 2 * scale;
-            this.cx.drawImage(otherSprites, tileX, 0, 2 * width, 2 * height, x, y, width, height);
+            let tileX = (actor.type == "coin" ? 2 : 1) * 40;
+            this.cx.drawImage(otherSprites, tileX, 0, 30, 30, x, y, width, height);
          }
       }
    }
@@ -737,7 +741,7 @@ function elt(type, props, style, ...children) {
    return dom;
 }
 
-function trackTouchKeys(touchEvent,dir,isFire){
+function trackTouchKeys(touchEvent, dir, isFire) {
    touchEvent.preventDefault();
    touchKeys[dir] = isFire;
 }
@@ -749,7 +753,6 @@ const touchKeys = {
    ArrowUp: false
 }
 
-
 const btnStyle = {
    position: "absolute",
    width: "50px",
@@ -759,11 +762,11 @@ const btnStyle = {
    borderStyle: "none",
    color: "pink",
    top: "250px",
-   opacity:0.6
+   opacity: 0.6
 }
 const topBtnStyle = Object.assign({}, btnStyle, { right: "50px" });
 const topBtn = elt('div', {
-   ontouchstart: (event) => trackTouchKeys(event,'ArrowUp',true),
+   ontouchstart: (event) => trackTouchKeys(event, 'ArrowUp', true),
    ontouchend: (event) => trackTouchKeys(event, 'ArrowUp', false)
 }, topBtnStyle, "⬆");
 const rightBtnStyle = Object.assign({}, btnStyle, { left: "100px", transform: "scale(-1,1)", "-webkit -transform": "scale(-1,1)", "-ms-transform": "scale(-1,1)" })
@@ -798,7 +801,6 @@ function runLevelonMobile(level, gameClass) {
          }
       }
       window.addEventListener("keydown", escHandler);
-      // let arrowKeys = trackKeys(["ArrowLeft", "ArrowRight", "ArrowUp"]);
 
       function frame(time) {
          if (running == "no") {
@@ -810,7 +812,6 @@ function runLevelonMobile(level, gameClass) {
             return false;
          }
          state = state.update(time, touchKeys, gameClass);
-         // console.log(touchKeys)
          display.syncState(state);
          if (state.status == "playing") {
             return true;
@@ -829,18 +830,38 @@ function runLevelonMobile(level, gameClass) {
    });
 }
 
+//设备运行环境
+function is_touch_device() {
+   return (('ontouchstart' in window)
+      || (navigator.MaxTouchPoints > 0)
+      || (navigator.msMaxTouchPoints > 0));
+}
+
+function pixelTypeTransfer(value) {
+   if (typeof value == "string") {
+      return Number(value.match(/-?\d+/)[0]);
+   } else {
+      return value + "px";
+   }
+}
+
+
 
 export default class Game {
    constructor(dom) {
       this.dom = dom;
+      this.scale = 20;
+      this.gameWidth = 700;
+      this.gameHeight = 400;
+      this.changeDimension();
+
       //如果在移动端运行
-      //if()
-      dom.style.position = "relative";
-      dom.style.width = '700px';
-      dom.style.margin = 'auto';
-      dom.appendChild(topBtn);
-      dom.appendChild(rightBtn);
-      dom.appendChild(leftBtn);
+      if (is_touch_device()) {
+         this.dom.style.position = "relative";
+         this.dom.appendChild(topBtn);
+         this.dom.appendChild(rightBtn);
+         this.dom.appendChild(leftBtn);
+      }
       this.playerSprites = getImage('player.png', pics);
       this.backgroundColor = "rgb(52, 166, 251)";
       this.backgroundImage = null;
@@ -850,6 +871,7 @@ export default class Game {
       this.jumpSpeed = 17;
       this.killTheGame = false;
    }
+
    async runGame(plans, levelSettings = [], globalSettings) {
       return new Promise(async (resolve) => {
          //更改全球设置
@@ -866,7 +888,12 @@ export default class Game {
             if (levelSettings.length > 0) {
                this.mutate(levelSettings[level])
             }
-            let status = await runLevelonMobile(new Level(plans[level]), this);
+            let status;
+            if (is_touch_device()) {
+               status = await runLevelonMobile(new Level(plans[level]), this);
+            } else {
+               status = await runLevel(new Level(plans[level]), this)
+            }
             if (status == 'won') {
                level++
             } else {
@@ -899,6 +926,26 @@ export default class Game {
             this[key] = valueToBeMutated[key]
          }
       })
+   }
+   changeDimension(){
+
+      //根据dom的大小定义游戏的尺寸
+      if (this.dom.style.width.length == 0) return;
+      let actualRatio = pixelTypeTransfer(this.dom.style.height) / pixelTypeTransfer(this.dom.style.width)
+      if (actualRatio > (this.gameHeight / this.gameWidth)) {
+         //依赖宽来定义size
+         let adjRatio = pixelTypeTransfer(this.dom.style.width) / this.gameWidth;
+         this.gameWidth = pixelTypeTransfer(this.dom.style.width)
+         this.gameHeight *= adjRatio;
+         this.scale *= adjRatio;
+      } else {
+         //依赖高来定义size
+         let adjRatio = pixelTypeTransfer(this.dom.style.height) / this.gameHeight;
+         this.gameHeight = pixelTypeTransfer(this.dom.style.height)
+         this.gameWidth *= adjRatio;
+         this.scale *= adjRatio;
+      }
+      
    }
 }
 
