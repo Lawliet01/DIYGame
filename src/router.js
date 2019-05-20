@@ -43,6 +43,10 @@ export default new Router({
     {
       path:'/previewPage',
       component:()=>import(/*webpackChunkName:"previewPage"*/ './views/previewPage.vue')
+    },
+    {
+      path:'/help',
+      component:()=>import(/*webpackChunkName:"help"*/ './views/help.vue')
     }
   ]
 })

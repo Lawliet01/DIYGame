@@ -47,7 +47,7 @@
     <!-- 按键组 -->
     <div class="btnGroup">
       <button @click="goToPlayerFigureDesign()" class="designBtn">
-        <font-awesome-icon icon="male" class="fa-lg"/>&nbsp;人物形象设计
+        <font-awesome-icon icon="male" class="fa-lg"/>&nbsp;角色设计
       </button>
       <button @click="goToGameDesign()" class="designBtn">
         <font-awesome-icon icon="gamepad" class="fa-lg"/>&nbsp;游戏设计

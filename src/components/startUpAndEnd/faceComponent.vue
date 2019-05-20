@@ -865,6 +865,9 @@ export default {
 }
 
 @media screen and (max-width: 920px) {
+  #faceComponent {
+    width: 700px;
+  }
 
   .leftContainer {
     display: block;
@@ -885,18 +888,18 @@ export default {
         }
       }
 
-      .modeTitle{
-        margin-top:15px;
-        margin-bottom:0;
+      .modeTitle {
+        margin-top: 15px;
+        margin-bottom: 0;
       }
       .seperateline {
         width: 300px;
-        margin:5px auto
+        margin: 5px auto;
       }
 
       .backgroundSetting {
         div {
-          padding-top:20px;
+          padding-top: 20px;
           width: 33.3%;
           display: inline-block;
           text-align: center;
@@ -929,7 +932,7 @@ export default {
         position: relative;
         .leftContent,
         .rightContent {
-          padding-top:20px;
+          padding-top: 20px;
           display: inline-block;
           width: 50%;
         }

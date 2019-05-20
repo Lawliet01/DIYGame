@@ -27,7 +27,7 @@
       <div class="operationalContainer">
         <div class="choices">
           <button class="backgroundSettingBtn" @click="mode='backgroundSetting'">背景</button>
-          <button class="propertySettingBtn" @click="mode='propertySetting'">游戏属性</button>
+          <button class="propertySettingBtn" @click="mode='propertySetting'">角色属性</button>
         </div>
         <div class="settingContainer">
           <div class="backgroundSettingPanel" v-if="mode=='backgroundSetting'">

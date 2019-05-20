@@ -3,9 +3,9 @@
     <header>
       <nav>
         <router-link to="/">主页</router-link>
-        <router-link to="/previewPage">预览</router-link>
-        <router-link to="/entireGame">设计总面板</router-link>
-        <router-link to="/">帮助</router-link>
+        <router-link to="/previewPage">实例</router-link>
+        <router-link to="/entireGame">设计总台</router-link>
+        <router-link to="/help">帮助</router-link>
       </nav>
     </header>
     <transition name="pageTransition">
@@ -36,7 +36,7 @@ html {
 }
 body {
   margin: 0;
-  width:100%;
+  max-width:100%;
   overflow-x:hidden;
 }
 #app {

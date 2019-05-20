@@ -8,7 +8,7 @@
         <div class="introductionTitle">DIYGAME</div>
         <p class="introductionBody">是一款自主游戏设计平台，允许使用者在没有任何技术背景的情况下打造个人专属的冒险游戏。</p>
         <div class="startBtn">
-          <router-link to="/previewPage" class="preview">预览</router-link>
+          <router-link to="/previewPage" class="preview">实例</router-link>
           <router-link to="/entireGame" class="startDesign">开始设计</router-link>
         </div>
       </div>
@@ -40,7 +40,7 @@
       </div>
       <div class="explanation">
         <div>
-          <p>导入图片，把自己或他人的头像与游戏角色融为一体，宛如身临其境游戏当中。</p>
+          <p>一款游戏的设计，首先游戏角色开始。DIYGAME让您按照自己的想法，设计独一无二的角色形象。</p>
         </div>
       </div>
 
@@ -49,7 +49,7 @@
       </div>
       <div class="explanation">
         <div>
-          <p>根据自己的构想设计游戏关卡，按照自己的意愿在关卡里面添加金币、熔浆、怪物等元素， 还可以发挥创造力作出各种有意义的图案。</p>
+          <p>您可以根据自己的构想设计游戏关卡，按照自己的意愿在关卡里面添加金币、熔浆、怪物等各类元素， 还可以发挥创造力创造出各种有意义的图案。</p>
         </div>
       </div>
       <div class="thirdFunction" v-bind:style="backgroundStyle">
@@ -57,7 +57,7 @@
       </div>
       <div class="explanation">
         <div>
-          <p>游戏开始前，设计游戏初始化界面，可自定义任意文字、图片、背景等元素。通关后，设计一段游戏结束的文字动画，如一段真诚的生日祝福，如一封深情的情书。</p>
+          <p>您可以自定义游戏的初始化与结束界面，按照自己的需求在界面里添加各类的文字与图片，结束界面还允许您设计一段流动的文字动画，以歌颂朋友的友谊，或表达对TA的爱慕之情。</p>
         </div>
       </div>
     </section>

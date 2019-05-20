@@ -81,7 +81,7 @@
         >模版{{index+1}}</div>
       </div>
       <div class="cancelBtn" @click="cancel()">取消</div>
-      <div class="doneBtn" @click="done()">完成</div>
+      <div class="doneBtn" @click="done()">保存</div>
     </div>
   </div>
 </template>
