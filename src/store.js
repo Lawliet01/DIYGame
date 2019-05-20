@@ -4,6 +4,12 @@ import defaultGameMap from './lib/gameLevel'
 
 Vue.use(Vuex)
 
+const restoreData = (state, value) => {
+  for (let key in value) {
+    state[key] = value[key]
+  }
+}
+
 let playerFigure = {
   namespaced: true,
   state: {
@@ -28,7 +34,7 @@ let playerFigure = {
       Object.keys(state).forEach(key => {
         state[key] = null
       })
-    }
+    },
   },
 };
 
@@ -77,7 +83,8 @@ let gameLevel = {
       Object.keys(valuePair).forEach(key => {
         state.globalPlayerSetting[key] = valuePair[key]
       })
-    }
+    },
+    restoreData
   }
 }
 
@@ -147,7 +154,8 @@ const startUpFaceMutations = {
       if (state[key] == undefined) throw new Error('no such keys')
       state[key] = style[key]
     }
-  }
+  },
+  restoreData
 }
 
 let startUpFace = {
@@ -198,7 +206,7 @@ let endFace = {
       left: "265px",
       fontSize: "30px",
       color: '#fbff20',
-      zIndex:100,
+      zIndex: 100,
       animation: true,
       animationTime: 10,
       animationDir: 'top',
@@ -215,7 +223,7 @@ let endFace = {
           left: state.textFlowStyle.left,
           fontSize: state.textFlowStyle.fontSize,
           color: state.textFlowStyle.color,
-          zIndex:100,
+          zIndex: 100,
         },
         animate: {
           animation: state.textFlowStyle.animation,

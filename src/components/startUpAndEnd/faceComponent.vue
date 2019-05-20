@@ -45,119 +45,131 @@
         </div>
 
         <h3 class="modeTitle">{{modeTitle}}</h3>
-        <div style="width:100px;margin:20px auto">
+        <div class="seperateline">
           <hr>
         </div>
 
         <!-- pictureSetting -->
-        <div class="pictureSetting" v-show="mode == 'pictrureEditing'">
-          <div class="filter">
-            <span>效果</span>
-            <select
-              :value="pictureComponents[currentPictureFocus] == undefined?'default':pictureComponents[currentPictureFocus].filter"
-              @change="changePictureProperty('filter','none')"
-            >
-              <option disabled value="default">滤镜</option>
-              <option
-                v-for="(effect,index) in filterGroup"
-                :key="'filterGroup'+index"
-                :value="effect.value"
-              >{{effect.name}}</option>
-            </select>
+        <div class="pictureSetting" v-show="mode == 'pictureEditing'">
+          <div class="leftContent">
+            <div class="filter">
+              <span>效果</span>
+              <select
+                :value="pictureComponents[currentPictureFocus] == undefined?'default':pictureComponents[currentPictureFocus].filter"
+                @change="changePictureProperty('filter','none')"
+              >
+                <option disabled value="default">滤镜</option>
+                <option
+                  v-for="(effect,index) in filterGroup"
+                  :key="'filterGroup'+index"
+                  :value="effect.value"
+                >{{effect.name}}</option>
+              </select>
+            </div>
+
+            <div class="resize">
+              <span>大小</span>
+              <input
+                type="range"
+                min="10"
+                max="600"
+                step="1"
+                :value="pictureComponents[currentPictureFocus] == undefined?1:pictureComponents[currentPictureFocus].width"
+                @input="changePictureProperty('width',1)"
+              >
+            </div>
           </div>
-          <div class="resize">
-            <span>大小</span>
-            <input
-              type="range"
-              min="10"
-              max="600"
-              step="1"
-              :value="pictureComponents[currentPictureFocus] == undefined?1:pictureComponents[currentPictureFocus].width"
-              @input="changePictureProperty('width',1)"
-            >
+          <div class="middleContent">
+            <div class="opacityAdj">
+              <span>透明度</span>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                :value="pictureComponents[currentPictureFocus] == undefined?0:pictureComponents[currentPictureFocus].opacity"
+                @input="changePictureProperty('opacity',1)"
+              >
+            </div>
+
+            <div class="rotateBtn">
+              <span>左</span>
+              <input
+                type="range"
+                min="-180"
+                max="180"
+                step="1"
+                :value="pictureComponents[currentPictureFocus] == undefined?-180:pictureComponents[currentPictureFocus].rotate"
+                @input="changePictureProperty('rotate',100)"
+              >
+              右
+            </div>
           </div>
-          <div class="opacityAdj">
-            <span>透明度</span>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              :value="pictureComponents[currentPictureFocus] == undefined?0:pictureComponents[currentPictureFocus].opacity"
-              @input="changePictureProperty('opacity',1)"
-            >
-          </div>
-          <div class="rotateBtn">
-            <span>左</span>
-            <input
-              type="range"
-              min="-180"
-              max="180"
-              step="1"
-              :value="pictureComponents[currentPictureFocus] == undefined?-180:pictureComponents[currentPictureFocus].rotate"
-              @input="changePictureProperty('rotate',100)"
-            >
-            右
-          </div>
-          <div class="stepUpOrDown">
-            <button class="stepUp" value="1" @click="changePictureProperty('zIndex',0)">往上一层</button>
-            <button class="stepDown" value="-1" @click="changePictureProperty('zIndex',0)">往下一层</button>
-          </div>
-          <div class="destroyBtn">
-            <button @click="changePictureProperty('destroy',false)">删除</button>
+          <div class="rightContent">
+            <div class="stepUpOrDown">
+              <button class="stepUp" value="1" @click="changePictureProperty('zIndex',0)">往上一层</button>
+              <button class="stepDown" value="-1" @click="changePictureProperty('zIndex',0)">往下一层</button>
+            </div>
+            <div class="destroyBtn">
+              <button @click="changePictureProperty('destroy',false)">删除</button>
+            </div>
           </div>
         </div>
 
         <!-- textSetting -->
         <div class="textSetting" v-show="mode == 'textEditing'">
-          <div class="resize">
-            <span>大小</span>
-            <input
-              type="range"
-              min="5"
-              max="200"
-              step="1"
-              :value="textComponents[currentTextFocus] == undefined?5:textComponents[currentTextFocus].fontSize"
-              @input="changeTextProperty('fontSize',1)"
-            >
+          <div class="leftContent">
+            <div class="resize">
+              <span>大小</span>
+              <input
+                type="range"
+                min="5"
+                max="200"
+                step="1"
+                :value="textComponents[currentTextFocus] == undefined?5:textComponents[currentTextFocus].fontSize"
+                @input="changeTextProperty('fontSize',1)"
+              >
+            </div>
+            <div class="opacityAdj">
+              <span>透明度</span>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                :value="textComponents[currentTextFocus] == undefined?0:textComponents[currentTextFocus].opacity"
+                @input="changeTextProperty('opacity',1)"
+              >
+            </div>
+            <div class="rotateBtn">
+              <span>左</span>
+              <input
+                type="range"
+                min="-180"
+                max="180"
+                step="1"
+                :value="textComponents[currentTextFocus] == undefined?-180:textComponents[currentTextFocus].rotate"
+                @input="changeTextProperty('rotate',100)"
+              >
+              右
+            </div>
           </div>
-          <div class="opacityAdj">
-            <span>透明度</span>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              :value="textComponents[currentTextFocus] == undefined?0:textComponents[currentTextFocus].opacity"
-              @input="changeTextProperty('opacity',1)"
-            >
-          </div>
-          <div class="rotateBtn">
-            <span>左</span>
-            <input
-              type="range"
-              min="-180"
-              max="180"
-              step="1"
-              :value="textComponents[currentTextFocus] == undefined?-180:textComponents[currentTextFocus].rotate"
-              @input="changeTextProperty('rotate',100)"
-            >
-            右
-          </div>
-          <div>
-            <span>颜色</span>
-            <input
-              type="color"
-              :value="textComponents[currentTextFocus] == undefined?'#b900ff':textComponents[currentTextFocus].color"
-              @input="changeTextProperty('color','blue')"
-            >
-          </div>
-          <div class="stepUpOrDown">
-            <button class="stepUp" value="1" @click="changeTextProperty('zIndex',0)">往上一层</button>
-            <button class="stepDown" value="-1" @click="changeTextProperty('zIndex',0)">往下一层</button>
-          </div>
-          <div class="destroyBtn">
-            <button @click="changeTextProperty('destroy',false)">删除</button>
+          <div class="rightContent">
+            <div class="colorInput">
+              <span>颜色</span>
+              <input
+                type="color"
+                :value="textComponents[currentTextFocus] == undefined?'#b900ff':textComponents[currentTextFocus].color"
+                @input="changeTextProperty('color','blue')"
+              >
+            </div>
+            <div class="stepUpOrDown">
+              <button class="stepUp" value="1" @click="changeTextProperty('zIndex',0)">往上一层</button>
+              <button class="stepDown" value="-1" @click="changeTextProperty('zIndex',0)">往下一层</button>
+            </div>
+            <div class="destroyBtn">
+              <button @click="changeTextProperty('destroy',false)">删除</button>
+            </div>
           </div>
         </div>
 
@@ -187,136 +199,149 @@
           <div class="startUpBtnText">
             <input type="text" v-model="startUpBtnText">
           </div>
-          <div class="startUpBtnWidth">
-            长度
-            <input
-              type="range"
-              min="10"
-              max="200"
-              step="1"
-              :value="pixelTypeTransfer(startBtnStyle.width)"
-              @input="startBtnStyle.width = pixelTypeTransfer(Number($event.target.value))"
-            >
-            <br>宽度
-            <input
-              type="range"
-              min="10"
-              max="200"
-              step="1"
-              :value="pixelTypeTransfer(startBtnStyle.height)"
-              @input="startBtnStyle.height = pixelTypeTransfer(Number($event.target.value))"
-            >
+          <div class="leftContent">
+            <div class="startUpBtnWidth">
+              长度
+              <input
+                type="range"
+                min="10"
+                max="200"
+                step="1"
+                :value="pixelTypeTransfer(startBtnStyle.width)"
+                @input="startBtnStyle.width = pixelTypeTransfer(Number($event.target.value))"
+              >
+              <br>宽度
+              <input
+                type="range"
+                min="10"
+                max="200"
+                step="1"
+                :value="pixelTypeTransfer(startBtnStyle.height)"
+                @input="startBtnStyle.height = pixelTypeTransfer(Number($event.target.value))"
+              >
+            </div>
+            <div class="startUpBtnBorderRadius">
+              边角
+              <input
+                type="range"
+                min="0"
+                max="200"
+                step="1"
+                :value="pixelTypeTransfer(startBtnStyle.borderRadius)"
+                @input="startBtnStyle.borderRadius = pixelTypeTransfer(Number($event.target.value))"
+              >
+            </div>
           </div>
-          <div class="startUpBtnBorderRadius">
-            边角
-            <input
-              type="range"
-              min="0"
-              max="200"
-              step="1"
-              :value="pixelTypeTransfer(startBtnStyle.borderRadius)"
-              @input="startBtnStyle.borderRadius = pixelTypeTransfer(Number($event.target.value))"
-            >
+          <div class="middleContent">
+            <div class="startUpBtnBorderWidth">
+              边框
+              <input
+                type="range"
+                min="0"
+                max="15"
+                step="1"
+                :value="pixelTypeTransfer(startBtnStyle.borderWidth)"
+                @input="startBtnStyle.borderWidth = pixelTypeTransfer(Number($event.target.value))"
+              >
+            </div>
+            <div class="startUpBtnFontSize">
+              字体
+              <input
+                type="range"
+                min="10"
+                max="100"
+                step="1"
+                :value="pixelTypeTransfer(startBtnStyle.fontSize)"
+                @input="startBtnStyle.fontSize = pixelTypeTransfer(Number($event.target.value))"
+              >
+            </div>
           </div>
-          <div class="startUpBtnBorderWidth">
-            边框
-            <input
-              type="range"
-              min="0"
-              max="15"
-              step="1"
-              :value="pixelTypeTransfer(startBtnStyle.borderWidth)"
-              @input="startBtnStyle.borderWidth = pixelTypeTransfer(Number($event.target.value))"
-            >
+          <div class="rightContent">
+            <div class="changeBtnColor">
+              按钮颜色：
+              &nbsp;
+              <input type="color" v-model="startBtnStyle.backgroundColor">
+            </div>
+            <div class="changeFontColor">
+              字体颜色：
+              &nbsp;
+              <input type="color" v-model="startBtnStyle.color">
+            </div>
+            <div class="changeBorderColor">
+              边框颜色：
+              &nbsp;
+              <input type="color" v-model="startBtnStyle.borderColor">
+            </div>
           </div>
-          <div class="startUpBtnFontSize">
-            字体
-            <input
-              type="range"
-              min="10"
-              max="100"
-              step="1"
-              :value="pixelTypeTransfer(startBtnStyle.fontSize)"
-              @input="startBtnStyle.fontSize = pixelTypeTransfer(Number($event.target.value))"
-            >
-          </div>
-          <div class="changeBtnColor">
-            按钮颜色：
-            &nbsp;
-            <input type="color" v-model="startBtnStyle.backgroundColor">
-          </div>
-          <div class="changeFontColor">
-            字体颜色：
-            &nbsp;
-            <input type="color" v-model="startBtnStyle.color">
-          </div>
-          <div class="changeBorderColor">
-            边框颜色：
-            &nbsp;
-            <input type="color" v-model="startBtnStyle.borderColor">
-          </div>
+
           <div class="stepUpOrDown">
             <button class="stepUp" @click="startBtnStyle.zIndex+=1">往上一层</button>
-            <button class="stepDown" @click="startBtnStyle.zIndex == startBtnStyle==0?0:startBtnStyle - 1">往下一层</button>
+            <button
+              class="stepDown"
+              @click="startBtnStyle.zIndex == startBtnStyle==0?0:startBtnStyle - 1"
+            >往下一层</button>
           </div>
         </div>
 
         <!-- text-flow -->
         <div class="textFlowSetting" v-if="face=='end'" v-show="mode=='textFlowEditing'">
-          <textarea v-model="textFlowText"></textarea>
-          <div class="textFlowFontSize">
-            <span>字体</span>
-            <input
-              type="range"
-              min="10"
-              max="100"
-              step="1"
-              :value="pixelTypeTransfer(textFlowStyle.fontSize)"
-              @input="textFlowStyle.fontSize = pixelTypeTransfer(Number($event.target.value))"
-            >
+          <div class="leftContent">
+            <textarea v-model="textFlowText"></textarea>
+            <div class="textFlowFontSize">
+              <span>字体</span>
+              <input
+                type="range"
+                min="10"
+                max="100"
+                step="1"
+                :value="pixelTypeTransfer(textFlowStyle.fontSize)"
+                @input="textFlowStyle.fontSize = pixelTypeTransfer(Number($event.target.value))"
+              >
+            </div>
+            <div class="changeFontColor">
+              <span>字体颜色</span>
+              <input type="color" v-model="textFlowStyle.color">
+            </div>
           </div>
-          <div class="changeFontColor">
-            <span>字体颜色</span>
-            <input type="color" v-model="textFlowStyle.color">
+          <div class="rightContent">
+            <label>
+              ----
+              <input type="checkbox" v-model="textFlowStyle.animation">动画
+              ----
+            </label>
+            <div v-if="textFlowStyle.animation">
+              <span>持续时间</span>
+              <input
+                type="range"
+                min="0"
+                max="30"
+                step="1"
+                v-model.number="textFlowStyle.animationTime"
+              >
+              {{textFlowStyle.animationTime}}秒
+              <br>
+              <span>移动距离</span>
+              <input
+                type="range"
+                min="0"
+                max="2000"
+                step="1"
+                v-model.number="textFlowStyle.animationDistance"
+              >
+              {{textFlowStyle.animationDistance}}
+              <br>
+              <span>移动方向</span>
+              <select v-model.number="textFlowStyle.animationDir">
+                <option value="top">上</option>
+                <option value="left">左</option>
+                <option value="right">右</option>
+                <option value="bottom">下</option>
+              </select>
+              <br>
+              <button @click="textFlowAnimate()" v-bind:disabled="runningAnimation">测试</button>
+              <button @click="runningAnimation = false">停止</button>
+            </div>
           </div>
-          <label>
-            ----
-            <input type="checkbox" v-model="textFlowStyle.animation">动画
-            ----
-          </label>
-          <div v-if="textFlowStyle.animation">
-            <span>持续时间</span>
-            <input
-              type="range"
-              min="0"
-              max="30"
-              step="1"
-              v-model.number="textFlowStyle.animationTime"
-            >
-            {{textFlowStyle.animationTime}}秒
-            <br>
-            <span>移动距离</span>
-            <input
-              type="range"
-              min="0"
-              max="2000"
-              step="1"
-              v-model.number="textFlowStyle.animationDistance"
-            >
-            {{textFlowStyle.animationDistance}}
-            <br>
-            <span>移动方向</span>
-            <select v-model.number="textFlowStyle.animationDir">
-              <option value="top">上</option>
-              <option value="left">左</option>
-              <option value="right">右</option>
-              <option value="bottom">下</option>
-            </select>
-            <br>
-            <button @click="textFlowAnimate()" v-bind:disabled="runningAnimation">测试</button>
-            <button @click="runningAnimation = false">停止</button>
-          </div>
-          <div></div>
         </div>
 
         <!-- done -->
@@ -429,7 +454,7 @@ export default {
     },
     mode() {
       this.currentPictureFocus =
-        this.mode == "pictrureEditing" ? this.currentPictureFocus : -1;
+        this.mode == "pictureEditing" ? this.currentPictureFocus : -1;
       this.currentTextFocus =
         this.mode == "textEditing" ? this.currentTextFocus : -1;
     }
@@ -500,11 +525,11 @@ export default {
       let dir = this.textFlowStyle.animationDir;
       let start = 1;
       if (dir == "top" || dir == "bottom") {
-        distance = dir == "top" ? -1 * distance : 1*distance;
+        distance = dir == "top" ? -1 * distance : 1 * distance;
 
         let animate = setInterval(() => {
           this.textFlowStyle.top =
-            this.pixelTypeTransfer(this.textFlowStyle.top) + 
+            this.pixelTypeTransfer(this.textFlowStyle.top) +
             (distance / time) * 60 +
             "px";
           start += 60;
@@ -568,8 +593,8 @@ export default {
     },
     changePictureFocus(index) {
       this.currentPictureFocus = index;
-      if (this.mode == "pictrureEditing") return;
-      this.mode = "pictrureEditing";
+      if (this.mode == "pictrueEditing") return;
+      this.mode = "pictureEditing";
     },
     changeTextProperty(property, defaultValue) {
       if (this.textComponents[this.currentTextFocus] == undefined)
@@ -584,7 +609,7 @@ export default {
       } else if (property == "zIndex") {
         value =
           this.textComponents[this.currentTextFocus][property] + Number(value);
-          if (value == -1) return;
+        if (value == -1) return;
       } else if (property == "destroy") {
         value = true;
         this.mode = "none";
@@ -649,7 +674,7 @@ export default {
               destroy: false
             });
             this.currentPictureFocus = this.pictureComponents.length - 1;
-            this.mode = "pictrureEditing";
+            this.mode = "pictureEditing";
           }
         });
         reader.readAsDataURL(input.files[0]);
@@ -679,6 +704,7 @@ export default {
   vertical-align: top;
 }
 
+//操作台
 .operationalPanel {
   position: relative;
   width: 700px;
@@ -697,6 +723,7 @@ export default {
   }
 }
 
+//设置版
 .settingPanel {
   position: relative;
   width: 200px;
@@ -709,6 +736,11 @@ export default {
       margin-top: 5px;
       margin-right: 10px;
     }
+  }
+
+  .seperateline {
+    width: 100px;
+    margin: 20px auto;
   }
 
   .options {
@@ -740,9 +772,12 @@ export default {
     div {
       text-align: left;
       padding-left: 10px;
-      input[type=range]{
-        width:100px;
+      input[type="range"] {
+        width: 100px;
       }
+    }
+    .stepUpOrDown {
+      padding-left: 20px;
     }
     .changeBtnColor {
       margin-top: 5px;
@@ -825,6 +860,127 @@ export default {
       background-color: red;
       color: white;
       cursor: pointer;
+    }
+  }
+}
+
+@media screen and (max-width: 920px) {
+
+  .leftContainer {
+    display: block;
+    .operationalPanel {
+      margin: auto;
+    }
+  }
+  .rightConatiner {
+    display: block;
+    .settingPanel {
+      margin: auto;
+      width: 700px;
+      height: 240px;
+
+      .options {
+        div {
+          font-size: 15px;
+        }
+      }
+
+      .modeTitle{
+        margin-top:15px;
+        margin-bottom:0;
+      }
+      .seperateline {
+        width: 300px;
+        margin:5px auto
+      }
+
+      .backgroundSetting {
+        div {
+          padding-top:20px;
+          width: 33.3%;
+          display: inline-block;
+          text-align: center;
+        }
+      }
+
+      .startUpBtnSetting {
+        position: relative;
+        .leftContent,
+        .middleContent,
+        .rightContent,
+        .stepUpOrDown {
+          display: inline-block;
+          width: 33.3%;
+          div {
+            text-align: center;
+          }
+        }
+        .stepUpOrDown {
+          text-align: center;
+          position: absolute;
+          left: 50%;
+          top: 30%;
+          transform: translateX(-50%);
+          padding-left: 25px;
+        }
+      }
+
+      .textSetting {
+        position: relative;
+        .leftContent,
+        .rightContent {
+          padding-top:20px;
+          display: inline-block;
+          width: 50%;
+        }
+        .leftContent {
+          padding-left: 120px;
+          input[type="range"] {
+            max-width: 100px;
+          }
+        }
+        .rightContent {
+          input[type="color"] {
+            margin-top: 0;
+            margin-bottom: 0;
+          }
+        }
+      }
+
+      .textFlowSetting {
+        .leftContent,
+        .rightContent {
+          display: inline-block;
+          width: 50%;
+          vertical-align: top;
+        }
+        .leftContent {
+          padding-left: 70px;
+          textarea {
+            width: 85%;
+            margin: 0px;
+          }
+        }
+        .rightContent {
+          div {
+            margin-top: 5px;
+            padding-left: 50px;
+            input[type="range"] {
+              max-width: 120px;
+            }
+          }
+        }
+      }
+
+      .pictureSetting {
+        .leftContent,
+        .middleContent,
+        .rightContent {
+          display: inline-block;
+          width: 33.3%;
+          padding-left: 30px;
+        }
+      }
     }
   }
 }

@@ -46,11 +46,19 @@
 
     <!-- 按键组 -->
     <div class="btnGroup">
-      <button @click="goToPlayerFigureDesign()" class="playerFigureDesign">人物形象设计</button>
-      <button @click="goToGameDesign()">游戏级别设计</button>
-      <button @click="goToStartUpAndEndDesign()">开始结束界面设计</button>
+      <button @click="goToPlayerFigureDesign()" class="designBtn">
+        <font-awesome-icon icon="male" class="fa-lg"/>&nbsp;人物形象设计
+      </button>
+      <button @click="goToGameDesign()" class="designBtn">
+        <font-awesome-icon icon="gamepad" class="fa-lg"/>&nbsp;游戏设计
+      </button>
+      <button @click="goToStartUpAndEndDesign()" class="designBtn">
+        <font-awesome-icon icon="laptop" class="fa-lg"/>&nbsp;界面设计
+      </button>
       <button @click="reset()">{{!gameEnd?'结束游戏':'重置游戏'}}</button>
-      <button @click="downloadTheGame()">完成并下载</button>
+      <button @click="save()">保存</button>
+      <button @click="restore()">恢复</button>
+      <button @click="downloadTheGame()">下载</button>
     </div>
 
     <!-- 下载弹出框 -->
@@ -61,10 +69,10 @@
 <script>
 import Game from "../lib/pureGame";
 import gameLevel from "../lib/gameLevel";
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapMutations } from "vuex";
 import gameTemplate from "@/lib/gameTemplate";
 import { doesNotThrow } from "assert";
-import mobileRouterDevice from '@/lib/mobileRouterProtect';
+import mobileRouterDevice from "@/lib/mobileRouterProtect";
 
 let pics = {};
 importAll(require.context("../pic/pureGame/", false, /\.png$/));
@@ -74,7 +82,7 @@ function importAll(r) {
 
 export default {
   name: "entrieGame",
-  mixins:[mobileRouterDevice],
+  mixins: [mobileRouterDevice],
   beforeRouteLeave(to, from, next) {
     if (this.runningGame == null) {
       next();
@@ -136,6 +144,10 @@ export default {
     }
   },
   computed: {
+    ...mapState("playerFigure", {
+      playerFigureImgData: "imgData",
+      playerFigureWidth: null
+    }),
     ...mapState("gameLevel", [
       "levelMap",
       "levelSetting",
@@ -172,6 +184,27 @@ export default {
     }
   },
   methods: {
+    save() {
+      store("gameLevel", this.$store.state.gameLevel);
+      store("startUpFace", this.$store.state.startUpFace);
+      store("endFace", this.$store.state.endFace);
+      alert("已保存！");
+
+      function store(name, data) {
+        localStorage.setItem(name, JSON.stringify(data));
+      }
+    },
+    restore() {
+      restoreData("gameLevel", this);
+      restoreData("startUpFace", this);
+      restoreData("endFace", this);
+      alert("已恢复！");
+      function restoreData(name, self) {
+        let data = localStorage.getItem(name);
+        if (data != null)
+          self.$store.commit(name + "/restoreData", JSON.parse(data));
+      }
+    },
     reset() {
       if (this.gameEnd == true) {
         //游戏已经结束
@@ -217,7 +250,7 @@ export default {
       });
       let url = window.URL.createObjectURL(blob);
       let link = document.createElement("a");
-      document.body.appendChild(link)
+      document.body.appendChild(link);
       link.setAttribute("href", url);
       link.setAttribute("download", gameName + ".html");
       link.click();
@@ -383,15 +416,19 @@ export default {
   min-width: 700px;
   margin: auto;
   button {
-    @include buttonStyle(20%, 25px);
+    @include buttonStyle(14.28%, 25px);
     border-radius: 0px;
     background-color: #f1f1f1;
     &:hover {
       outline: none;
     }
-    &:focus{
+    &:focus {
       outline: none;
     }
+  }
+  .designBtn {
+    color: #3f51b5;
+    font-weight: bold;
   }
 }
 
