@@ -6,6 +6,7 @@
         <router-link to="/previewPage">实例</router-link>
         <router-link to="/entireGame">设计总台</router-link>
         <router-link to="/help">帮助</router-link>
+        <a href="">Github</a>
       </nav>
     </header>
     <transition name="pageTransition">
@@ -78,7 +79,7 @@ header {
   
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 550px) {
   header{
     text-align: center;
     &::before{

@@ -91,6 +91,21 @@ export default {
     this.runningGame.stopGame();
     next();
   },
+  beforeRouteEnter(from,to,next){
+    //ie浏览器下不允许
+    function isIE() {
+      let ua = navigator.userAgent;
+      var is_ie = ua.indexOf("MSIE ") > -1 || ua.indexOf("Trident/") > -1;
+
+      return is_ie;
+    }
+    if (isIE()) {
+      alert('抱歉，目前不支持该浏览器，可以使用Chrome,Edge,Opera,Firefox,Safari等浏览器')
+      next(false)
+    }else{
+      next()
+    }
+  },
   mounted() {
     this.textFlowRealTimeStyle = JSON.parse(
       JSON.stringify(this.endProcessTextFlow.style)

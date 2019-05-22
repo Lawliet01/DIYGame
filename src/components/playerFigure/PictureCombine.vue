@@ -196,6 +196,7 @@ export default {
       };
     },
     drawCanvasAfterTransform(img, context, left, top, width, height) {
+      context.save()
       context.translate(left, top);
       if (this.flip == true) {
         flipScale(context, width / 2, this.scale);
@@ -204,7 +205,7 @@ export default {
       }
       context.rotate((this.rotate * Math.PI) / 180);
       context.drawImage(img, 0, 0, width, height);
-      context.resetTransform();
+      context.restore();
       function flipScale(context, around, scale) {
         context.translate(around, 0);
         context.scale(-scale, scale);

@@ -1,7 +1,7 @@
 export default {
    created(){
       if (this.is_touch_device()) {
-         confirm('游戏设计需在电脑端完成，以获得最佳体验')
+         alert('游戏设计需在电脑端完成，以获得最佳体验')
          this.$router.push('/')
       }
    },

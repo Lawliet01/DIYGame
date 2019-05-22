@@ -451,7 +451,10 @@ class CanvasDisplay {
       };
    }
    clear() {
-      this.canvas.remove();
+      if (this.canvas.parentNode != null) {
+         this.canvas.parentNode.removeChild(this.canvas)
+      }
+      this.canvas.remove()
    }
    updateViewport(state) {
       let view = this.viewport, margin_width = view.width / 3, margin_height = view.height / 3;
@@ -647,9 +650,25 @@ class CanvasDisplay {
 function trackKeys(keys) {
    let down = Object.create(null);
    function track(event) {
+      // console.log(event.type)
       if (keys.includes(event.key)) {
          down[event.key] = event.type == "keydown";
          event.preventDefault();
+         return;
+      }
+      //for ie
+      if (['Up','Left','Right'].includes(event.key)){
+         switch (event.key) {
+            case 'Up':
+               down['ArrowUp'] = event.type == 'keydown'
+               break;
+            case 'Left':
+               down['ArrowLeft'] = event.type == 'keydown'
+               break;
+            case 'Right':
+               down['ArrowRight'] = event.type == 'keydown'
+               break;
+         }
       }
    }
    window.addEventListener("keydown", track);
@@ -683,7 +702,7 @@ function runLevel(level, gameClass) {
 
    return new Promise(resolve => {
       function escHandler(event) {
-         if (event.key != "Escape") return;
+         if (event.key != "Escape"&&event.key!="Esc") return;
          event.preventDefault();
          if (running == "no") {
             running = "yes";
