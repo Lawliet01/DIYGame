@@ -352,7 +352,6 @@
 </template>
 
 <script>
-import Vue from "vue";
 import pictureComponent from "@/components/startUpAndEnd/pictureComponent";
 import textComponent from "@/components/startUpAndEnd/textComponent";
 import filterGroupMixin from "@/components/startUpAndEnd/filterGroup";

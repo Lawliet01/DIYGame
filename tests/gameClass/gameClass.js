@@ -339,7 +339,7 @@ class Fire {
     return new State(state.level, state.actors, 'lost')
   }
   gone(state) {
-    let filtered = state.actors.filter(a => a != this);;
+    let filtered = state.actors.filter(a => a != this);
     return new State(state.level, filtered, state.status)
   }
   update(time, state) {

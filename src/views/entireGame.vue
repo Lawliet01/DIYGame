@@ -69,9 +69,8 @@
 <script>
 import Game from "../lib/pureGame";
 import gameLevel from "../lib/gameLevel";
-import { mapState, mapGetters, mapMutations } from "vuex";
+import { mapState, mapGetters} from "vuex";
 import gameTemplate from "@/lib/gameTemplate";
-import { doesNotThrow } from "assert";
 import mobileRouterDevice from "@/lib/mobileRouterProtect";
 
 let pics = {};
