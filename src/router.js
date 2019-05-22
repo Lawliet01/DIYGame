@@ -4,7 +4,7 @@ import Home from './views/Home.vue'
 
 Vue.use(Router)
 
-const router =  new Router({
+const router = new Router({
   base: process.env.BASE_URL,
   routes: [
     {
@@ -50,16 +50,18 @@ const router =  new Router({
   ]
 })
 
-router.beforeResolve((to, from, next) => {
+router.beforeEach((to, from, next) => {
   // If this isn't an initial page load.
-    // Start the route progress bar.
-    NProgress.start()
+  // Start the route progress bar.
+  NProgress.start()
   next()
 })
 
 router.afterEach((to, from) => {
   // Complete the animation of the route progress bar.
-  NProgress.done()
+  setTimeout(()=>{
+    NProgress.done()
+  },500)
 })
 
 
