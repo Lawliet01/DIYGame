@@ -74,7 +74,6 @@
 // @ is an alias to /src
 
 export default {
-  //name: 'home',
   mounted() {
     if (!is_touch_device()) {
       this.backgroundStyle.backgroundAttachment = "fixed";
