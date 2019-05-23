@@ -1,34 +1,9 @@
-# diygame
+# diyGame
+diyGame允许使用者在没有技术背景的情况下设计一款冒险游戏。
 
-## Project setup
-```
-npm install
-```
+## site
+[diygame](http://diygame.vip)
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## guide
+[diygame](http://diygame.vip/#/help)
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
