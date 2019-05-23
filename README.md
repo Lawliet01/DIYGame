@@ -3,7 +3,7 @@ DIYGame允许使用者在没有技术背景的情况下设计一款冒险游戏�
 
 ## 主页
 
-[DIYGAME主页](http://diygame.vip/#/)
+[DIYGAME主页介绍](http://diygame.vip/#/)
 
 ## 设计实例
 
@@ -13,11 +13,11 @@ DIYGame允许使用者在没有技术背景的情况下设计一款冒险游戏�
 
 - 游戏角色
 - 游戏关卡
-- 开始结束界面
+- 游戏的开始与结束界面
 
 ## 马上试一试：
 
-建议使用电脑端来访问：[DIYGAME](http://diygame.vip/#/entireGame)
+建议使用电脑端来访问：[DIYGAME设计总台](http://diygame.vip/#/entireGame)
 
 ## 使用指南
 
