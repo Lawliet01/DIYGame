@@ -453,6 +453,7 @@ class CanvasDisplay {
    clear() {
       if (this.canvas.parentNode != null) {
          this.canvas.parentNode.removeChild(this.canvas)
+         return;
       }
       this.canvas.remove()
    }
