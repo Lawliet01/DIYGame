@@ -6,7 +6,7 @@
       </div>
       <div class="introductionText">
         <div class="introductionTitle">DIYGAME</div>
-        <p class="introductionBody">是一款自主游戏设计平台，你可以在<strong>不写任何代码</strong>的情况写，<strong>按照自己的想法</strong>打造一款个人专属的冒险游戏。</p>
+        <p class="introductionBody">是一个自主游戏设计平台，你可以在<strong>不写任何代码</strong>的情况写，<strong>按照自己的想法</strong>打造一款个人专属的冒险游戏。</p>
         <div class="startBtn">
           <router-link to="/previewPage" class="preview">例子</router-link>
           <router-link to="/entireGame" class="startDesign">开始设计</router-link>

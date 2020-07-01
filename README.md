@@ -1,36 +1,46 @@
 # DIYGame
-DIYGame帮助使用者在没有技术背景的情况下设计一款冒险游戏。最终设计的游戏以html文件的形式下载下来，可以在浏览器上运行。
+DIYGame帮助使用者在**不写任何一行代码**的情况下实现一款**个人专属**的冒险游戏。最终设计的游戏以html文件的形式下载下来，可以在浏览器上运行。
 
 ## 主页
 
 [DIYGAME主页介绍](http://diygame.vip/#/)
 
-
-
 ## 设计示例
 
+### 示例1:游戏角色形象设计
 
-### GIF示例1:游戏角色形象设计
+这是一张照片:
 
-把任意个人照片与游戏角色融为一体。
+![alt 加载失败](./README/XTFpicture.png)
 
+使用DIYGAME可以把照片内人的头像嵌在游戏角色上：
 
-![alt 加载失败](./README/playerFigureGIF.gif)
+![alt 加载失败](./src/pic/helpPage/playerFigureResult.png)
 
-
-### GIF示例2:游戏关卡设计
-
-
-按照你的想法设计关卡内容除此之外，你还可以修改关卡的背景颜色、关卡的背景图片、人物的属性等等。。。
+[GIF动画演示](./README/playFigure.md)
 
 
-![alt 加载失败](./README/structureDesign.gif)
+### 示例2:游戏关卡设计
+
+按照你的想法设计关卡内容、修改关卡的背景颜色、关卡的背景图片、人物的属性等等。。。
+
+![alt 加载失败](./README/gamePanelExample.png)
+
+最终都会以你想要的样式实现出来：
+
+[!alt 加载失败](./src/pic/helpPage/gameDesignResult.png)
+
+[GIF动画演示](./README/structureDesign.md)
 
 
-### 图片示例3:游戏的开始与结束界面设计
+### 示例3:游戏的开始与结束界面设计
 
-你可以设计游戏初始界面的开始按钮、并给初始界面添加文字与图片、修改背景样式等；在结束界面，你还可以设计一段文字动画流.
-\
+你还可以设计游戏初始与结束界面；在结束界面，你还可以设计一段文字动画流.
+
+![alt 加载失败](./README/startFace.png.png)
+
+设计结果样例:
+
 ![alt 加载失败](./src/pic/helpPage/faceDesignResult.png)
 
 
@@ -49,19 +59,15 @@ DIYGame帮助使用者在没有技术背景的情况下设计一款冒险游戏�
 
 ## 使用指南
 
-
 [DIYGAME帮助](http://diygame.vip/#/help)
 
-
 ## 技术栈
-
 
 - vue
 - vuex
 - vueRouter
 - vue-cli
 - sass
-
 
 ## 其他
 
