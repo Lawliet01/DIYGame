@@ -9,6 +9,8 @@ DIYGame帮助使用者在**不写任何一行代码**的情况下实现一款**�
 
 ### 示例1:游戏角色形象设计
 
+[GIF动画演示](./README/playerFigure.md)
+
 这是一张照片:
 
 ![alt 加载失败](./README/XTFpicture.png)
@@ -17,10 +19,10 @@ DIYGame帮助使用者在**不写任何一行代码**的情况下实现一款**�
 
 ![alt 加载失败](./src/pic/helpPage/playerFigureResult.png)
 
-[GIF动画演示](./README/playFigure.md)
-
 
 ### 示例2:游戏关卡设计
+
+[GIF动画演示](./README/structureDesign.md)
 
 按照你的想法设计关卡内容、修改关卡的背景颜色、关卡的背景图片、人物的属性等等。。。
 
@@ -28,16 +30,14 @@ DIYGame帮助使用者在**不写任何一行代码**的情况下实现一款**�
 
 最终都会以你想要的样式实现出来：
 
-[!alt 加载失败](./src/pic/helpPage/gameDesignResult.png)
-
-[GIF动画演示](./README/structureDesign.md)
+![alt 加载失败](./src/pic/helpPage/gameDesignResult.png)
 
 
 ### 示例3:游戏的开始与结束界面设计
 
 你还可以设计游戏初始与结束界面；在结束界面，你还可以设计一段文字动画流.
 
-![alt 加载失败](./README/startFace.png.png)
+![alt 加载失败](./README/startFace.png)
 
 设计结果样例:
 
