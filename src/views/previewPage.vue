@@ -29,7 +29,19 @@
     <div
       v-if="runningGame==false&&gameEnd==false"
       style="font-size:15px;color:red;font-weight:600"
-    >{{is_touch_device()?"操作屏幕按键移动角色,横屏再开始游戏体验更加":"上、左、右键移动角色，esc键暂停"}}</div>
+    >{{is_touch_device()?"操作屏幕按键移动角色,横屏再开始游戏体验更加":"(上、左、右键移动角色，esc键暂停)"}}</div>
+    <div
+      v-if="runningGame==false&&gameEnd==false"
+      style="font-weight:600"
+    >这是游戏的开始界面，您可以自定义这的开始按钮、页面背景、页面图片与文字</div>
+      <div
+      v-if="runningGame&&!gameEnd"
+      style="font-weight:600"
+    >这是游戏的运行界面，您可以自定义这里的关卡结构、元素、背景等等</div>
+    <div
+      v-if="gameEnd"
+      style="font-weight:600"
+    >这是游戏的结束界面，您可以自定义这的开始按钮、页面背景，还可以添加一段文字流</div>
 
     <!-- 游戏容器 -->
     <div class="preViewGameContainer" v-bind:style="gameDimension"></div>

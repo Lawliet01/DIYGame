@@ -6,7 +6,7 @@
         <router-link to="/previewPage">实例</router-link>
         <router-link to="/entireGame">设计总台</router-link>
         <router-link to="/help">帮助</router-link>
-        <a href="https://github.com/Lawliet01/diyGame" target='_blank'>Github</a>
+        <a href="https://github.com/Lawliet01/diyGame" target='_blank'>GITHUB</a>
       </nav>
     </header>
     <transition name="pageTransition">

@@ -22,4 +22,21 @@ exports.startPictureComponents = [{ style: { "top": "-28px", "left": "104px", "o
 
 exports.endBackgroundStyle = { "backgroundImage": "", "backgroundColor": "#000000", "backgroundSize": "cover", "backgroundRepeat": "no-repeat" }
 
-exports.processTextFlow = { "style": { "position": "absolute", "top": "223px", "left": "207px", "fontSize": "30px", "color": "#ff0029", "zIndex": 100 }, "animate": { "animation": true, "animationTime": 20, "animationDir": "top", "animationDistance": 935 }, "textContent": "\n五星红旗迎风飘扬，\n胜利歌声多么响亮；\n歌唱我们亲爱的祖国，\n从今走向繁荣富强。\n歌唱我们亲爱的祖国，\n从今走向繁荣富强。\n越过高山，越过平原，\n跨过奔腾的黄河长江；\n宽广美丽的土地，\n是我们亲爱的家乡，\n英雄的人民站起来了！\n我们团结友爱坚强如钢。\n五星红旗迎风飘扬，\n胜利歌声多么响亮；" }
+exports.processTextFlow = {
+  style: {
+    position: "absolute",
+    top: "223px",
+    left: "207px",
+    fontSize: "30px",
+    color: "#ff0029",
+    zIndex: 100,
+  },
+  animate: {
+    animation: true,
+    animationTime: 20,
+    animationDir: "top",
+    animationDistance: 935,
+  },
+  textContent:
+    "\n您想对通关的人说的话\n您想对通关的人说的话\n您想对通关的人说的话\n您想对通关的人说的话\n您想对通关的人说的话\n您想对通关的人说的话\n您想对通关的人说的话\n您想对通关的人说的话",
+};

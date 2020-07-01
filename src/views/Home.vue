@@ -6,9 +6,9 @@
       </div>
       <div class="introductionText">
         <div class="introductionTitle">DIYGAME</div>
-        <p class="introductionBody">是一款自主游戏设计平台，允许使用者在没有任何技术背景的情况下打造个人专属的冒险游戏。</p>
+        <p class="introductionBody">是一款自主游戏设计平台，你可以在<strong>不写任何代码</strong>的情况写，<strong>按照自己的想法</strong>打造一款个人专属的冒险游戏。</p>
         <div class="startBtn">
-          <router-link to="/previewPage" class="preview">实例</router-link>
+          <router-link to="/previewPage" class="preview">例子</router-link>
           <router-link to="/entireGame" class="startDesign">开始设计</router-link>
         </div>
       </div>
@@ -17,7 +17,7 @@
           <div class="useCaseIcon">
             <font-awesome-icon icon="birthday-cake"/>
           </div>
-          <div class="useCaseText">朋友生日最有创意的礼物</div>
+          <div class="useCaseText">亲友生日上最有创意的礼物</div>
         </div>
         <div class="useCase">
           <div class="useCaseIcon">
@@ -34,13 +34,13 @@
       </div>
     </section>
     <section class="functionsIntro">
-      <h1>三大功能</h1>
+      <h1>主要特性</h1>
       <div class="firstFunction" v-bind:style="backgroundStyle">
-        <span class="caption">①角色形象设计</span>
+        <span class="caption">①自主设计角色形象</span>
       </div>
       <div class="explanation">
         <div>
-          <p>一款游戏的设计，首先从游戏角色的设计开始。DIYGAME允许您按照自己的想法，设计独一无二的游戏角色形象。</p>
+          <p>一款个人专属的游戏，必不可少的是富有个人特色的游戏角色。DIYGAME允许您按照自己的想法，设计独一无二的角色形象。</p>
         </div>
       </div>
 
@@ -49,7 +49,7 @@
       </div>
       <div class="explanation">
         <div>
-          <p>您可以根据自己的意愿添加任意数量的关卡，并按照自己的构想在任意位置里添加金币、熔浆、怪物等各种元素。您的想象力与创造力将在这里得到施展。</p>
+          <p>您可以根据自己的意愿设置任意数量的关卡，并按照自己的构想在不同位置上添加金币、熔浆、怪物等各种元素。您的想象力与创造力将在这里得到施展。</p>
         </div>
       </div>
       <div class="thirdFunction" v-bind:style="backgroundStyle">
@@ -57,7 +57,7 @@
       </div>
       <div class="explanation">
         <div>
-          <p>您可以设计游戏的初始与结束界面，按照自己的想法在界面添加各类元素。结束界面还允许您设计一段流动的文字动画，来表达您想说的话。这部分的设计不仅增加了游戏的独特性，还能有效地表达设计者的设计意图。</p>
+          <p>您可以设计游戏的开始与结束界面。结束界面还允许您设计一段流动的文字动画，来表达您想说的话。这部分的设计不仅增加了游戏的独特性，还能有效地传达您的设计意图。</p>
         </div>
       </div>
     </section>
