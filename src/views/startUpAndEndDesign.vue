@@ -1,8 +1,8 @@
 <template>
   <div id="startUpAndEndFace">
     <div class="changeFace">
-      <div @click="face='start'" v-bind:class="{faceSelected:face=='start'}">游戏开始界面</div>|
-      <div @click="face='end'" v-bind:class="{faceSelected:face=='end'}">游戏结束动画</div>
+      <div @click="face='start'" v-bind:class="{faceSelected:face=='start'}">{{lang === 1 ?"游戏开始界面":"Start Interface"}}</div>|
+      <div @click="face='end'" v-bind:class="{faceSelected:face=='end'}">{{ lang === 1 ?"游戏结束动画":"End Interface"}}</div>
     </div>
     <face-component face="start" v-if="face=='start'" key="startFace"></face-component>
     <face-component face="end" v-else-if="face=='end'" key="endFace"></face-component>
@@ -17,6 +17,11 @@ export default {
   name: "startUpAndEndFace",
   mixins: [mobileRouterDevice],
   components: { faceComponent },
+  computed:{
+    lang(){
+      return this.$store.state.lang
+    }
+  },
   data: function() {
     return {
       face: "start"

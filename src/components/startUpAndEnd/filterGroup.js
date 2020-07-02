@@ -3,7 +3,7 @@ export default {
       return {
          filterGroup:[
             {
-               name: "无",
+               name: "none",
                value: "none"
             },
             {

@@ -26,10 +26,10 @@
 
       <!-- forward and back arrow -->
       <div class="reInput" @click="reInput()">
-        <font-awesome-icon icon="angle-left"/> 重新导入
+        <font-awesome-icon icon="angle-left"/> {{lang === 1 ? "重新导入":"reimport"}}
       </div>
       <div class="done" @click="done()">
-        下一步
+        {{lang === 1 ?"下一步":"next"}}
         <font-awesome-icon icon="angle-right"/>
       </div>
 
@@ -90,7 +90,7 @@
       @click="addPicture()"
       v-if="imgSrc.length == 0&&imgData == null"
       class="inputImageBtn"
-    >导入照片</button>
+    >{{lang === 1 ?"导入照片":"import photo"}}</button>
   </div>
 </template>
 
@@ -152,6 +152,9 @@ export default {
       if (this.imgSrc.length == 0 && this.imgData == null) return null;
       return document.getElementsByClassName("pictureEditCanvas")[0];
     },
+    lang(){
+      return this.$store.state.lang
+    },
     cursor: function() {
       switch (this.mode) {
         case "drag":
@@ -190,7 +193,7 @@ export default {
     },
     //完成，把x,y传上去
     done() {
-      let confirm = window.confirm("已完成剪切，要进入下一步？");
+      let confirm = window.confirm(`${this.lang === 1 ?"已完成剪切，要进入下一步？":"Complete croping and want to go next?"}`);
       if (confirm == false) return;
       this.uploadData();
       this.$router.push({ path: "/playerFigure/combine" });

@@ -1,11 +1,11 @@
 <template>
   <div id="helpPage">
     <div class="link">
-      <div class="helpTitle">-帮助</div>
-      <div @click="page='entireGame'" class="pageLink">&nbsp;&nbsp;首次使用</div>
-      <div @click="page='playerFigure'" class="pageLink">&nbsp;&nbsp;角色设计</div>
-      <div @click="page='gameDesign'" class="pageLink">&nbsp;&nbsp;游戏设计</div>
-      <div @click="page='faceDesign'" class="pageLink">&nbsp;&nbsp;界面设计</div>
+      <div class="helpTitle">-{{lang === 1 ?"帮助":"Guide"}}</div>
+      <div @click="page='entireGame'" class="pageLink">&nbsp;&nbsp;{{lang === 1 ?"首次使用":"Introduction"}}</div>
+      <div @click="page='playerFigure'" class="pageLink">&nbsp;&nbsp;{{lang === 1?"角色设计":"Player Design"}}</div>
+      <div @click="page='gameDesign'" class="pageLink">&nbsp;&nbsp;{{lang === 1 ?"游戏设计":"Level Design"}}</div>
+      <div @click="page='faceDesign'" class="pageLink">&nbsp;&nbsp;{{lang === 1 ?"界面设计":"Interface Design"}}</div>
     </div>
     <div class="page">
       <help-for-Entire-Game v-if="page=='entireGame'" v-on:change-page="changePage($event)"></help-for-Entire-Game>
@@ -39,7 +39,13 @@ export default {
         this.page = pageName;
         window.scrollTo(0,0);
      }
-  }
+  },
+  computed:{
+    lang(){
+      return this.$store.state.lang
+    }
+  },
+
 };
 </script>
 

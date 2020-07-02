@@ -182,7 +182,7 @@ let startUpFace = {
       backgroundSize: "700px 400px",
       backgroundRepeat: "no-repeat",
     },
-    startUpBtnText: "开始游戏",
+    startUpBtnText: "GO",
   },
   getters: startUpAndEndFaceGetters,
   mutations: startUpFaceMutations
@@ -212,7 +212,7 @@ let endFace = {
       animationDir: 'top',
       animationDistance: 200,
     },
-    textFlowText: "在这里写下\n游戏结束的话"
+    textFlowText: "XXXXXXXX\nXXXXXXXX"
   },
   getters: Object.assign({}, startUpAndEndFaceGetters, {
     processTextFlow: (state) => {
@@ -240,6 +240,14 @@ let endFace = {
 
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
+  state:{
+    lang: 1, // 1为中文，2为英语
+  },
+  mutations:{
+    changeLanguage(state, lang){
+      state.lang = lang
+    }
+  },
   modules: {
     playerFigure,
     gameLevel,

@@ -26,8 +26,8 @@
     </div>
 
     <!-- back and go  -->
-    <div class="goback" @click="goBack()">返回</div>
-    <div class="done" @click="generatePlayerFigure()">下一步</div>
+    <div class="goback" @click="goBack()">{{lang === 1 ?"返回":"Back"}}</div>
+    <div class="done" @click="generatePlayerFigure()">{{lang === 1 ?"下一步":"Next >"}}</div>
 
     <!-- options -->
     <div class="adjustOptions">
@@ -158,6 +158,9 @@ export default {
     //大小canvas的比例
     ratio: function() {
       return this.previewSize.width / this.canvasContainerSize.width;
+    },
+    lang(){
+      return this.$store.state.lang
     }
   },
   methods: {

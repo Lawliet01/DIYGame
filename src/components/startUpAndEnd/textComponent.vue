@@ -26,7 +26,10 @@ export default {
       this.face == "start"
         ? this.getComponentPropertyByIndex("text", this.index)
         : this.endGetComponentPropertyByIndex("text", this.index);
-    if (componentProperties === undefined) return;
+    if (componentProperties === undefined) {
+      this.textContent = this.lang === 1 ?"双击编辑":"Double click to edit"
+      return;
+    }
     this.pos.left = componentProperties.left;
     this.pos.top = componentProperties.top;
     this.textContent = componentProperties.textContent;
@@ -57,6 +60,9 @@ export default {
     ...mapGetters("endFace", {
       endGetComponentPropertyByIndex: "getComponentPropertyByIndex"
     }),
+    lang(){
+      return this.$store.state.lang
+    },
     style() {
       return {
         top: this.pos.top + "px",

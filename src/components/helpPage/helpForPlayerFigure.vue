@@ -1,19 +1,35 @@
 <template>
   <div class="note-wrapper">
-    <h1>帮助：角色设计</h1>
+    <h1 v-if="lang === 1">帮助：角色设计</h1>
+    <h1 v-else>Player Character Design</h1>
     <hr>
     <br>
-    <p>角色形象设计允许您给游戏角色更换任意面部形象。</p>
-    <br>
-    <p>角色设计分成两个部分：</p>
-    <p>1.人物头部裁剪</p>
-    <p>2.人物形象合并</p>
-    <br>
-    <p>角色形象设计的流程是：</p>
-    <p>1.导入一张有人像照片。</p>
-    <p>2.借助页面提供的工具把人像头部"抠"出来。</p>
-    <p>3.把抠出来的部分与游戏角色合并。</p>
-    <p>4.测试并修改。</p>
+    <div v-if="lang === 1">
+      <p>角色形象设计允许您给游戏角色更换任意面部形象。</p>
+      <br>
+      <p>角色设计分成两个部分：</p>
+      <p>1.人物头部裁剪</p>
+      <p>2.人物形象合并</p>
+      <br>
+      <p>角色形象设计的流程是：</p>
+      <p>1.导入一张有人像照片。</p>
+      <p>2.借助页面提供的工具把人像头部"抠"出来。</p>
+      <p>3.把抠出来的部分与游戏角色合并。</p>
+      <p>4.测试并修改。</p>
+    </div>
+    <div v-else>
+      <p>Player Character Design allows you to change to face of the player.</p>
+      <br>
+      <p>Player Character Design can be divided into two parts:</p>
+      <p>1.crop the Picture to get the face.</p>
+      <p>2.combine the face and the player.</p>
+      <br>
+      <p>Step：</p>
+      <p>1.导入一张有人像照片。</p>
+      <p>2.借助页面提供的工具把人像头部"抠"出来。</p>
+      <p>3.把抠出来的部分与游戏角色合并。</p>
+      <p>4.测试并修改。</p>
+    </div>
     <br>
     <br>
     <br>
@@ -163,7 +179,12 @@
   
 <script>
 export default {
-  name: "helpForPlayerFigure"
+  name: "helpForPlayerFigure",
+  computed:{
+    lang(){
+      return this.$store.state.lang
+    },
+  }
 };
 </script>
 

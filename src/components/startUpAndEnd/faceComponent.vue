@@ -39,9 +39,9 @@
       <div class="settingPanel">
         <!-- options group -->
         <div class="options">
-          <div @click="addText()">添加文字</div>
-          <div @click="addPicture()">添加图片</div>
-          <div @click="mode = 'backgroundEditing'">修改背景</div>
+          <div @click="addText()">{{lang === 1 ?"添加文字":"Add Text"}}</div>
+          <div @click="addPicture()">{{lang === 1 ?"添加图片":"Add Image"}}</div>
+          <div @click="mode = 'backgroundEditing'">{{lang === 1 ?"修改背景":"Background"}}</div>
         </div>
 
         <h3 class="modeTitle">{{modeTitle}}</h3>
@@ -53,12 +53,12 @@
         <div class="pictureSetting" v-show="mode == 'pictureEditing'">
           <div class="leftContent">
             <div class="filter">
-              <span>效果</span>
+              <span>{{lang === 1 ?"效果":"Filter"}}</span>
               <select
                 :value="pictureComponents[currentPictureFocus] == undefined?'default':pictureComponents[currentPictureFocus].filter"
                 @change="changePictureProperty('filter','none')"
               >
-                <option disabled value="default">滤镜</option>
+                <option disabled value="default">{{lang === 1 ?"滤镜":"Filter"}}</option>
                 <option
                   v-for="(effect,index) in filterGroup"
                   :key="'filterGroup'+index"
@@ -68,7 +68,7 @@
             </div>
 
             <div class="resize">
-              <span>大小</span>
+              <span>{{lang === 1 ?"大小":"Size"}}</span>
               <input
                 type="range"
                 min="10"
@@ -81,7 +81,7 @@
           </div>
           <div class="middleContent">
             <div class="opacityAdj">
-              <span>透明度</span>
+              <span>{{lang ===1 ?"透明度":"Opacity"}}</span>
               <input
                 type="range"
                 min="0"
@@ -93,7 +93,7 @@
             </div>
 
             <div class="rotateBtn">
-              <span>左</span>
+              <span>{{lang === 1 ?"左":"L"}}</span>
               <input
                 type="range"
                 min="-180"
@@ -102,16 +102,16 @@
                 :value="pictureComponents[currentPictureFocus] == undefined?-180:pictureComponents[currentPictureFocus].rotate"
                 @input="changePictureProperty('rotate',100)"
               >
-              右
+              {{lang === 1 ?"右":"R"}}
             </div>
           </div>
           <div class="rightContent">
             <div class="stepUpOrDown">
-              <button class="stepUp" value="1" @click="changePictureProperty('zIndex',0)">往上一层</button>
-              <button class="stepDown" value="-1" @click="changePictureProperty('zIndex',0)">往下一层</button>
+              <button class="stepUp" value="1" @click="changePictureProperty('zIndex',0)">{{lang === 1 ?"往上一层":"Bring forward"}}</button>
+              <button class="stepDown" value="-1" @click="changePictureProperty('zIndex',0)">{{lang === 1 ?"往下一层":"Bring Backward"}}</button>
             </div>
             <div class="destroyBtn">
-              <button @click="changePictureProperty('destroy',false)">删除</button>
+              <button @click="changePictureProperty('destroy',false)">{{lang === 1 ?"删除":"delete"}}</button>
             </div>
           </div>
         </div>
@@ -120,7 +120,7 @@
         <div class="textSetting" v-show="mode == 'textEditing'">
           <div class="leftContent">
             <div class="resize">
-              <span>大小</span>
+              <span>{{lang === 1 ?"大小":"Size"}}</span>
               <input
                 type="range"
                 min="5"
@@ -131,7 +131,7 @@
               >
             </div>
             <div class="opacityAdj">
-              <span>透明度</span>
+              <span>{{lang === 1 ?"透明度":"Opacity"}}</span>
               <input
                 type="range"
                 min="0"
@@ -142,7 +142,7 @@
               >
             </div>
             <div class="rotateBtn">
-              <span>左</span>
+              <span>{{lang === 1 ?"左":"L"}}</span>
               <input
                 type="range"
                 min="-180"
@@ -151,12 +151,12 @@
                 :value="textComponents[currentTextFocus] == undefined?-180:textComponents[currentTextFocus].rotate"
                 @input="changeTextProperty('rotate',100)"
               >
-              右
+              {{lang === 1 ?"右":"R"}}
             </div>
           </div>
           <div class="rightContent">
             <div class="colorInput">
-              <span>颜色</span>
+              <span>{{lang === 1 ?"颜色":"Color"}}</span>
               <input
                 type="color"
                 :value="textComponents[currentTextFocus] == undefined?'#b900ff':textComponents[currentTextFocus].color"
@@ -164,11 +164,11 @@
               >
             </div>
             <div class="stepUpOrDown">
-              <button class="stepUp" value="1" @click="changeTextProperty('zIndex',0)">往上一层</button>
-              <button class="stepDown" value="-1" @click="changeTextProperty('zIndex',0)">往下一层</button>
+              <button class="stepUp" value="1" @click="changeTextProperty('zIndex',0)">{{lang === 1 ?"往上一层":"Bring forward"}}</button>
+              <button class="stepDown" value="-1" @click="changeTextProperty('zIndex',0)">{{lang === 1 ?"往下一层":"Bring Backward"}}</button>
             </div>
             <div class="destroyBtn">
-              <button @click="changeTextProperty('destroy',false)">删除</button>
+              <button @click="changeTextProperty('destroy',false)">{{lang === 1 ?"删除":"delete"}}</button>
             </div>
           </div>
         </div>
@@ -176,20 +176,20 @@
         <!-- backgroundEditing -->
         <div class="backgroundSetting" v-show="mode == 'backgroundEditing'">
           <div class="changeBackgroundColor">
-            背景颜色：
+           {{lang === 1 ?"背景颜色：":"BgColor: "}}
             <input type="color" v-model="backgroundStyle.backgroundColor">
           </div>
           <div class="changeBackgroundImage">
-            背景图片：
-            <button @click="addPicture(true)">导入背景</button>
+           {{lang === 1 ?"背景图片：":"BgImage: "}}
+            <button @click="addPicture(true)">{{lang === 1 ?"导入背景":"Import"}}</button>
           </div>
           <div class="backgroundOption">
-            背景位置：
+            {{lang === 1 ?"背景位置：":"BgPos: "}}
             <select @change="changeBackgroundSize($event.target.value)">
-              <option value="700px 400px">填满</option>
-              <option value="cover">覆盖</option>
-              <option value="contain">包含</option>
-              <option value="repeat">重复</option>
+              <option value="700px 400px">{{lang === 1 ?"填满":"stretch"}}</option>
+              <option value="cover">{{lang === 1 ?"覆盖" :"cover"}}</option>
+              <option value="contain">{{lang === 1 ?"包含":"contain"}}</option>
+              <option value="repeat">{{lang === 1 ?"重复":"repeat"}}</option>
             </select>
           </div>
         </div>
@@ -201,7 +201,7 @@
           </div>
           <div class="leftContent">
             <div class="startUpBtnWidth">
-              长度
+              {{lang === 1 ?"长度":"Width"}}
               <input
                 type="range"
                 min="10"
@@ -210,7 +210,7 @@
                 :value="pixelTypeTransfer(startBtnStyle.width)"
                 @input="startBtnStyle.width = pixelTypeTransfer(Number($event.target.value))"
               >
-              <br>宽度
+              <br>{{lang === 1 ? "宽度":"Height"}}
               <input
                 type="range"
                 min="10"
@@ -221,7 +221,7 @@
               >
             </div>
             <div class="startUpBtnBorderRadius">
-              边角
+              {{lang === 1 ?"边角":"Radius"}}
               <input
                 type="range"
                 min="0"
@@ -234,7 +234,7 @@
           </div>
           <div class="middleContent">
             <div class="startUpBtnBorderWidth">
-              边框
+              {{lang === 1 ?"边框":"Border"}}
               <input
                 type="range"
                 min="0"
@@ -245,7 +245,7 @@
               >
             </div>
             <div class="startUpBtnFontSize">
-              字体
+              {{lang === 1 ?"字体":"Font"}}
               <input
                 type="range"
                 min="10"
@@ -258,28 +258,28 @@
           </div>
           <div class="rightContent">
             <div class="changeBtnColor">
-              按钮颜色：
+              {{lang === 1 ?"按钮颜色：":"Button Color: "}}
               &nbsp;
               <input type="color" v-model="startBtnStyle.backgroundColor">
             </div>
             <div class="changeFontColor">
-              字体颜色：
+              {{lang === 1 ?"字体颜色：":"Font Color: "}}
               &nbsp;
               <input type="color" v-model="startBtnStyle.color">
             </div>
             <div class="changeBorderColor">
-              边框颜色：
+              {{lang === 1 ?"边框颜色：":"Border Color: "}}
               &nbsp;
               <input type="color" v-model="startBtnStyle.borderColor">
             </div>
           </div>
 
           <div class="stepUpOrDown">
-            <button class="stepUp" @click="startBtnStyle.zIndex+=1">往上一层</button>
+            <button class="stepUp" @click="startBtnStyle.zIndex+=1">{{lang === 1 ?"往上一层":"Forward"}}</button>
             <button
               class="stepDown"
               @click="startBtnStyle.zIndex == startBtnStyle==0?0:startBtnStyle - 1"
-            >往下一层</button>
+            >{{lang === 1 ?"往下一层":"Backward"}}</button>
           </div>
         </div>
 
@@ -288,7 +288,7 @@
           <div class="leftContent">
             <textarea v-model="textFlowText"></textarea>
             <div class="textFlowFontSize">
-              <span>字体</span>
+              <span>{{lang === 1 ?"字体大小":"Font Size"}}</span>
               <input
                 type="range"
                 min="10"
@@ -299,18 +299,18 @@
               >
             </div>
             <div class="changeFontColor">
-              <span>字体颜色</span>
+              <span>{{lang === 1 ?"字体颜色":"Font Color "}}</span>
               <input type="color" v-model="textFlowStyle.color">
             </div>
           </div>
           <div class="rightContent">
             <label>
               ----
-              <input type="checkbox" v-model="textFlowStyle.animation">动画
+              <input type="checkbox" v-model="textFlowStyle.animation">{{lang === 1 ?"动画":"Animation"}}
               ----
             </label>
             <div v-if="textFlowStyle.animation">
-              <span>持续时间</span>
+              <span>{{lang === 1 ?"持续时间":"Duration"}}</span>
               <input
                 type="range"
                 min="0"
@@ -318,9 +318,9 @@
                 step="1"
                 v-model.number="textFlowStyle.animationTime"
               >
-              {{textFlowStyle.animationTime}}秒
+              {{textFlowStyle.animationTime}}s
               <br>
-              <span>移动距离</span>
+              <span>{{lang === 1 ?"移动距离":"Distance"}}</span>
               <input
                 type="range"
                 min="0"
@@ -330,22 +330,22 @@
               >
               {{textFlowStyle.animationDistance}}
               <br>
-              <span>移动方向</span>
+              <span>{{lang === 1 ?"移动方向 ":"Direction"}}</span>
               <select v-model.number="textFlowStyle.animationDir">
-                <option value="top">上</option>
-                <option value="left">左</option>
-                <option value="right">右</option>
-                <option value="bottom">下</option>
+                <option value="top">{{lang === 1 ?"上":"Up"}}</option>
+                <option value="left">{{lang === 1 ?"左":"Left"}}</option>
+                <option value="right">{{lang === 1 ?"右":"Right"}}</option>
+                <option value="bottom">{{lang === 1 ?"下":"Down"}}</option>
               </select>
               <br>
-              <button @click="textFlowAnimate()" v-bind:disabled="runningAnimation">测试</button>
-              <button @click="runningAnimation = false">停止</button>
+              <button @click="textFlowAnimate()" v-bind:disabled="runningAnimation">{{lang ===1  ?"测试":"test"}}</button>
+              <button @click="runningAnimation = false">{{lang === 1 ?"停止":"Stop"}}</button>
             </div>
           </div>
         </div>
 
         <!-- done -->
-        <button @click="done()" class="doneBtn">完成</button>
+        <button @click="done()" class="doneBtn">{{lang === 1 ?"完成":"Done"}}</button>
       </div>
     </div>
   </div>
@@ -459,6 +459,9 @@ export default {
     }
   },
   computed: {
+    lang(){
+      return this.$store.state.lang
+    },
     //注入数据
     ...mapState("startUpFace", {
       startUpBtnFromVuex: "startUpBtn",
@@ -476,17 +479,17 @@ export default {
     }),
     modeTitle() {
       if (this.mode == "pictureEditing") {
-        return "图片编辑";
+        return this.lang === 1 ?"图片编辑":"Image Edit";
       } else if (this.mode == "textEditing") {
-        return "文字编辑";
+        return this.lang === 1 ?"文字编辑":"Text Edit";
       } else if (this.mode == "backgroundEditing") {
-        return "背景编辑";
+        return this.lang === 1 ?"背景编辑":"Background Edit";
       } else if (this.mode == "textFlowEditing") {
-        return "文字动画编辑";
+        return this.lang === 1 ?"文字动画编辑":"Text Animation Edit";
       } else if (this.mode == "startUpBtnEditing") {
-        return "开始按钮编辑";
+        return this.lang === 1 ?"开始按钮编辑":"Start Button Edit";
       } else {
-        return "点击相应元素进行编辑";
+        return this.lang === 1 ?"点击相应元素进行编辑":"Click Element to Edit";
       }
     }
   },

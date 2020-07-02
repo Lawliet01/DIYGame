@@ -22,16 +22,16 @@
     <!-- rightConatiner -->
     <div class="rightConatiner">
       <div class="returnBtnContainer">
-        <button class="returnBtn" @click="returnToEntireGame()">完成</button>
+        <button class="returnBtn" @click="returnToEntireGame()">{{lang === 1 ?"完成":"DONE"}}</button>
       </div>
       <div class="operationalContainer">
         <div class="choices">
-          <button class="backgroundSettingBtn" @click="mode='backgroundSetting'">背景</button>
-          <button class="propertySettingBtn" @click="mode='propertySetting'">角色属性</button>
+          <button class="backgroundSettingBtn" @click="mode='backgroundSetting'">{{lang === 1 ? "背景":"background"}}</button>
+          <button class="propertySettingBtn" @click="mode='propertySetting'">{{lang === 1 ? "角色属性":"player setting"}}</button>
         </div>
         <div class="settingContainer">
           <div class="backgroundSettingPanel" v-if="mode=='backgroundSetting'">
-            <br>更换背景颜色：
+            <br>{{lang === 1 ?"更换背景颜色：":"Background Color"}}
             <br>
             <br>
             <input
@@ -43,20 +43,20 @@
             <br>
             <br>
             <hr>
-            <br>更换背景图片：
+            <br>{{lang === 1 ?"更换背景图片：":"Background Image"}}
             <br>
             <br>
-            <button @click="inputBackgroundImage" class="backgroundInput">导入背景</button>
+            <button @click="inputBackgroundImage" class="backgroundInput">{{lang === 1 ?"导入背景":"Import picture"}}</button>
           </div>
           <div class="propertySetting" v-else>
-            生命
+            {{lang === 1 ?"生命":"Lives"}}
             <input
               type="number"
               class="playerLives"
               :value="globalPlayerSetting.lives"
               @input="changePlayerSetting($event.target.value,'lives')"
             >
-            <br>速度
+            <br>{{lang === 1 ?"速度":" Speed"}}
             <input
               type="range"
               class="playerSpeed"
@@ -66,7 +66,7 @@
               :value="globalPlayerSetting.speed"
               @change="changePlayerSetting($event.target.value,'speed')"
             >
-            <br>弹跳
+            <br>{{lang === 1 ?"弹跳":"Bounce"}}
             <input
               type="range"
               class="playerJumpSpeed"
@@ -76,7 +76,7 @@
               :value="globalPlayerSetting.jumpSpeed"
               @change="changePlayerSetting($event.target.value,'jumpSpeed')"
             >
-            <br>大小
+            <br>{{lang === 1 ?"大小":"Size"}}
             <input
               type="range"
               class="playerSize"
@@ -92,7 +92,7 @@
         </div>
       </div>
       <button class="structureDesign" @click="openStructureDesign()">
-        <font-awesome-icon icon="cogs" class="fa-sm"/>&nbsp;结构设计
+        <font-awesome-icon icon="cogs" class="fa-sm"/>&nbsp;{{lang === 1 ?"添加元素":"Add Level Elements"}}
       </button>
     </div>
     <transition name="pageTransition">
@@ -138,6 +138,9 @@ export default {
       "structureDesign",
       "globalPlayerSetting"
     ]),
+    lang(){
+      return this.$store.state.lang
+    },
     gamePreviewContainer() {
       return document.getElementsByClassName("gamePreviewContainer")[0];
     }

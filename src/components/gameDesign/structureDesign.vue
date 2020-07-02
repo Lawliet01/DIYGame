@@ -26,7 +26,7 @@
     <div class="rightContainer">
 
       <!-- optionList -->
-      <div class="extendButton" @click="extendPanel.optionsList = !extendPanel.optionsList">游戏元素</div>
+      <div class="extendButton" @click="extendPanel.optionsList = !extendPanel.optionsList">{{lang === 1 ?"游戏元素":"Element Options"}}</div>
       <div class="optionsListContainer" v-show="extendPanel.optionsList">
         <div
           class="currentOption"
@@ -51,37 +51,37 @@
       </div>
 
       <!-- setting -->
-      <div class="extendButton" @click="extendPanel.setting = !extendPanel.setting">面板操作</div>
+      <div class="extendButton" @click="extendPanel.setting = !extendPanel.setting">{{lang === 1 ?"面板操作":"Edit"}}</div>
       <div class="setting" v-show = 'extendPanel.setting'>
         <div>
           <input type="range" v-model="mapScale" min="0.2" max="1.5" step="0.1">
         </div>
         <div class="resize">
-          长：
+          {{lang === 1 ?"长：":"W: "}}
           <input type="text" v-model.number="dimension.width" @change="changeDimension()">
-          宽：
+          {{lang === 1 ?"高：":"H: "}}
           <input type="text" v-model.number="dimension.height" @change="changeDimension()">
         </div>
         <div class="gridLine">
-          网格：
+          {{lang === 1 ?"网格：":"Grid: "}}
           <input type="checkbox" v-model="showGrid">
         </div>
-        <div class="undoBtn" @click="undo()">撤销</div>
-        <div class="resetBtn" @click="reset()">重置</div>
-        <div class="clearBtn" @click="clear()">清空界面</div>
+        <div class="undoBtn" @click="undo()">{{lang === 1 ?"撤销":"Undo"}}</div>
+        <div class="resetBtn" @click="reset()">{{lang === 1 ?"重置":"Reset"}}</div>
+        <div class="clearBtn" @click="clear()">{{lang === 1 ?"清空界面":"Clear All"}}</div>
       </div>
 
       <!-- template -->
-      <div class="extendButton" @click="extendPanel.template = !extendPanel.template">游戏模版</div>
+      <div class="extendButton" @click="extendPanel.template = !extendPanel.template">{{lang === 1 ?"游戏模版":"Game Template"}}</div>
       <div class="template" v-show='extendPanel.template'>
         <div
           v-for="(template,index) in templates"
           :key="'template'+index"
           @click="useTemplate(template)"
-        >模版{{index+1}}</div>
+        >{{lang === 1 ?"模版":"T"}}{{index+1}}</div>
       </div>
-      <div class="cancelBtn" @click="cancel()">取消</div>
-      <div class="doneBtn" @click="done()">保存</div>
+      <div class="cancelBtn" @click="cancel()">{{lang === 1 ?"取消":"Cancel"}}</div>
+      <div class="doneBtn" @click="done()">{{lang === 1 ?"保存":"Save"}}</div>
     </div>
   </div>
 </template>
@@ -116,7 +116,6 @@ export default {
         width: 0,
         height: 0
       },
-      selectorChineseName: ["玩家", "墙体", "怪兽", "金币", "熔浆"],
       selectorList: ["players", "walls", "monsters", "collectors", "lava"],
       selectedOption: { src: "", pattern: "." },
       optionsForSelector: {
@@ -146,7 +145,13 @@ export default {
     };
   },
   computed: {
-    ...mapState("gameLevel", ["levelMap", "currentLevel"])
+    ...mapState("gameLevel", ["levelMap", "currentLevel"]),
+    selectorChineseName(){
+      return this.lang === 1 ?["玩家", "墙体", "怪兽", "金币", "熔浆"]:["player", "wall", "harm", "coin","lava"]
+    },
+    lang(){
+      return this.$store.state.lang
+    }
   },
   methods: {
     optionStyle(option) {

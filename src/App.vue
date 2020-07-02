@@ -2,11 +2,13 @@
   <div id="app">
     <header>
       <nav>
-        <router-link to="/">主页</router-link>
-        <router-link to="/previewPage">实例</router-link>
-        <router-link to="/entireGame">设计总台</router-link>
-        <router-link to="/help">帮助</router-link>
+        <router-link to="/">{{lang===2?"Home":"主页"}}</router-link>
+        <router-link to="/previewPage">{{lang===2?"Example":"实例"}}</router-link>
+        <router-link to="/entireGame">{{lang===2?"Console":"设计总台"}}</router-link>
+        <router-link to="/help">{{lang===2?"Guide":"帮助"}}</router-link>
         <a href="https://github.com/Lawliet01/diyGame" target='_blank'>GITHUB</a>
+        <a @click="changeLang(2)" :class="lang===2?'selected':'unselected'">En</a>
+        |<a @click="changeLang(1)" :class="lang===1?'selected':'unselected'">中文</a>
       </nav>
     </header>
     <transition name="pageTransition">
@@ -15,6 +17,23 @@
   </div>
 </template>
 
+<script>
+// import { mapState, mapMutations} from "vuex";
+
+export default {
+  computed:{
+    lang(){
+      return this.$store.state.lang
+    }
+  },
+  methods:{
+    changeLang(lang){
+      this.$store.commit('changeLanguage',lang )
+    }
+  }
+}
+
+</script>
 <style lang="scss">
 @import "./lib/rangeInputStyle.css";
 
@@ -73,6 +92,21 @@ header {
       }
       &:hover {
         text-decoration: underline;
+      }
+    }
+
+    .selected {
+      margin: 5px;
+      // @extend a;
+
+      color: #2c3e50;
+    }
+
+    .unselected {
+      margin: 5px;
+      &:hover {
+        // text-decoration: underline;
+        cursor: pointer;
       }
     }
   }

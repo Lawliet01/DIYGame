@@ -3,7 +3,7 @@
     <div
       v-if="runningGame!=null&&gameEnd==false"
       style="font-size:15px;color:red;font-weight:600"
-    >上、左、右键移动角色，esc键暂停</div>
+    >{{lang === 1 ? "上、左、右键移动角色，esc键暂停" : "press [left,right,up] key to move player, esc key to pause the game."}}</div>
     <!-- 开始界面 -->
     <div class="startUpFace" v-bind:style="backgroundStyle" v-if="runningGame==null">
       <button v-bind:style="startUpBtn" v-on:click="startGame()">{{startUpBtnText}}</button>
@@ -47,18 +47,18 @@
     <!-- 按键组 -->
     <div class="btnGroup">
       <button @click="goToPlayerFigureDesign()" class="designBtn">
-        <font-awesome-icon icon="male" class="fa-lg"/>&nbsp;角色设计
+        <font-awesome-icon icon="male" class="fa-lg"/>&nbsp;{{lang===1?"角色设计":"Player"}}
       </button>
       <button @click="goToGameDesign()" class="designBtn">
-        <font-awesome-icon icon="gamepad" class="fa-lg"/>&nbsp;游戏设计
+        <font-awesome-icon icon="gamepad" class="fa-lg"/>&nbsp;{{lang===1?"游戏设计":"Level"}}
       </button>
       <button @click="goToStartUpAndEndDesign()" class="designBtn">
-        <font-awesome-icon icon="laptop" class="fa-lg"/>&nbsp;界面设计
+        <font-awesome-icon icon="laptop" class="fa-lg"/>&nbsp;{{lang===1?"界面设计":"Interface"}}
       </button>
-      <button @click="reset()">{{!gameEnd?'结束游戏':'重置游戏'}}</button>
-      <button @click="save()">保存</button>
-      <button @click="restore()">恢复</button>
-      <button @click="downloadTheGame()">下载</button>
+      <button @click="reset()">{{!gameEnd?`${lang===1?"结束游戏":"reset"}`:`${lang === 1 ?"重置游戏":"reset"}`}}</button>
+      <button @click="save()">{{lang === 1 ?"保存":"save"}}</button>
+      <button @click="restore()">{{lang === 1 ?"恢复":"restore"}}</button>
+      <button @click="downloadTheGame()">{{lang === 1 ? "下载":"download"}}</button>
     </div>
 
     <!-- 下载弹出框 -->
@@ -195,6 +195,9 @@ export default {
       let image = new Image();
       image.src = this.$store.state.playerFigure.result;
       return image;
+    },
+    lang(){
+      return this.$store.state.lang
     }
   },
   methods: {
@@ -202,7 +205,7 @@ export default {
       store("gameLevel", this.$store.state.gameLevel);
       store("startUpFace", this.$store.state.startUpFace);
       store("endFace", this.$store.state.endFace);
-      alert("已保存！");
+      alert(`${this.lang === 1 ?"已保存!":"Saved!"}`);
 
       function store(name, data) {
         localStorage.setItem(name, JSON.stringify(data));
@@ -212,7 +215,7 @@ export default {
       restoreData("gameLevel", this);
       restoreData("startUpFace", this);
       restoreData("endFace", this);
-      alert("已恢复！");
+      alert(`${this.lang === 1 ?"已恢复, 请重新开始游戏!":"Done! Please restart the game!"}`);
       function restoreData(name, self) {
         let data = localStorage.getItem(name);
         if (data != null)
