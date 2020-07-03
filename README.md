@@ -15,7 +15,7 @@ DIYGAME is a pure front-end web application. User can make platform game **witho
 
 [GIF demo](./README/playerFigure.md)
 
-![alt failure load](./README/playerFigureExample.png)
+![alt failure load](./README/playerFigureExp.png)
 
 
 ### Example 2: Design game level

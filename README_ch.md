@@ -14,7 +14,7 @@ DIYGame是一个纯前端的应用。使用者可以在**不写任何一行代�
 
 [GIF动画演示](./README/playerFigure.md)
 
-![alt 加载失败](./README/playerFigureExample.png)
+![alt 加载失败](./README/playerFigureExp.png)
 
 
 ### 示例2:游戏关卡设计
