@@ -4,4 +4,4 @@
 ![alt failure load](./playerFigureGIF.gif)
 
 
-[<-](../README.md)
+[<- back](../README.md)

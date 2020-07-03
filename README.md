@@ -35,13 +35,13 @@ DIYGAME is a pure front-end web application. User can make platform game **witho
 [A complete instance](http://diygame.vip/#/previewPage) made by DIYGAME。
 
 
-## Try Now：
+## Try Now:
 
 Please visit on PC:
-[DIYGAME constole](http://diygame.vip/#/entireGame)。
+[DIYGAME console](http://diygame.vip/#/entireGame)。
 
 
-## User Guide
+## User Guide with video demo:
 
 [DIYGAME Guide](http://diygame.vip/#/help)
 
