@@ -3,7 +3,7 @@
     <div
       v-if="runningGame!=null&&gameEnd==false"
       style="font-size:15px;color:red;font-weight:600"
-    >{{lang === 1 ? "上、左、右键移动角色，esc键暂停" : "Press [left,right,up] key to move player. Press 「esc」key to pause the game."}}</div>
+    >{{lang === 1 ? "上、左、右键移动角色，esc键暂停" : "Press [left,right,up] key to move player. Press [esc]key to pause the game."}}</div>
     <!-- 开始界面 -->
     <div class="startUpFace" v-bind:style="backgroundStyle" v-if="runningGame==null">
       <button v-bind:style="startUpBtn" v-on:click="startGame()">{{startUpBtnText}}</button>

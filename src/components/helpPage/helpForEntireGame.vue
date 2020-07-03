@@ -5,8 +5,8 @@
     <hr>
     <br>
     <br>
-    <p v-if="lang === 1">DIYGAME是一款自主游戏设计平台，你可以在<strong>不写任何代码</strong>的情况写，完全按照自己的想法打造一款<strong>具有个人印记</strong>的冒险游戏。</p>
-    <p v-else>DIYGAME is a game design platform, you can make your own platform game <strong>without any coding</strong></p>
+    <p v-if="lang === 1">DIYGAME是一款自主游戏设计平台，你可以在<strong>不写任何代码</strong>的情况写，打造一款<strong>具有个人印记</strong>的冒险游戏。</p>
+    <p v-else>DIYGAME is a game design application, you can make your own platform game <strong>without any coding</strong>here</p>
     <br>
     <br>
     <br>

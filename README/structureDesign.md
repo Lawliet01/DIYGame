@@ -1,5 +1,5 @@
 
-## GIF示例2:游戏关卡设计
+## GIF demo: Design game level
 
 ![alt 加载失败](./structureDesign.gif)
 

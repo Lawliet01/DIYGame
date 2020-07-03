@@ -1,74 +1,50 @@
+
+[中文](./README_ch.md)
+
+
 # DIYGame
-DIYGame帮助使用者在**不写任何一行代码**的情况下实现一款**个人专属**的冒险游戏。最终设计的游戏以html文件的形式下载下来，可以在浏览器上运行。
+DIYGAME is a pure front-end web application. User can make platform game **without any coding** on it. The game could be saved as an HTML file and run in the browser.
 
-## 主页
+## Home page
 
-[DIYGAME主页介绍](http://diygame.vip/#/)
+[Home page of DIYGAME](http://diygame.vip/#/)
 
-## 设计示例
+## What you can do
 
-### 示例1:游戏角色形象设计
+### Example 1: Make your own player character
 
-[GIF动画演示](./README/playerFigure.md)
+[GIF demo](./README/playerFigure.md)
 
-这是一张照片:
-
-![alt 加载失败](./README/XTFpicture.png)
-
-使用DIYGAME可以把照片内人的头像嵌在游戏角色上：
-
-![alt 加载失败](./src/pic/helpPage/playerFigureResult.png)
+![alt failure load](./README/playerFigureExample.png)
 
 
-### 示例2:游戏关卡设计
+### Example 2: Design game level
 
-[GIF动画演示](./README/structureDesign.md)
+[GIF demo](./README/structureDesign.md)
 
-按照你的想法设计关卡内容、修改关卡的背景颜色、关卡的背景图片、人物的属性等等。。。
-
-![alt 加载失败](./README/gamePanelExample.png)
-
-最终都会以你想要的样式实现出来：
-
-![alt 加载失败](./src/pic/helpPage/gameDesignResult.png)
+![alt failure load](./README/gamePanelExample_en.png)
 
 
-### 示例3:游戏的开始与结束界面设计
+### Example 3: Design game interface
 
-你还可以设计游戏初始与结束界面；在结束界面，你还可以设计一段文字动画流.
-
-![alt 加载失败](./README/startFace.png)
-
-设计结果样例:
-
-![alt 加载失败](./src/pic/helpPage/faceDesignResult.png)
+![alt failure load](./README/startFace_en.png)
 
 
-## 简单的设计实例
+## A complete instance:
+
+[A complete instance](http://diygame.vip/#/previewPage) made by DIYGAME。
 
 
-用DIYGAME来设计的[一个简单的游戏实例](http://diygame.vip/#/previewPage)
+## Try Now：
+
+Please visit on PC:
+[DIYGAME constole](http://diygame.vip/#/entireGame)。
 
 
-## 马上试一试：
+## User Guide
 
+[DIYGAME Guide](http://diygame.vip/#/help)
 
-以上都只是可设计范围的冰山一角，想要了解全部内容，建议马上尝试：[DIYGAME设计总台](http://diygame.vip/#/entireGame)。
-请用电脑端来访问。
+## 
 
-
-## 使用指南
-
-[DIYGAME帮助](http://diygame.vip/#/help)
-
-## 技术栈
-
-- vue
-- vuex
-- vueRouter
-- vue-cli
-- sass
-
-## 其他
-
-如果喜欢该作品，希望给个star✨，感谢🙏
+If you like my work, please give me a star✨. Thank you very much.

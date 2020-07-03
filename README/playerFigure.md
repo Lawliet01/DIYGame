@@ -1,7 +1,7 @@
 
-## GIF示例1:游戏角色形象设计
+## GIF demo: Design player character
 
-![alt 加载失败](./playerFigureGIF.gif)
+![alt failure load](./playerFigureGIF.gif)
 
 
-[返回](../README.md)
+[<-](../README.md)
