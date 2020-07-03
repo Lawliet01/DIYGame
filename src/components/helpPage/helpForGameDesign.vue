@@ -1,7 +1,21 @@
 <template>
   <div class="note-wrapper">
-    <h1>帮助：游戏设计</h1>
+    <h1 v-if="lang === 1">帮助：游戏设计</h1>
+    <h1 v-else>Level Design</h1>
     <hr>
+    <br>
+    <h2 v-if="lang === 1">视频演示 (41秒) </h2>
+    <h2 v-else>Video Demo(41s)</h2>
+    <br>
+    <video src="@/video/levelEdit.mp4" controls width="100%" ></video>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div v-if="lang === 1">
     <br>
     <p>目前提供使用者进行设计的是一款冒险游戏，类似超级马里奥。</p>
     <p>玩家通过避开所有的怪物与熔浆，收集关卡上所有金币，方能通关。</p>
@@ -180,12 +194,18 @@
     <p>
       <img src="@/pic/helpPage/gameDesignResult.png">
     </p>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "helpForGameDesign"
+  name: "helpForGameDesign",
+  computed:{
+    lang(){
+      return this.$store.state.lang
+    },
+  }
 };
 </script>
 

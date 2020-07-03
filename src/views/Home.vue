@@ -6,8 +6,8 @@
       </div>
       <div class="introductionText">
         <div class="introductionTitle">DIYGAME</div>
-        <p class="introductionBody" v-if="lang === 1">是一个自主游戏设计平台，你可以在<strong>不写任何代码</strong>的情况写，<strong>按照自己的想法</strong>打造一款个人专属的冒险游戏。</p>
-        <p class="introductionBody" v-else>is a game design platform, you can make your own platform game <strong>without any coding</strong></p>
+        <p class="introductionBody" v-if="lang === 1">是一个自主游戏设计平台，你可以在<strong>不写任何代码</strong>的情况写，完全按照自己的想法打造一款<strong>具有个人印记</strong>的冒险游戏。</p>
+        <p class="introductionBody" v-else>is a game design platform. You can make your own platform game <strong>without any coding</strong> here.</p>
         <div class="startBtn">
           <router-link to="/previewPage" class="preview">{{lang === 2?"EXAMPLE":"实例"}}</router-link>
           <router-link to="/entireGame" class="startDesign">{{lang === 2?"TRY NOW !":"开始设计"}}</router-link>
@@ -21,7 +21,7 @@
           <div class="useCaseIcon">
             <font-awesome-icon icon="birthday-cake"/>
           </div>
-          <div class="useCaseText">{{lang === 2 ? "Memorable Birthday Gift":"亲友生日上最有创意的礼物"}}</div>
+          <div class="useCaseText">{{lang === 2 ? "Memorable birthday gift":"亲友生日上最有创意的礼物"}}</div>
         </div>
         <div class="useCase">
           <div class="useCaseIcon">
@@ -45,7 +45,7 @@
       <div class="explanation">
         <div>
           <p v-if="lang===1">一款自主设计的游戏，必不可少的是富有个人特色的游戏角色。DIYGAME允许您按照自己的想法，设计独一无二的角色形象。</p>
-          <p v-else>a self-made player character is essential for a self-made game. You can design your own player character with the assistance of DIYGAME.</p>
+          <p v-else>A homemade player character is essential for a homemade game. You can design your own player character with the assistance of DIYGAME.</p>
         </div>
       </div>
 
@@ -55,7 +55,7 @@
       <div class="explanation">
         <div>
           <p v-if="lang === 1">您可以根据自己的意愿设置任意数量的关卡，并按照自己的构想给每个关卡添加金币、熔浆、怪物等各种元素。您的想象力与创造力将在这里得到施展。</p>
-          <p v-else>You can set up any number of Levels and add elements(coin, lava, monster and so on ) to each level base on your idea.</p>
+          <p v-else>You can set up any number of levels and add elements(coin, lava, monster and so on ) to each level base on your idea.</p>
         </div>
       </div>
       <div class="thirdFunction" v-bind:style="backgroundStyle">

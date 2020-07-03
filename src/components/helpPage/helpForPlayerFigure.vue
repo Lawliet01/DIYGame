@@ -4,7 +4,21 @@
     <h1 v-else>Player Character Design</h1>
     <hr>
     <br>
+    <h2 v-if="lang === 1">视频演示 (2分钟) </h2>
+    <h2 v-else>Video Demo(2min)</h2>
+    <br>
+    <div class="video">
+      <video src="@/video/playerFigureVideo.mp4" controls width="100%"></video>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
     <div v-if="lang === 1">
+    <br>
       <p>角色形象设计允许您给游戏角色更换任意面部形象。</p>
       <br>
       <p>角色设计分成两个部分：</p>
@@ -16,20 +30,6 @@
       <p>2.借助页面提供的工具把人像头部"抠"出来。</p>
       <p>3.把抠出来的部分与游戏角色合并。</p>
       <p>4.测试并修改。</p>
-    </div>
-    <div v-else>
-      <p>Player Character Design allows you to change to face of the player.</p>
-      <br>
-      <p>Player Character Design can be divided into two parts:</p>
-      <p>1.crop the Picture to get the face.</p>
-      <p>2.combine the face and the player.</p>
-      <br>
-      <p>Step：</p>
-      <p>1.导入一张有人像照片。</p>
-      <p>2.借助页面提供的工具把人像头部"抠"出来。</p>
-      <p>3.把抠出来的部分与游戏角色合并。</p>
-      <p>4.测试并修改。</p>
-    </div>
     <br>
     <br>
     <br>
@@ -173,7 +173,8 @@
     <br>
     <br>
     <br>
-    <br>
+    <br>   
+    </div>
   </div>
 </template>
   
@@ -201,6 +202,7 @@ export default {
     }
   }
 }
+
 </style>
 
 

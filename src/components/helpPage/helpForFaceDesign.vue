@@ -1,9 +1,16 @@
 <template>
   <div class="note-wrapper">
-    <h1>帮助：界面设计</h1>
+    <h1 v-if="lang === 1">帮助：界面设计</h1>
+    <h1 v-else>Interface Design</h1>
     <hr>
     <br>
+    <h2 v-if="lang === 1">视频演示 (1分33秒) </h2>
+    <h2 v-else>Video Demo(1min33s)</h2>
     <br>
+    <video src="@/video/interfaceEdit.mp4" controls width="100%"></video>
+    <br>
+    <br>
+    <div v-if="lang === 1">
     <br>
     <p>界面设计包含两个部分：</p>
     <p>1.游戏开始界面设计</p>
@@ -74,12 +81,18 @@
     </p>
     <br>
     <br>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "helpForFaceDesign"
+  name: "helpForFaceDesign",
+  computed:{
+    lang(){
+      return this.$store.state.lang
+    },
+  }
 };
 </script>
 

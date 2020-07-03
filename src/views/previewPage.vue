@@ -29,7 +29,7 @@
     <div
       v-if="runningGame==false&&gameEnd==false"
       style="font-size:15px;color:red;font-weight:600"
-    >{{is_touch_device()?"操作屏幕按键移动角色,横屏再开始游戏体验更加":`${lang===1?'(上、左、右键移动角色，esc键暂停)':'press [left,right,up] key to move player, esc key to pause the game.'}`}}</div>
+    >{{is_touch_device()?`${lang === 1 ? "操作屏幕按键移动角色,横屏再开始游戏体验更加":""}`:`${lang===1?'(上、左、右键移动角色，esc键暂停)':'Press [left,right,up] key to move player. Press [esc] key to pause the game.'}`}}</div>
     <div
       v-if="runningGame==false&&gameEnd==false"
       style="font-weight:600; width: 70vw; margin: auto;"

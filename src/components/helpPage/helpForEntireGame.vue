@@ -5,7 +5,7 @@
     <hr>
     <br>
     <br>
-    <p v-if="lang === 1">DIYGAME是一款自主游戏设计平台，你可以在<strong>不写任何代码</strong>的情况写，<strong>按照自己的想法</strong>打造一款个人专属的冒险游戏。</p>
+    <p v-if="lang === 1">DIYGAME是一款自主游戏设计平台，你可以在<strong>不写任何代码</strong>的情况写，完全按照自己的想法打造一款<strong>具有个人印记</strong>的冒险游戏。</p>
     <p v-else>DIYGAME is a game design platform, you can make your own platform game <strong>without any coding</strong></p>
     <br>
     <br>
@@ -43,20 +43,24 @@
     <p>⑧ 保存按钮，保存您设计的游戏。</p>
     <p>⑨ 恢复按钮，会把游戏设计恢复到您上一次保存的位置。</p>
     <p>⑩ 下载该游戏。</p>
+    <p>⑪ 跳转到github repo。</p>
+    <p>⑫ 切换语言。</p>
     </div>
     <div v-else>
-      <p>① Button to go back to the home page.</p>
+      <p>① Go back to the home page.</p>
       <p>② Example of a game made by DIYGAME.</p>
       <p>③ Console entrance.</p>
       <p>④ Check the Guide.</p>
       <p>⑤ The game that you are working on currently. All the operations you made will show here immediately.</p>
       <p>⑥ Entrances of design of different parts of the game.</p>
       <p>
-        ⑦ Button to terminate the game right away.Just for convenience to test the game.
+        ⑦ Terminate the game right away.Just for convenience to test the game.
       </p>
-      <p>⑧ Button to save your design.</p>
-      <p>⑨ Button to restore your game. You have to save something before you can restore anything.</p>
-      <p>⑩ Button to download your game.</p>
+      <p>⑧ Save your design.</p>
+      <p>⑨ Restore your game. You have to save something before you can restore anything.</p>
+      <p>⑩ Download your game.</p>
+      <p>⑪ Visit github repo.</p>
+      <p>⑫ Change Language.</p>
     </div>
     <br>
     <br>

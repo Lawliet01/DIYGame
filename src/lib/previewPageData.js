@@ -38,5 +38,5 @@ exports.processTextFlow = {
     animationDistance: 935,
   },
   textContent:
-    "\n您想对通关的人说的话\n您想对通关的人说的话\n您想对通关的人说的话\n您想对通关的人说的话\n您想对通关的人说的话\n您想对通关的人说的话\n您想对通关的人说的话\n您想对通关的人说的话",
+    "\nYour message Here:\nXXXXXXXXXXXXXX\nXXXXXXXXXXXXXX\nXXXXXXXXXXXXXX\nXXXXXXXXXXXXXX\nXXXXXXXXXXXXXX\nXXXXXXXXXXXXXX\nXXXXXXXXXXXXXX\nXXXXXXXXXXXXXX",
 };

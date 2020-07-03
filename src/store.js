@@ -241,7 +241,7 @@ let endFace = {
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state:{
-    lang: 1, // 1为中文，2为英语
+    lang: 2, // 1为中文，2为英语
   },
   mutations:{
     changeLanguage(state, lang){

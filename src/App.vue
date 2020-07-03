@@ -26,6 +26,14 @@ export default {
       return this.$store.state.lang
     }
   },
+  created(){
+    let date = (new Date()).toString()
+    let inChina = /CST|China/.test(date)
+    if (inChina) {
+      this.changeLang(1)
+    }
+
+  },
   methods:{
     changeLang(lang){
       this.$store.commit('changeLanguage',lang )
